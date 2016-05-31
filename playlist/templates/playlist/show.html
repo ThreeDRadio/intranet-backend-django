@@ -1,0 +1,97 @@
+        {% load time_delta %}
+        {% load staticfiles %}
+        {% include 'playlist/header.html' %}
+
+        <script>
+            var statsData = {
+                labels: ["Female", "Australian", "Local", "Unique Artists", "Total Tracks"],
+                datasets: [
+                    {
+                        data: [ {{ female }}, {{ australian }}, {{ local }}, {{ artists }}, {{ songCount }} ]
+                    },
+                ]
+            }
+        </script>
+        
+        <div class="container">
+        
+            <h1>{{ show }} <small> with {{ show.defaultHost }}</small></h1>
+        
+            <div class="row">
+        
+                <div class="col-md-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            Most played artists
+                        </div>
+                        <div class="panel-body">
+
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>#</th><th>Artist</th><th>Plays</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                            {% for artist in top %}
+                            <tr><td>{{ forloop.counter }}</td><td>{{ artist.artist }}</td><td>{{ artist.plays }}</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                            
+                        </div>
+                    </div>
+        
+                </div>
+        
+                <div class="col-md-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            Statistics 
+                        </div>
+                        <div class="panel-body">
+                            <canvas id="showStats" width="500" height="400">
+                            <b>total songs:</b> {{ songcount }} <br>
+                            <b>unique artists:</b> {{ artists }} <br>
+                            <b>Local:</b> {{ local }} <br>
+                            <b>Australian: </b> {{ australian }} <br>
+                            <b>Female: </b> {{ female }} <br></canvas>
+                        </div>
+                    </div>
+        
+                </div>
+        
+            </div>
+                {% for playlist in playlists %}
+
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <div class="pull-right">
+                            <ul class="nav nav-pills">
+                                <li role="presentation"><a href="/logger/playlists/{{playlist.id}}" role="button">View Tracks</a></li>
+                                <li role="presentation"><a href="/logger/playlists/{{playlist.id}}/edit" role="button">Edit Playlist</a></li>
+                                <li role="presentation" class="dropdown">
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                                    Export<span class="caret"></span>
+                                    <ul class="dropdown-menu">
+                                        <li><a href="/logger/playlists/{{playlist.id}}?format=text" role="button">List</a></li>
+                                        <li><a href="/logger/playlists/{{playlist.id}}?format=csv" role="button">CSV</a></li>
+                                    </ul>
+                                </ul>
+                            </div>
+                            {% if playlist.show %}
+                            <h4>{{playlist.show}} <small> {{playlist.date}}</small></h4>
+                            {% else %}
+                            <h4>{{playlist.showname}} <small> {{playlist.date}}</small></h4>
+                            {% endif %}
+                            <p class="small">{{playlist.notes}}</p>
+
+                    </div></div>
+
+                    {% endfor %}
+        
+        </div>
+        <script type="text/javascript" src='{% static 'js/show-chart.js' %}'></script>
+    </body>
+</html>

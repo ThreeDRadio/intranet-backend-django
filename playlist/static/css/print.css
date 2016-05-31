@@ -1,0 +1,21 @@
+
+@media print {
+    .container {
+        width: 100%;
+    }
+
+    body {
+        font-size: 8pt;
+    }
+
+    h1 {
+        font-size: 16pt;
+    }
+
+    .table-condensed>thead {display: table-header-group;}
+
+    .table-condensed>tbody>tr>td, .table-condensed>tbody>tr>th, .table-condensed>tfoot>tr>td, .table-condensed>tfoot>tr>th, .table-condensed>thead>tr>td, .table-condensed>thead>tr>th {
+        padding: 1px;
+    }
+
+}

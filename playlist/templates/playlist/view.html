@@ -1,0 +1,42 @@
+{% load time_delta %}
+{% include 'playlist/header.html' %}
+
+        <div class="container">
+
+            <h1>Logging Sheet: {{ playlist.show }} <small>{{ playlist.date }} </small></h1>
+
+
+
+            <table class="table table-striped table-condensed">
+
+                <thead>
+                    <tr>
+                        <th>#</th><th>Artist</th><th>Track</th><th>Album</th><th>Duration</th><th>Local</th><th>Aus</th><th>Fem</th><th>NR</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for entryform in tracks %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ entryform.artist }}</td>
+                        <td>{{ entryform.title }}</td>
+                        <td>{{ entryform.album }}</td>
+                        <td>{{ entryform.duration|time_delta }}</td>
+                        <td>{% if entryform.local %}<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>{% endif %} </td>
+                        <td>{% if entryform.australian %}<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>{% endif %} </td>
+                        <td>{% if entryform.female %}<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>{% endif %} </td>
+                        <td>{% if entryform.newRelease %}<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>{% endif %} </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+
+
+            </table>
+
+        </div>
+    </body>
+</html>
+
+
+

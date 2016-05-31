@@ -1,0 +1,55 @@
+        {% load bootstrap3 %}
+{% include 'playlist/header.html' %}
+
+        {% load staticfiles %}
+        <script>
+            var statsData = {
+                labels: ["Female", "Australian", "Local", "Unique Artists", "Total Tracks"],
+                datasets: [
+                    {
+                        data: [ {{ female }}, {{ australian }}, {{ local }}, {{ artists }}, {{ songCount }} ]
+                    },
+                ]
+            }
+        </script>
+        <div class="container">
+            <div class="row">
+
+                <h1>Recent Logging Sheets</h1>
+
+                {% for playlist in playlists %}
+
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <div class="pull-right">
+                            <ul class="nav nav-pills">
+                                <li role="presentation"><a href="/logger/playlists/{{playlist.id}}" role="button">View Tracks</a></li>
+                                <li role="presentation"><a href="/logger/playlists/{{playlist.id}}/edit" role="button">Edit Playlist</a></li>
+                                <li role="presentation" class="dropdown">
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                                    Export<span class="caret"></span>
+                                    <ul class="dropdown-menu">
+                                        <li><a href="/logger/playlists/{{playlist.id}}?format=text" role="button">Artist - Track</a></li>
+                                        <li><a href="/logger/playlists/{{playlist.id}}?format=text&album=true" role="button">Artist - Track, Album</a></li>
+                                        <li><a href="/logger/playlists/{{playlist.id}}?format=csv" role="button">CSV</a></li>
+                                    </ul>
+                                </ul>
+                            </div>
+                            {% if playlist.show %}
+                            <h4><a href="/logger/shows/{{playlist.show.id}}/">{{playlist.show}}</a> <small> {{playlist.date}}</small></h4>
+                            {% else %}
+                            <h4>{{playlist.showname}} <small> {{playlist.date}}</small></h4>
+                            {% endif %}
+                            <p class="small">{{playlist.notes}}</p>
+
+                    </div></div>
+
+                    {% endfor %}
+                </div>
+
+                </div>
+        <script type="text/javascript" src='{% static 'js/show-chart.js' %}'></script>
+
+            </body>
+        </html>
+
