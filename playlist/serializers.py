@@ -36,7 +36,7 @@ class PlaylistEntrySerializer(serializers.ModelSerializer):
 
 class PlaylistSerializer(serializers.ModelSerializer):
 
-    tracks = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    tracks = serializers.HyperlinkedIdentityField(view_name='Playlist-tracks')
 
     class Meta:
         model = Playlist

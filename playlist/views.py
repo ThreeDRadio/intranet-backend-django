@@ -6,7 +6,7 @@ from django.contrib import messages
 import django_filters
 from rest_framework import filters
 from rest_framework import viewsets
-from rest_framework.decorators import list_route
+from rest_framework.decorators import list_route, detail_route
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 import unicodecsv as csv
@@ -260,6 +260,12 @@ class PlaylistViewSet(viewsets.ModelViewSet):
     queryset = Playlist.objects.all()
     serializer_class = PlaylistSerializer
     ordering_fields = ('date',)
+
+    @detail_route()
+    def tracks(self, request, pk=None):
+        post = self.get_object()
+        serializer = PlaylistEntrySerializer(post.tracks.all(), context={'request': request}, many=True)
+        return Response(serializer.data)
 
 class PlaylistEntryViewSet(viewsets.ModelViewSet):
     queryset = PlaylistEntry.objects.all()
