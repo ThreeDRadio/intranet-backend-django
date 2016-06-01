@@ -256,8 +256,10 @@ class ShowViewSet(viewsets.ModelViewSet):
     serializer_class = ShowSerializer
 
 class PlaylistViewSet(viewsets.ModelViewSet):
+    filter_backends = (filters.OrderingFilter,)
     queryset = Playlist.objects.all()
     serializer_class = PlaylistSerializer
+    ordering_fields = ('date',)
 
 class PlaylistEntryViewSet(viewsets.ModelViewSet):
     queryset = PlaylistEntry.objects.all()
