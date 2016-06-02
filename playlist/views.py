@@ -264,7 +264,7 @@ class PlaylistViewSet(viewsets.ModelViewSet):
     @detail_route()
     def tracks(self, request, pk=None):
         post = self.get_object()
-        serializer = PlaylistEntrySerializer(post.tracks.all(), context={'request': request}, many=True)
+        serializer = PlaylistEntrySerializer(post.tracks.all().order_by('pk'), context={'request': request}, many=True)
         return Response(serializer.data)
 
 class PlaylistEntryViewSet(viewsets.ModelViewSet):
