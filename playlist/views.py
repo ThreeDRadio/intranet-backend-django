@@ -254,6 +254,7 @@ class TrackViewSet(viewsets.ModelViewSet):
 class ShowViewSet(viewsets.ModelViewSet):
     queryset = Show.objects.all()
     serializer_class = ShowSerializer
+    pagination_class = None
 
 class PlaylistViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.OrderingFilter,)
