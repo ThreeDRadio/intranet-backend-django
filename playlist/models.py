@@ -71,7 +71,7 @@ class Show(models.Model):
 
 class Playlist(models.Model):
     show = models.ForeignKey(Show, null=True, related_name="playlists")
-    showname = models.CharField(max_length=200)
+    showname = models.CharField(max_length=200, blank=True)
     host = models.CharField(max_length=200)
     date = models.DateField()
     notes = models.TextField(blank=True, null=True)
