@@ -17,7 +17,7 @@ class TopArtistSerializer(serializers.Serializer):
     plays = serializers.IntegerField()
 
 class ShowStatisticsSerializer(serializers.Serializer):
-    statistic = serializers.CharField()
+    name = serializers.CharField()
     value = serializers.IntegerField()
 
 

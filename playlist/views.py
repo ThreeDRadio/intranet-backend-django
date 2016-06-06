@@ -274,24 +274,24 @@ class ShowViewSet(viewsets.ModelViewSet):
 
         data = (
                 {
-                    'statistic': 'tracks',
+                    'name': 'Total tracks',
                     'value': tracks
                 },
+                {   'name': 'Unique artists',
+                    'value': artists
+                },
                 {
-                    'statistic': 'local',
+                    'name': 'Local',
                     'value': local
                 }, 
                 {
-                    'statistic': 'australian',
+                    'name': 'Australian',
                     'value': australian
                 },
                 {
-                    'statistic': 'female',
+                    'name': 'Female',
                     'value': female
                 },
-                {   'statistic': 'artists',
-                    'value': artists
-                }
             )
 
         serializer = ShowStatisticsSerializer(data, context={'request': request}, many=True)
