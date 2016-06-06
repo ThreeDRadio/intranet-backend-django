@@ -15,7 +15,7 @@ from django.db.models import Count
 
 from .forms import NewPlaylistForm, PlaylistEntryForm, SummaryReportForm
 from .models import Playlist, PlaylistEntry, Cd, Cdtrack, Show
-from serializers import ReleaseSerializer, TrackSerializer, ShowSerializer, PlaylistSerializer, PlaylistEntrySerializer
+from serializers import ReleaseSerializer, TrackSerializer, ShowSerializer, PlaylistSerializer, PlaylistEntrySerializer, TopArtistSerializer
 
 
 # Create your views here.
@@ -255,6 +255,19 @@ class ShowViewSet(viewsets.ModelViewSet):
     queryset = Show.objects.all()
     serializer_class = ShowSerializer
     pagination_class = None
+
+    @detail_route()
+    def topartists(self, request, pk=None):
+        show = self.get_object()
+        top = PlaylistEntry.objects.filter(playlist__show=show).values('artist').annotate(plays=Count('artist')).order_by('-plays')[:10]
+        serializer = TopArtistSerializer(top, many=True)
+        return Response(serializer.data)
+
+    @detail_route()
+    def playlists (self, request, pk=None):
+        show = self.get_object()
+        serializer = PlaylistSerializer(show.playlists.all().order_by('-date'), context={'request': request}, many=True)
+        return Response(serializer.data)
 
 class PlaylistViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.OrderingFilter,)

@@ -12,6 +12,11 @@ class TrackSerializer(serializers.ModelSerializer):
         fields = ('trackid', 'url', 'tracknum', 'trackartist', 'tracktitle', 'tracklength', 'album')
 
 
+class TopArtistSerializer(serializers.Serializer):
+    artist = serializers.CharField()
+    plays = serializers.IntegerField()
+
+
 class ReleaseSerializer(serializers.HyperlinkedModelSerializer):
     tracks = serializers.PrimaryKeyRelatedField(
         many=True,
@@ -23,9 +28,12 @@ class ReleaseSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('id', 'url', 'arrivaldate', 'artist', 'title', 'year', 'local', 'compilation', 'female', 'tracks')
 
 class ShowSerializer(serializers.ModelSerializer):
+    playlists = serializers.HyperlinkedIdentityField(view_name='Show-playlists')
+    topartists = serializers.HyperlinkedIdentityField(view_name='Show-topartists')
+
     class Meta:
         model = Show
-        fields = ('id', 'name', 'startTime', 'endTime', 'defaultHost') 
+        fields = ('id', 'name', 'startTime', 'endTime', 'defaultHost', 'playlists', 'topartists') 
 
 class PlaylistEntrySerializer(serializers.ModelSerializer):
 
