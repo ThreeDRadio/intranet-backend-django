@@ -16,6 +16,10 @@ class TopArtistSerializer(serializers.Serializer):
     artist = serializers.CharField()
     plays = serializers.IntegerField()
 
+class ShowStatisticsSerializer(serializers.Serializer):
+    statistic = serializers.CharField()
+    value = serializers.IntegerField()
+
 
 class ReleaseSerializer(serializers.HyperlinkedModelSerializer):
     tracks = serializers.PrimaryKeyRelatedField(
@@ -30,10 +34,11 @@ class ReleaseSerializer(serializers.HyperlinkedModelSerializer):
 class ShowSerializer(serializers.ModelSerializer):
     playlists = serializers.HyperlinkedIdentityField(view_name='Show-playlists')
     topartists = serializers.HyperlinkedIdentityField(view_name='Show-topartists')
+    statistics = serializers.HyperlinkedIdentityField(view_name='Show-statistics')
 
     class Meta:
         model = Show
-        fields = ('id', 'name', 'startTime', 'endTime', 'defaultHost', 'playlists', 'topartists') 
+        fields = ('id', 'name', 'startTime', 'endTime', 'defaultHost', 'playlists', 'topartists', 'statistics') 
 
 class PlaylistEntrySerializer(serializers.ModelSerializer):
 

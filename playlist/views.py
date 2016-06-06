@@ -15,7 +15,7 @@ from django.db.models import Count
 
 from .forms import NewPlaylistForm, PlaylistEntryForm, SummaryReportForm
 from .models import Playlist, PlaylistEntry, Cd, Cdtrack, Show
-from serializers import ReleaseSerializer, TrackSerializer, ShowSerializer, PlaylistSerializer, PlaylistEntrySerializer, TopArtistSerializer
+from serializers import ReleaseSerializer, TrackSerializer, ShowSerializer, PlaylistSerializer, PlaylistEntrySerializer, TopArtistSerializer, ShowStatisticsSerializer
 
 
 # Create your views here.
@@ -261,6 +261,41 @@ class ShowViewSet(viewsets.ModelViewSet):
         show = self.get_object()
         top = PlaylistEntry.objects.filter(playlist__show=show).values('artist').annotate(plays=Count('artist')).order_by('-plays')[:10]
         serializer = TopArtistSerializer(top, many=True)
+        return Response(serializer.data)
+
+    @detail_route()
+    def statistics(self, request, pk=None):
+        show = self.get_object()
+        tracks = PlaylistEntry.objects.filter(playlist__show=show).count()
+        local = PlaylistEntry.objects.filter(playlist__show=show).filter(local=True).count()
+        australian = PlaylistEntry.objects.filter(playlist__show=show).filter(australian=True).count()
+        female = PlaylistEntry.objects.filter(playlist__show=show).filter(female=True).count()
+        artists = PlaylistEntry.objects.filter(playlist__show=show).distinct('artist').count()
+
+        data = (
+                {
+                    'statistic': 'tracks',
+                    'value': tracks
+                },
+                {
+                    'statistic': 'local',
+                    'value': local
+                }, 
+                {
+                    'statistic': 'australian',
+                    'value': australian
+                },
+                {
+                    'statistic': 'female',
+                    'value': female
+                },
+                {   'statistic': 'artists',
+                    'value': artists
+                }
+            )
+
+        serializer = ShowStatisticsSerializer(data, context={'request': request}, many=True)
+
         return Response(serializer.data)
 
     @detail_route()
