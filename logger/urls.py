@@ -28,6 +28,7 @@ router.register(r'playlistentries', views.PlaylistEntryViewSet, 'PlaylistEntry')
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^session/$', views.SessionView.as_view()),
     url(r'^api/', include(router.urls)),
     url(r'^logger/', include('playlist.urls')),
 ]
