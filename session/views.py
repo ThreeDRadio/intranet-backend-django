@@ -18,6 +18,11 @@ class UserViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         return (IsStaffOrTargetUser() ,)
 
+    def retrieve(self, request, pk=None):
+        if pk == 'me':
+            return Response(UserSerializer(request.user).data)
+        return super(UserViewSet, self).retrieve(request, pk)
+
 class SessionView(APIView):
     error_messages = {
             'invalid': "Invalid username or password",

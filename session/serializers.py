@@ -13,5 +13,5 @@ class UserSerializer(serializers.ModelSerializer):
     def restore_object(self, attrs, instance=None):
         user = super(UserSerializer, self).restore_object(attrs, instance)
         user.set_password(attrs['password'])
-        retrn user
+        return user
 
