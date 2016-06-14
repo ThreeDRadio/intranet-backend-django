@@ -31,7 +31,5 @@ router.register(r'playlistentries', views.PlaylistEntryViewSet, 'PlaylistEntry')
 urlpatterns = [
     url(r'^api-token-auth/', 'rest_framework.authtoken.views.obtain_auth_token'),
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^session/$', SessionView.as_view()),
     url(r'^api/', include(router.urls)),
-    url(r'^logger/', include('playlist.urls')),
 ]
