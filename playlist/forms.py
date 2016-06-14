@@ -64,6 +64,7 @@ class PlaylistEntryForm(forms.ModelForm):
 class SummaryReportForm(forms.Form):
     startDate = forms.DateField(label='Start Date', widget=DateWidget(usel10n=True, bootstrap_version=3))
     endDate = forms.DateField(label='End Date', widget=DateWidget(usel10n=True, bootstrap_version=3))
+    reportFormat = forms.ChoiceField(label="Report Format", choices = (('top20', 'Top 20+1'),('apra', 'APRA')))
 
     def clean(self):
         cleaned_data = super(SummaryReportForm, self).clean()

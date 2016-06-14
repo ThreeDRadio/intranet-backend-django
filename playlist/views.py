@@ -57,26 +57,39 @@ def today(request):
 def summary(request):
     startDate = request.GET.get('startDate', date.min)
     endDate = request.GET.get('endDate', date.max)
-    playlists = Playlist.objects.filter(date__range=(startDate, endDate))
+    reportFormat = request.GET.get('format')
+
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="play_summary.csv"'
 
-    out = csv.writer(response)
-    out.writerow(['show', 'date', 'start time', 'artist', 'track', 'album',
-                  'local', 'australian', 'female', 'new release'])
+    if reportFormat == "top20":
+        playlists = Playlist.objects.filter(date__range=(startDate, endDate))
+        out = csv.writer(response)
+        out.writerow(['show', 'date', 'start time', 'artist', 'track', 'album',
+                      'local', 'australian', 'female', 'new release'])
 
-    for playlist in playlists:
-        if playlist.show is None:
-            showname = playlist.showname
-            startTime = '0:00'
-        else:
-            showname = playlist.show.name
-            startTime = playlist.show.startTime
+        for playlist in playlists:
+            if playlist.show is None:
+                showname = playlist.showname
+                startTime = '0:00'
+            else:
+                showname = playlist.show.name
+                startTime = playlist.show.startTime
 
-        for track in playlist.playlistentry_set.all():
-            out.writerow(
-                [showname, playlist.date, startTime, track.artist, track.title, track.album, track.local, track.australian,
-                 track.female, track.newRelease])
+            for track in playlist.tracks.all():
+                out.writerow(
+                    [showname, playlist.date, startTime, track.artist, track.title, track.album, track.local, track.australian,
+                     track.female, track.newRelease])
+
+    else:
+        out = csv.writer(response)
+        out.writerow(['Title of Work', 'Composer/Arranger', 'Artist', 'Record Label', 'Total No Usages Per Week', 'Duration',
+                      'APRA use only'])
+
+        songs = PlaylistEntry.objects.filter(playlist__date__range=(startDate, endDate)).values('artist', 'title', 'duration').annotate(plays=Count('duration')).order_by('artist','title', '-plays')
+
+        for song in songs:
+            out.writerow([song['title'], '', song['artist'], '', song['plays'], song['duration'], ''])
 
     return response
 
@@ -207,7 +220,7 @@ def reports(request):
         form = SummaryReportForm(request.POST)
         if form.is_valid():
             return HttpResponseRedirect('/logger/summary/?startDate=' + unicode(form.cleaned_data.get('startDate')) +
-                                        '&endDate=' + unicode(form.cleaned_data.get('endDate')))
+                                        '&endDate=' + unicode(form.cleaned_data.get('endDate')) + '&format=' + unicode(form.cleaned_data.get('reportFormat')))
     else:
         form = SummaryReportForm()
     context = RequestContext(request, {
