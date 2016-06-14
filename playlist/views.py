@@ -133,7 +133,7 @@ def playlist(request, playlist_id):
             out = csv.writer(response)
             out.writerow(['artist', 'track', 'album', 'local', 'australian', 'female', 'new release'])
 
-            for track in playlist.playlistentry_set.all():
+            for track in playlist.tracks.all():
                 out.writerow([track.artist, track.title, track.album, track.local, track.australian, track.female,
                               track.newRelease])
             return response
