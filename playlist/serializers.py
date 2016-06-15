@@ -21,6 +21,16 @@ class ShowStatisticsSerializer(serializers.Serializer):
     value = serializers.IntegerField()
 
 
+class PlayCountSerializer(serializers.Serializer):
+    artist = serializers.CharField()
+    album = serializers.CharField()
+    title = serializers.CharField()
+    plays = serializers.IntegerField(
+        read_only=True
+    )
+
+
+
 class ReleaseSerializer(serializers.HyperlinkedModelSerializer):
     tracks = serializers.PrimaryKeyRelatedField(
         many=True,

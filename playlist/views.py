@@ -5,7 +5,9 @@ from django.forms.models import modelformset_factory
 from django.contrib import messages
 import django_filters
 from rest_framework import filters
+from rest_framework import generics
 from rest_framework import viewsets
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.views import APIView
 from rest_framework.decorators import list_route, detail_route
 from rest_framework.response import Response
@@ -16,7 +18,7 @@ from django.db.models import Count
 
 from .forms import NewPlaylistForm, PlaylistEntryForm, SummaryReportForm
 from .models import Playlist, PlaylistEntry, Cd, Cdtrack, Show
-from serializers import ReleaseSerializer, TrackSerializer, ShowSerializer, PlaylistSerializer, PlaylistEntrySerializer, TopArtistSerializer, ShowStatisticsSerializer
+from serializers import ReleaseSerializer, TrackSerializer, ShowSerializer, PlaylistSerializer, PlaylistEntrySerializer, TopArtistSerializer, ShowStatisticsSerializer, PlayCountSerializer
 
 import logging
 
@@ -335,6 +337,17 @@ class PlaylistViewSet(viewsets.ModelViewSet):
 class PlaylistEntryViewSet(viewsets.ModelViewSet):
     queryset = PlaylistEntry.objects.all()
     serializer_class = PlaylistEntrySerializer
+
+    @list_route()
+    def today(self, request):
+        queryset = PlaylistEntry.objects.filter(playlist__date=date.today()).values('artist', 'title', 'album').annotate(plays=Count('title')).order_by('artist', '-plays')
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = PlayCountSerializer(page, context={'request': request}, many=True)
+            return self.get_paginated_response(serializer.data)
+        serializer = PlayCountSerializer(queryset, many=True)
+        return Response(serializer.data)
+
 
 class ArtistViewSet(viewsets.ViewSet):
     filter_backends = (filters.SearchFilter,)
