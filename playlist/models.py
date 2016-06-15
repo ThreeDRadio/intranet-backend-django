@@ -83,6 +83,10 @@ class Playlist(models.Model):
 
 class PlaylistEntry(models.Model):
     playlist = models.ForeignKey(Playlist, related_name='tracks')
+
+    # entry order!
+    index = models.IntegerField(null=True)
+
     # text entry
     artist = models.CharField(max_length=200, blank=False, null=False)
     album = models.CharField(max_length=200, blank=False, null=False)
