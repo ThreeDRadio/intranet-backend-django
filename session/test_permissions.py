@@ -5,6 +5,8 @@ from rest_framework.viewsets import ModelViewSet
 
 import permissions
 
+from models import Whitelist
+
 class IsStaffOrTargetUserTest(TestCase):
   def setUp(self):
     self.user = User.objects.create_user('user', 'password', 'fake@user.com');
@@ -124,3 +126,53 @@ class IsStaffOrTargetUserTest(TestCase):
     view = ModelViewSet();
     view.action = 'retrieve'
     self.assertEqual(permission.has_object_permission(request, view, self.admin), False)
+
+
+
+class IsAuthenticatedOrWhitelistTest(TestCase):
+  def setUp(self):
+    self.user = User.objects.create_user('user', 'password', 'fake@user.com');
+    self.whitelist = Whitelist.objects.create(ip='127.0.0.1', name= 'Localhost')
+
+
+  def test_unauthenticated_not_whitelisted(self):
+    """ An unauthenticated, un-whitelisted IP address should not be granted permission"""
+    factory = APIRequestFactory()
+    request = factory.get('api/users');
+    request.META['REMOTE_ADDR'] = '255.255.255.0'
+    request.user = False
+    permission = permissions.IsAuthenticatedOrWhitelist()
+    view = ModelViewSet();
+    view.action = 'retrieve'
+    self.assertEqual(permission.has_permission(request, view), False)
+
+  def test_unauthenticated_but_whitelisted(self):
+    """ An unauthenticated, whitelisted IP address should be granted permission"""
+    factory = APIRequestFactory()
+    request = factory.get('api/users');
+    request.user = False
+    permission = permissions.IsAuthenticatedOrWhitelist()
+    view = ModelViewSet();
+    view.action = 'retrieve'
+    self.assertEqual(permission.has_permission(request, view), True)
+
+  def test_authenticated_not_whitelisted(self):
+    """ An authenticated, un-whitelisted IP address should be granted permission"""
+    factory = APIRequestFactory()
+    request = factory.get('api/users');
+    request.META['REMOTE_ADDR'] = '255.255.255.0'
+    request.user = self.user 
+    permission = permissions.IsAuthenticatedOrWhitelist()
+    view = ModelViewSet();
+    view.action = 'retrieve'
+    self.assertEqual(permission.has_permission(request, view), True)
+
+  def test_authenticated_whitelisted(self):
+    """ An authenticated, un-whitelisted IP address should be granted permission"""
+    factory = APIRequestFactory()
+    request = factory.get('api/users');
+    request.user = self.user 
+    permission = permissions.IsAuthenticatedOrWhitelist()
+    view = ModelViewSet();
+    view.action = 'retrieve'
+    self.assertEqual(permission.has_permission(request, view), True)
