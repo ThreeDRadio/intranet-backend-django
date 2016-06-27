@@ -1,6 +1,0 @@
-{% autoescape off %}{% if playlist.show %}{{playlist.show}}{% else %}{{playlist.showname}}{%endif%} - {{playlist.date}}
-
-{{playlist.notes}}
-
-{% for entryform in tracks %}{{ entryform.artist }} - {{ entryform.title }}{%if printalbum %}, {{entryform.album}}{% endif %}
-{% endfor %}{% endautoescape %}
