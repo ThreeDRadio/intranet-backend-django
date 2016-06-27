@@ -17,14 +17,14 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from rest_framework import routers
 from playlist import views
-from session.views import SessionView, UserViewSet
+from session.views import UserViewSet
 
 router = routers.DefaultRouter()
 router.register(r'releases', views.ReleaseViewSet)
 router.register(r'tracks', views.TrackViewSet)
 router.register(r'artists', views.ArtistViewSet, 'Artist')
 router.register(r'shows', views.ShowViewSet, 'Show')
-router.register(r'users', UserViewSet, 'User')
+router.register(r'users', UserViewSet, 'user')
 router.register(r'playlists', views.PlaylistViewSet, 'Playlist')
 router.register(r'playlistentries', views.PlaylistEntryViewSet, 'PlaylistEntry')
 
