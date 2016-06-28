@@ -6,6 +6,7 @@ from models import Whitelist
 
 
 class WhitelistAdmin(admin.ModelAdmin):
+    list_display = ['name', 'ip']
     model = Whitelist
 
 
