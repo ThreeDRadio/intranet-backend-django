@@ -2,7 +2,7 @@ from django.db import models
 from datetime import timedelta
 
 
-from catalogue.models import Cdtrack
+# from catalogue.models import Cdtrack
 # Create your models here.
 
 

@@ -43,7 +43,7 @@ class Cdcomment(models.Model):
         db_table = 'cdcomment'
 
 
-class Cdtrack(models.Model):
+class Track(models.Model):
     trackid = models.BigIntegerField(primary_key=True)
     cdid = models.ForeignKey(Release, db_column='cdid', related_name="tracks")
     tracknum = models.BigIntegerField()
