@@ -1,7 +1,7 @@
 from django.db import models
 
 # Create your models here.
-class Cd(models.Model):
+class Release(models.Model):
     id = models.BigIntegerField(primary_key=True)
     artist = models.CharField(max_length=200, blank=True, null=True)
     title = models.CharField(max_length=200, blank=True, null=True)
@@ -45,7 +45,7 @@ class Cdcomment(models.Model):
 
 class Cdtrack(models.Model):
     trackid = models.BigIntegerField(primary_key=True)
-    cdid = models.ForeignKey(Cd, db_column='cdid', related_name="tracks")
+    cdid = models.ForeignKey(Release, db_column='cdid', related_name="tracks")
     tracknum = models.BigIntegerField()
     tracktitle = models.CharField(max_length=200, blank=True, null=True)
     trackartist = models.CharField(max_length=200, blank=True, null=True)
