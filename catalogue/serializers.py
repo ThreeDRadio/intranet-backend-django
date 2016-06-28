@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Cd, Cdtrack
+from .models import Release, Track
 
 class TrackSerializer(serializers.ModelSerializer):
     cdid = serializers.StringRelatedField(
@@ -7,7 +7,7 @@ class TrackSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        model = Cdtrack
+        model = Track
         fields = ('trackid', 'url', 'tracknum', 'trackartist', 'tracktitle', 'tracklength', 'cdid')
 
 class ReleaseSerializer(serializers.HyperlinkedModelSerializer):
@@ -17,5 +17,5 @@ class ReleaseSerializer(serializers.HyperlinkedModelSerializer):
     )
 
     class Meta:
-        model = Cd
+        model = Release 
         fields = ('id', 'url', 'arrivaldate', 'artist', 'title', 'year', 'local', 'compilation', 'female', 'tracks')

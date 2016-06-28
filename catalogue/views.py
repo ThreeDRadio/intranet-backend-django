@@ -17,7 +17,7 @@ from datetime import date
 from django.db.models import Count
 from django.shortcuts import render
 
-from models import Cd, Cdtrack
+from models import Release, Track 
 from serializers import ReleaseSerializer, TrackSerializer
 
 # Create your views here.
@@ -28,16 +28,16 @@ class ArtistViewSet(viewsets.ViewSet):
     def list(self, request):
         searchParam = self.request.query_params.get('term')
         if searchParam is None:
-            artists = [release.artist for release in Cd.objects.distinct('artist').order_by('artist')]
+            artists = [release.artist for release in Release.objects.distinct('artist').order_by('artist')]
         else:
             artists = [release.artist for release in
-                       Cd.objects.distinct('artist').filter(artist__icontains=searchParam).order_by('artist')]
+                      Release.objects.distinct('artist').filter(artist__icontains=searchParam).order_by('artist')]
 
         return Response(artists)
 
 
 class ReleaseViewSet(viewsets.ModelViewSet):
-    queryset = Cd.objects.all()
+    queryset = Release.objects.all()
     serializer_class = ReleaseSerializer
     filter_backends = (filters.OrderingFilter,
                        filters.SearchFilter,)
@@ -46,7 +46,7 @@ class ReleaseViewSet(viewsets.ModelViewSet):
 
     @list_route()
     def latest(self, request):
-        latestReleases = Cd.objects.all().order_by('-arrivaldate')
+        latestReleases = Release.objects.all().order_by('-arrivaldate')
 
         page = self.paginate_queryset(latestReleases)
         if page is not None:
@@ -62,12 +62,12 @@ class TrackFilter(django_filters.FilterSet):
     track = django_filters.CharFilter(name="tracktitle", lookup_type='icontains')
 
     class Meta:
-        model = Cdtrack
+        model = Track
         fields = ['track', 'artist']
 
 
 class TrackViewSet(viewsets.ModelViewSet):
-    queryset = Cdtrack.objects.all()
+    queryset = Track.objects.all()
     serializer_class = TrackSerializer
     filter_backends = (filters.DjangoFilterBackend,)
     filter_class = TrackFilter
