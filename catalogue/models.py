@@ -45,7 +45,7 @@ class Cdcomment(models.Model):
 
 class Track(models.Model):
     trackid = models.BigIntegerField(primary_key=True)
-    cdid = models.ForeignKey(Release, db_column='cdid', related_name="tracks")
+    release = models.ForeignKey(Release, db_column='cdid', related_name="tracks")
     tracknum = models.BigIntegerField()
     tracktitle = models.CharField(max_length=200, blank=True, null=True)
     trackartist = models.CharField(max_length=200, blank=True, null=True)
