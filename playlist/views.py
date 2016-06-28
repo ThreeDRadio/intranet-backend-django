@@ -19,6 +19,7 @@ from django.db.models import Count
 from .forms import SummaryReportForm
 from .models import Playlist, PlaylistEntry, Show
 from catalogue.models import Cd, Cdtrack
+from session.permissions import IsAuthenticatedOrWhitelist
 from serializers import ShowSerializer, PlaylistSerializer, PlaylistEntrySerializer, TopArtistSerializer, ShowStatisticsSerializer, PlayCountSerializer
 
 import logging
@@ -120,6 +121,7 @@ class ShowViewSet(viewsets.ModelViewSet):
     queryset = Show.objects.all()
     serializer_class = ShowSerializer
     pagination_class = None
+    permission_classes = [IsAuthenticatedOrWhitelist,]
 
     @detail_route()
     def topartists(self, request, pk=None):
