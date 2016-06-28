@@ -30,7 +30,7 @@ class Release(models.Model):
         return self.artist + " - " + self.title
 
 
-class Cdcomment(models.Model):
+class Comment(models.Model):
     release = models.ForeignKey(Release, db_column='cdid', related_name="comments")
     cdtrackid = models.BigIntegerField()
     comment = models.TextField(blank=True, null=True)
