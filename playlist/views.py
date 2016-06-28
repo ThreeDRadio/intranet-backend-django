@@ -175,6 +175,7 @@ class PlaylistViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.OrderingFilter,)
     queryset = Playlist.objects.all()
     serializer_class = PlaylistSerializer
+    permission_classes = [IsAuthenticatedOrWhitelist,]
     ordering_fields = ('date',)
 
     @detail_route()
