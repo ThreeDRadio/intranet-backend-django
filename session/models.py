@@ -17,3 +17,19 @@ class OldPassword(models.Model):
 class Whitelist(models.Model):
     ip = models.GenericIPAddressField()
     name = models.CharField(max_length=200)
+
+class OldUser(models.Model):
+    """ A model that matches the original users table, for importing"""
+    id = models.BigIntegerField(primary_key=True)
+    username = models.CharField(unique=True, max_length=100)
+    password = models.CharField(max_length=100, blank=True, null=True)
+    first = models.CharField(max_length=100, blank=True, null=True)
+    last = models.CharField(max_length=100, blank=True, null=True)
+    admin = models.NullBooleanField()
+    active = models.NullBooleanField()
+    cdeditor = models.NullBooleanField()
+    adminbook = models.NullBooleanField()
+
+    class Meta:
+        managed = False
+        db_table = 'users'
