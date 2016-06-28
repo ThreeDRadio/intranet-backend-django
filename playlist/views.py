@@ -187,6 +187,7 @@ class PlaylistViewSet(viewsets.ModelViewSet):
 class PlaylistEntryViewSet(viewsets.ModelViewSet):
     queryset = PlaylistEntry.objects.all()
     serializer_class = PlaylistEntrySerializer
+    permission_classes = [IsAuthenticatedOrWhitelist,]
 
     @list_route()
     def today(self, request):
