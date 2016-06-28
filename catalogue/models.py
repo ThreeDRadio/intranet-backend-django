@@ -31,7 +31,7 @@ class Release(models.Model):
 
 
 class Cdcomment(models.Model):
-    cdid = models.BigIntegerField()
+    cdid = models.ForeignKey(Release, db_column='cdid', related_name="comments")
     cdtrackid = models.BigIntegerField()
     comment = models.TextField(blank=True, null=True)
     createwho = models.BigIntegerField()
