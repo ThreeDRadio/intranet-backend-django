@@ -10,6 +10,9 @@ def init_new_user(sender, instance, signal, created, **kqargs):
         Token.objects.create(user = instance)
 
 
+class OldPassword(models.Model):
+    user = models.OneToOneField(User, primary_key=True)
+    password = models.CharField(max_length=200)
 
 class Whitelist(models.Model):
     ip = models.GenericIPAddressField()
