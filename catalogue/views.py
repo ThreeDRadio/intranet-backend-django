@@ -18,7 +18,7 @@ from django.db.models import Count
 from django.shortcuts import render
 
 from models import Release, Track 
-from serializers import ReleaseSerializer, TrackSerializer
+from serializers import ReleaseSerializer, TrackSerializer, CommentSerializer
 
 # Create your views here.
 class ArtistViewSet(viewsets.ViewSet):
@@ -50,7 +50,11 @@ class ReleaseViewSet(viewsets.ModelViewSet):
         serializer = TrackSerializer(release.tracks.all().order_by('tracknum'), context={'request': request}, many=True)
         return Response(serializer.data)
 
-
+    @detail_route()
+    def comments(self, request, pk=None):
+        release = self.get_object()
+        serializer = CommentSerializer(release.comments.all().order_by('pk'), context={'request': request}, many=True)
+        return Response(serializer.data)
 
 class TrackFilter(django_filters.FilterSet):
     artist = django_filters.CharFilter(name="album__artist", lookup_type='icontains')
