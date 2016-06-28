@@ -17,8 +17,9 @@ from datetime import date
 from django.db.models import Count
 
 from .forms import SummaryReportForm
-from .models import Playlist, PlaylistEntry, Cd, Cdtrack, Show
-from serializers import ReleaseSerializer, TrackSerializer, ShowSerializer, PlaylistSerializer, PlaylistEntrySerializer, TopArtistSerializer, ShowStatisticsSerializer, PlayCountSerializer
+from .models import Playlist, PlaylistEntry, Show
+from catalogue.models import Cd, Cdtrack
+from serializers import ShowSerializer, PlaylistSerializer, PlaylistEntrySerializer, TopArtistSerializer, ShowStatisticsSerializer, PlayCountSerializer
 
 import logging
 
@@ -115,43 +116,6 @@ def reports(request):
 
 ###############
 
-
-class ReleaseViewSet(viewsets.ModelViewSet):
-    queryset = Cd.objects.all()
-    serializer_class = ReleaseSerializer
-    filter_backends = (filters.OrderingFilter,
-                       filters.SearchFilter,)
-    search_fields = ('artist', 'title', 'tracks__title')
-    ordering_fields = ('arrivaldate', 'artist', 'title')
-
-    @list_route()
-    def latest(self, request):
-        latestReleases = Cd.objects.all().order_by('-arrivaldate')
-
-        page = self.paginate_queryset(latestReleases)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-
-        serializer = self.get_serializer(latestReleases, many=True)
-        return Response(serializer.data)
-
-
-class TrackFilter(django_filters.FilterSet):
-    artist = django_filters.CharFilter(name="album__artist", lookup_type='icontains')
-    track = django_filters.CharFilter(name="tracktitle", lookup_type='icontains')
-
-    class Meta:
-        model = Cdtrack
-        fields = ['track', 'artist']
-
-
-class TrackViewSet(viewsets.ModelViewSet):
-    queryset = Cdtrack.objects.all()
-    serializer_class = TrackSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
-    filter_class = TrackFilter
-
 class ShowViewSet(viewsets.ModelViewSet):
     queryset = Show.objects.all()
     serializer_class = ShowSerializer
@@ -231,18 +195,4 @@ class PlaylistEntryViewSet(viewsets.ModelViewSet):
         serializer = PlayCountSerializer(queryset, many=True)
         return Response(serializer.data)
 
-
-class ArtistViewSet(viewsets.ViewSet):
-    filter_backends = (filters.SearchFilter,)
-    search_fields = ('artist',)
-
-    def list(self, request):
-        searchParam = self.request.query_params.get('term')
-        if searchParam is None:
-            artists = [release.artist for release in Cd.objects.distinct('artist').order_by('artist')]
-        else:
-            artists = [release.artist for release in
-                       Cd.objects.distinct('artist').filter(artist__icontains=searchParam).order_by('artist')]
-
-        return Response(artists)
 

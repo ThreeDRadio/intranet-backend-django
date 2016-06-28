@@ -18,11 +18,14 @@ from django.contrib import admin
 from rest_framework import routers
 from playlist import views
 from session.views import UserViewSet
+from catalogue.views import ReleaseViewSet, TrackViewSet, ArtistViewSet
 
 router = routers.DefaultRouter()
-router.register(r'releases', views.ReleaseViewSet)
-router.register(r'tracks', views.TrackViewSet)
-router.register(r'artists', views.ArtistViewSet, 'Artist')
+router.register(r'releases', ReleaseViewSet)
+router.register(r'tracks', TrackViewSet)
+router.register(r'artists', ArtistViewSet, 'Artist')
+
+
 router.register(r'shows', views.ShowViewSet, 'Show')
 router.register(r'users', UserViewSet, 'user')
 router.register(r'playlists', views.PlaylistViewSet, 'Playlist')
