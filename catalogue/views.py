@@ -44,17 +44,12 @@ class ReleaseViewSet(viewsets.ModelViewSet):
     search_fields = ('artist', 'title', 'tracks__title')
     ordering_fields = ('arrivaldate', 'artist', 'title')
 
-    @list_route()
-    def latest(self, request):
-        latestReleases = Release.objects.all().order_by('-arrivaldate')
-
-        page = self.paginate_queryset(latestReleases)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-
-        serializer = self.get_serializer(latestReleases, many=True)
+    @detail_route()
+    def tracks(self, request, pk=None):
+        release = self.get_object()
+        serializer = TrackSerializer(release.tracks.all().order_by('tracknum'), context={'request': request}, many=True)
         return Response(serializer.data)
+
 
 
 class TrackFilter(django_filters.FilterSet):

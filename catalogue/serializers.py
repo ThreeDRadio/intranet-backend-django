@@ -2,19 +2,16 @@ from rest_framework import serializers
 from .models import Release, Track
 
 class TrackSerializer(serializers.ModelSerializer):
-    cdid = serializers.StringRelatedField(
-        read_only=True
-    )
+    # cdid = serializers.StringRelatedField(
+    #     read_only=True
+    # )
 
     class Meta:
         model = Track
-        fields = ('trackid', 'url', 'tracknum', 'trackartist', 'tracktitle', 'tracklength', 'cdid')
+        fields = ('trackid', 'url', 'tracknum', 'trackartist', 'tracktitle', 'tracklength', )
 
-class ReleaseSerializer(serializers.HyperlinkedModelSerializer):
-    tracks = serializers.PrimaryKeyRelatedField(
-        many=True,
-        read_only=True
-    )
+class ReleaseSerializer(serializers.ModelSerializer):
+    tracks = serializers.HyperlinkedIdentityField(view_name='release-tracks')
 
     class Meta:
         model = Release 

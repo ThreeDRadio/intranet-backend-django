@@ -21,8 +21,8 @@ from session.views import UserViewSet
 from catalogue.views import ReleaseViewSet, TrackViewSet, ArtistViewSet
 
 router = routers.DefaultRouter()
-router.register(r'releases', ReleaseViewSet)
-router.register(r'tracks', TrackViewSet)
+router.register(r'releases', ReleaseViewSet, 'release')
+router.register(r'tracks', TrackViewSet, 'track')
 router.register(r'artists', ArtistViewSet, 'Artist')
 
 
