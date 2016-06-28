@@ -2,13 +2,13 @@ from rest_framework import serializers
 from .models import Cd, Cdtrack
 
 class TrackSerializer(serializers.ModelSerializer):
-    album = serializers.StringRelatedField(
+    cdid = serializers.StringRelatedField(
         read_only=True
     )
 
     class Meta:
         model = Cdtrack
-        fields = ('trackid', 'url', 'tracknum', 'trackartist', 'tracktitle', 'tracklength', 'album')
+        fields = ('trackid', 'url', 'tracknum', 'trackartist', 'tracktitle', 'tracklength', 'cdid')
 
 class ReleaseSerializer(serializers.HyperlinkedModelSerializer):
     tracks = serializers.PrimaryKeyRelatedField(

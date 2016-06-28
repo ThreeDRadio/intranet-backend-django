@@ -47,7 +47,7 @@ class PlaylistEntry(models.Model):
     newRelease = models.BooleanField()
 
     # found in catalogue
-    catalogueEntry = models.ForeignKey(Cdtrack, null=True)
+    #catalogueEntry = models.ForeignKey(Cdtrack, null=True)
 
     def __unicode__(self):
         return '(' + self.playlist.show + ') ' + self.artist + " - " + self.title
