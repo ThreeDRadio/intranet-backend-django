@@ -22,4 +22,4 @@ class ReleaseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Release 
-        fields = ('id', 'arrivaldate', 'artist', 'title', 'year', 'local', 'compilation', 'female', 'tracks', 'comments')
+        fields = ('id', 'arrivaldate', 'artist', 'title', 'year', 'local', 'cpa', 'compilation', 'female', 'tracks', 'comments')
