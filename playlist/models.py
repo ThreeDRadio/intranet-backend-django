@@ -25,7 +25,7 @@ class Playlist(models.Model):
     complete = models.BooleanField(default=False)
 
     def __unicode__(self):
-        return self.show + ' - ' + str(self.date)
+        return str(self.show) + ' - ' + str(self.date)
 
 
 class PlaylistEntry(models.Model):
