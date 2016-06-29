@@ -17,7 +17,7 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from rest_framework import routers
 from playlist import views
-from session.views import UserViewSet
+from session.views import UserViewSet, MigrateAndLogin
 from catalogue.views import ReleaseViewSet, TrackViewSet, ArtistViewSet
 
 router = routers.DefaultRouter()
@@ -32,7 +32,8 @@ router.register(r'playlists', views.PlaylistViewSet, 'Playlist')
 router.register(r'playlistentries', views.PlaylistEntryViewSet, 'PlaylistEntry')
 
 urlpatterns = [
-    url(r'^api-token-auth/', 'rest_framework.authtoken.views.obtain_auth_token'),
+    #url(r'^api-token-auth/', 'rest_framework.authtoken.views.obtain_auth_token'),
+    url(r'^api-token-auth/', MigrateAndLogin.as_view()),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^api/', include(router.urls)),
     url(r'^logger/', include('playlist.urls')),
