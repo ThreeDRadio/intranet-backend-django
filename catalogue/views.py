@@ -35,14 +35,24 @@ class ArtistViewSet(viewsets.ViewSet):
 
         return Response(artists)
 
+class ReleaseFilter(filters.FilterSet):
+  min_arrival = django_filters.DateFilter(name="arrivaldate", lookup_type="gte")
+  class Meta:
+    model = Release
+    fields = ['arrivaldate',]
+
+
 
 class ReleaseViewSet(viewsets.ModelViewSet):
     queryset = Release.objects.all()
     serializer_class = ReleaseSerializer
     filter_backends = (filters.OrderingFilter,
-                       filters.SearchFilter,)
+                       filters.SearchFilter,
+                       filters.DjangoFilterBackend)
     search_fields = ('artist', 'title', 'tracks__title')
     ordering_fields = ('arrivaldate', 'artist', 'title')
+    filter_fields = ('arrivaldate',)
+    filter_class = ReleaseFilter
 
     @detail_route()
     def tracks(self, request, pk=None):
