@@ -37,9 +37,15 @@ class ArtistViewSet(viewsets.ViewSet):
 
 class ReleaseFilter(filters.FilterSet):
   min_arrival = django_filters.DateFilter(name="arrivaldate", lookup_type="gte")
+  artist = django_filters.CharFilter(name="artist", lookup_type="icontains")
+  track  = django_filters.CharFilter(name="tracks__tracktitle", lookup_type="icontains")
+  country = django_filters.CharFilter(name="cpa", lookup_type="icontains")
+  release = django_filters.CharFilter(name="title", lookup_type="icontains")
+  
+
   class Meta:
     model = Release
-    fields = ['arrivaldate',]
+    fields = ['arrivaldate','artist','tracks__tracktitle','year','country','title','local','demo','compilation','female']
 
 
 
@@ -51,7 +57,6 @@ class ReleaseViewSet(viewsets.ModelViewSet):
                        filters.DjangoFilterBackend)
     search_fields = ('artist', 'title', 'tracks__tracktitle')
     ordering_fields = ('arrivaldate', 'artist', 'title')
-    filter_fields = ('arrivaldate',)
     filter_class = ReleaseFilter
 
     @detail_route()
