@@ -49,7 +49,7 @@ class ReleaseViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.OrderingFilter,
                        filters.SearchFilter,
                        filters.DjangoFilterBackend)
-    search_fields = ('artist', 'title', 'tracks__title')
+    search_fields = ('artist', 'title', 'tracks__tracktitle')
     ordering_fields = ('arrivaldate', 'artist', 'title')
     filter_fields = ('arrivaldate',)
     filter_class = ReleaseFilter
