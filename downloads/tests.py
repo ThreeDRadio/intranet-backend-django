@@ -1,7 +1,11 @@
 from django.test import TestCase, override_settings
+from django.shortcuts import Http404
 import os
 from models import DownloadLink
+import views
 from datetime import timedelta
+from django.test import RequestFactory
+
 # Create your tests here.
 
 @override_settings(DOWNLOAD_BASE_PATH=os.getcwd())
@@ -43,3 +47,45 @@ class DownloadLinkModelTest(TestCase):
     self.assertFalse(link.isCurrent())
 
 
+  def test_download_view_invalid_url(self):
+    """ Download view should return a 404 if link doesn't exist"""
+    factory = RequestFactory()
+    request = factory.get('/downloads');
+    error = False
+    try:
+      response = views.download(request, 'fake_id');
+    except: 
+      error = True
+
+    self.assertTrue(error)
+
+  @override_settings(DOWNLOAD_LIFETIME=60)
+  def test_download_view_valid(self):
+    """ Download should return the xfile header for a good link"""
+    link = DownloadLink(path='/home/blah/file')
+    link.save()
+    factory = RequestFactory()
+    request = factory.get('/downloads');
+    error = False
+    response = views.download(request, link.id);
+    self.assertEqual(response['X-SendFile'], link.path)
+
+
+  @override_settings(DOWNLOAD_LIFETIME=60)
+  def test_download_view_expired(self):
+    """ Download should 404 if the link has expired"""
+    link = DownloadLink()
+    link.save()
+    link.createdAt = link.createdAt - timedelta(seconds=61)
+    link.save()
+
+    factory = RequestFactory()
+    request = factory.get('/downloads');
+
+    error = False
+    try:
+      response = views.download(request, link.id);
+    except: 
+      error = True
+
+    self.assertTrue(error)
