@@ -13,6 +13,7 @@ def download(request, linkID):
   if link.isCurrent():
     response = HttpResponse()
     response['X-Sendfile'] = link.path
+    response['X-Accel-Redirect'] = link.path + ';'
     return response
   else:
     raise Http404("Download link expired: " + linkID)
