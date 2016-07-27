@@ -16,9 +16,11 @@ import unicodecsv as csv
 from datetime import date
 from django.db.models import Count
 from django.shortcuts import render
+from django.conf import settings
 
 from models import Release, Track 
 from serializers import ReleaseSerializer, TrackSerializer, CommentSerializer
+from downloads.models import DownloadLink
 
 # Create your views here.
 class ArtistViewSet(viewsets.ViewSet):
@@ -79,9 +81,19 @@ class TrackFilter(django_filters.FilterSet):
         model = Track
         fields = ['track', 'artist']
 
-
 class TrackViewSet(viewsets.ModelViewSet):
     queryset = Track.objects.all()
     serializer_class = TrackSerializer
     filter_backends = (filters.DjangoFilterBackend,)
     filter_class = TrackFilter
+
+    @detail_route()
+    def requestDownload(self, request, pk=None):
+      track = self.get_object();
+      path = settings.DOWNLOAD_BASE_PATH + 'music/hi/' + format(track.release.id, '07') + '/' + format(track.release.id, '07') + '-' +  format(track.tracknum, '02') + '.mp3'
+      link = DownloadLink(name=track.tracktitle, path=path);
+      link.save()
+      return HttpResponse('{"url":"/download/' + str(link.id) + '"}');
+
+
+
