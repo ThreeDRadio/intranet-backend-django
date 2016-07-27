@@ -8,12 +8,12 @@ def download(request, linkID):
   try:
     link = get_object_or_404(DownloadLink, pk=linkID)
   except:
-    raise Http404("Invalid download link")
+    raise Http404("Invalid download link: " + linkID)
 
   if link.isCurrent():
     response = HttpResponse()
     response['X-Sendfile'] = link.path
     return response
   else:
-    raise Http404("Invalid download link")
+    raise Http404("Download link expired: " + linkID)
 
