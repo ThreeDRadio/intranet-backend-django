@@ -19,6 +19,7 @@ from rest_framework import routers
 from playlist import views
 from session.views import UserViewSet, MigrateAndLogin
 from catalogue.views import ReleaseViewSet, TrackViewSet, ArtistViewSet
+from downloads import views as downloadViews
 
 router = routers.DefaultRouter()
 router.register(r'releases', ReleaseViewSet, 'release')
@@ -37,4 +38,5 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^api/', include(router.urls)),
     url(r'^logger/', include('playlist.urls')),
+    url(r'^download/([a-f0-9\-]+)', downloadViews.download),
 ]
