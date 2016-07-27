@@ -93,7 +93,8 @@ class TrackViewSet(viewsets.ModelViewSet):
       path = settings.DOWNLOAD_BASE_PATH + 'music/hi/' + format(track.release.id, '07') + '/' + format(track.release.id, '07') + '-' +  format(track.tracknum, '02') + '.mp3'
       link = DownloadLink(name=track.tracktitle, path=path);
       link.save()
-      return HttpResponse('{"url":"/download/' + str(link.id) + '"}');
+      finalUrl = request.build_absolute_uri('/download/' + str(link.id) + '/');
+      return HttpResponse('{"url":"' + finalUrl + '"}');
 
 
 
