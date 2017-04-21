@@ -1,3 +1,4 @@
 env
 *.un~
 local_settings.py
+*.pyc
