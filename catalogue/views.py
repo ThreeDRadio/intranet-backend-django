@@ -17,8 +17,8 @@ from datetime import date
 from django.db.models import Count
 from django.shortcuts import render
 
-from models import Release, Track 
-from serializers import ReleaseSerializer, TrackSerializer, CommentSerializer
+from .models import Release, Track 
+from .serializers import ReleaseSerializer, TrackSerializer, CommentSerializer
 
 # Create your views here.
 class ArtistViewSet(viewsets.ViewSet):
@@ -35,7 +35,7 @@ class ArtistViewSet(viewsets.ViewSet):
 
         return Response(artists)
 
-class ReleaseFilter(filters.FilterSet):
+class ReleaseFilter(django_filters.FilterSet):
   min_arrival = django_filters.DateFilter(name="arrivaldate", lookup_type="gte")
   artist = django_filters.CharFilter(name="artist", lookup_type="icontains")
   track  = django_filters.CharFilter(name="tracks__tracktitle", lookup_type="icontains")
@@ -54,7 +54,7 @@ class ReleaseViewSet(viewsets.ModelViewSet):
     serializer_class = ReleaseSerializer
     filter_backends = (filters.OrderingFilter,
                        filters.SearchFilter,
-                       filters.DjangoFilterBackend)
+                       django_filters.rest_framework.DjangoFilterBackend)
     search_fields = ('artist', 'title', 'tracks__tracktitle')
     ordering_fields = ('arrivaldate', 'artist', 'title')
     filter_class = ReleaseFilter
@@ -83,5 +83,5 @@ class TrackFilter(django_filters.FilterSet):
 class TrackViewSet(viewsets.ModelViewSet):
     queryset = Track.objects.all()
     serializer_class = TrackSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     filter_class = TrackFilter

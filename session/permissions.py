@@ -1,5 +1,5 @@
 from rest_framework  import permissions
-from models import Whitelist
+from .models import Whitelist
 
 class IsStaffOrTargetUser(permissions.BasePermission):
     def has_permission(self, request, view):

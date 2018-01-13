@@ -4,5 +4,7 @@ include(
     'settings/base.py',
     'settings/bower.py',
     'settings/installed_apps.py',
-    optional('local_settings.py')
+    optional('local_settings.py'),
+
+    scope=globals()
 )

@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='playlistentry',
             name='playlist',
-            field=models.ForeignKey(default=5, to='playlist.Playlist'),
+            field=models.ForeignKey(default=5, on_delete=models.PROTECT, to='playlist.Playlist'),
             preserve_default=False,
         ),
     ]

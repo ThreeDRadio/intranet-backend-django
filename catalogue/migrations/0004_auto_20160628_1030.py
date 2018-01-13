@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='cdcomment',
             name='cdid',
-            field=models.ForeignKey(related_name='comments', db_column=b'cdid', to='catalogue.Release'),
+            field=models.ForeignKey(related_name='comments', on_delete=models.PROTECT, db_column='cdid', to='catalogue.Release'),
         ),
     ]

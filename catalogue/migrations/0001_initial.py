@@ -63,7 +63,7 @@ class Migration(migrations.Migration):
                 ('tracktitle', models.CharField(max_length=200, null=True, blank=True)),
                 ('trackartist', models.CharField(max_length=200, null=True, blank=True)),
                 ('tracklength', models.BigIntegerField(null=True, blank=True)),
-                ('cdid', models.ForeignKey(related_name='tracks', db_column=b'cdid', to='catalogue.Cd')),
+                ('cdid', models.ForeignKey(related_name='tracks', on_delete=models.PROTECT, db_column='cdid', to='catalogue.Cd')),
             ],
             options={
                 'db_table': 'cdtrack',

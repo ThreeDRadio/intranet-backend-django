@@ -19,6 +19,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='cdtrack',
             name='cdid',
-            field=models.ForeignKey(related_name='tracks', db_column=b'cdid', to='playlist.Cd'),
+            field=models.ForeignKey(related_name='tracks', on_delete=models.PROTECT, db_column='cdid', to='playlist.Cd'),
         ),
     ]

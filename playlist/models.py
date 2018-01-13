@@ -17,7 +17,7 @@ class Show(models.Model):
 
 
 class Playlist(models.Model):
-    show = models.ForeignKey(Show, null=True, related_name="playlists")
+    show = models.ForeignKey(Show, on_delete=models.PROTECT, null=True, related_name="playlists")
     showname = models.CharField(max_length=200, blank=True)
     host = models.CharField(max_length=200)
     date = models.DateField()
@@ -29,7 +29,7 @@ class Playlist(models.Model):
 
 
 class PlaylistEntry(models.Model):
-    playlist = models.ForeignKey(Playlist, related_name='tracks')
+    playlist = models.ForeignKey(Playlist, on_delete=models.PROTECT, related_name='tracks')
 
     # entry order!
     index = models.IntegerField(null=True)

@@ -12,6 +12,7 @@ INSTALLED_APPS = (
     'bootstrap3',
     'djangobower',
     'rest_framework',
+    'rest_framework_swagger',
     'rest_framework.authtoken',
     'corsheaders',
     'catalogue',

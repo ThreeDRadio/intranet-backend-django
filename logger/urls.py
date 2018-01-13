@@ -19,6 +19,10 @@ from rest_framework import routers
 from playlist import views
 from session.views import UserViewSet, MigrateAndLogin
 from catalogue.views import ReleaseViewSet, TrackViewSet, ArtistViewSet
+from django.conf.urls import url
+from rest_framework_swagger.views import get_swagger_view
+
+schema_view = get_swagger_view(title="Intranet")
 
 router = routers.DefaultRouter()
 router.register(r'releases', ReleaseViewSet, 'release')
@@ -34,7 +38,8 @@ router.register(r'playlistentries', views.PlaylistEntryViewSet, 'PlaylistEntry')
 urlpatterns = [
     #url(r'^api-token-auth/', 'rest_framework.authtoken.views.obtain_auth_token'),
     url(r'^api-token-auth/', MigrateAndLogin.as_view()),
-    url(r'^admin/', include(admin.site.urls)),
+    url(r'^admin/', admin.site.urls),
     url(r'^api/', include(router.urls)),
     url(r'^logger/', include('playlist.urls')),
+    url(r'^swagger', schema_view)
 ]

@@ -8,11 +8,11 @@ from rest_framework import viewsets
 from django.contrib.auth.models import User
 from django.http import HttpResponseBadRequest
 
-from serializers import UserSerializer
-from permissions import IsStaffOrTargetUser
+from .serializers import UserSerializer
+from .permissions import IsStaffOrTargetUser
 from hashlib import md5
 
-from models import OldPassword
+from .models import OldPassword
 
 class UserViewSet(viewsets.ModelViewSet):
     model = User

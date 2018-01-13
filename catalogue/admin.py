@@ -1,10 +1,10 @@
 from django.contrib import admin
 
-import models
+from .models import Comment
 
 # Register your models here.
 class CommentAdmin(admin.ModelAdmin):
-    model = models.Comment
+    model = Comment
 
 
-admin.site.register(models.Comment, CommentAdmin)
+admin.site.register(Comment, CommentAdmin)
