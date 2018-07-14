@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.conf import settings 
+from django.conf import settings
 from rest_framework import status
 from django.contrib.auth import authenticate, logout, login
 from rest_framework.views import APIView
@@ -14,12 +14,14 @@ from hashlib import md5
 
 from .models import OldPassword
 
+
 class UserViewSet(viewsets.ModelViewSet):
     model = User
     serializer_class = UserSerializer
     queryset = User.objects.all()
-    permission_classes = [IsStaffOrTargetUser,]
-
+    permission_classes = [
+        IsStaffOrTargetUser,
+    ]
 
     def retrieve(self, request, pk=None):
         if pk == 'me':
@@ -34,30 +36,29 @@ class UserViewSet(viewsets.ModelViewSet):
 
 class MigrateAndLogin(APIView):
     error_messages = {
-            'invalid': "Invalid username or password",
-            'disabled': "Sorry, this account is suspended",
+        'invalid': "Invalid username or password",
+        'disabled': "Sorry, this account is suspended",
     }
 
     def _error_response(self, messageKey):
         data = {
-                'success' : False,
-                'message' : self.error_messages[messageKey],
-                'user_id' : None,
-                }
+            'success': False,
+            'message': self.error_messages[messageKey],
+            'user_id': None,
+        }
         return Response(data, status=status.HTTP_400_BAD_REQUEST)
 
-
     def getOldPassword(self, username):
-      if OldPassword.objects.filter(user__username=username).exists():
-        return OldPassword.objects.get(user__username=username)
-      return None
+        if OldPassword.objects.filter(user__username=username).exists():
+            return OldPassword.objects.get(user__username=username)
+        return None
 
     def post(self, request, *args, **kwargs):
         username = request.POST.get('username')
         password = request.POST.get('password')
 
         errors = {}
-        error =  False 
+        error = False
         if username is None:
             error = True
             errors['username'] = "This field is required"
@@ -66,7 +67,6 @@ class MigrateAndLogin(APIView):
             error = True
             errors['password'] = "This field is required"
 
-
         # Return errors if the username/password was empty
         if error == True:
             return Response(errors, status=status.HTTP_400_BAD_REQUEST)
@@ -74,19 +74,20 @@ class MigrateAndLogin(APIView):
         # Try authenticating with the posted data
         user = authenticate(username=username, password=password)
         if user is not None:
-            return Response({'token': user.auth_token.key})
+            return Response({'token': user.auth_token.key, 'userId': user.id})
 
         # Try to migrate their password
         oldPassword = self.getOldPassword(username)
         if oldPassword is not None:
             passwordHash = md5(password).hexdigest()
             if oldPassword.password == passwordHash:
-              user = oldPassword.user
-              user.set_password(password)
-              user.save()
-              oldPassword.delete()
-              return Response({'token': user.auth_token.key})
+                user = oldPassword.user
+                user.set_password(password)
+                user.save()
+                oldPassword.delete()
+                return Response({
+                    'token': user.auth_token.key,
+                    'user': user.id
+                })
 
         return self._error_response('invalid')
-
-

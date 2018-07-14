@@ -29,15 +29,15 @@ router.register(r'releases', ReleaseViewSet, 'release')
 router.register(r'tracks', TrackViewSet, 'track')
 router.register(r'artists', ArtistViewSet, 'Artist')
 
-
 router.register(r'shows', views.ShowViewSet, 'Show')
 router.register(r'users', UserViewSet, 'user')
 router.register(r'playlists', views.PlaylistViewSet, 'Playlist')
-router.register(r'playlistentries', views.PlaylistEntryViewSet, 'PlaylistEntry')
+router.register(r'playlistentries', views.PlaylistEntryViewSet,
+                'PlaylistEntry')
 
 urlpatterns = [
     #url(r'^api-token-auth/', 'rest_framework.authtoken.views.obtain_auth_token'),
-    url(r'^api-token-auth/', MigrateAndLogin.as_view()),
+    url(r'^auth', MigrateAndLogin.as_view()),
     url(r'^admin/', admin.site.urls),
     url(r'^api/', include(router.urls)),
     url(r'^logger/', include('playlist.urls')),

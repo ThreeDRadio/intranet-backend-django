@@ -78,5 +78,5 @@ class MigrateAndLoginTest(APITestCase):
     self.assertEqual(OldPassword.objects.filter(user=self.oldUser).exists(), False)
 
     # new password should exist in user table
-    user = User.objects.get(username='oldUser');
+    user = User.objects.get(username='oldUser')
     self.assertEqual(user.check_password('pass2'), True)
