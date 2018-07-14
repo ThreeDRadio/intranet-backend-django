@@ -19,7 +19,7 @@ from django.db.models import Count
 from .forms import SummaryReportForm
 from .models import Playlist, PlaylistEntry, Show
 from session.permissions import IsAuthenticatedOrWhitelist
-from serializers import ShowSerializer, PlaylistSerializer, PlaylistEntrySerializer, TopArtistSerializer, ShowStatisticsSerializer, PlayCountSerializer
+from .serializers import ShowSerializer, PlaylistSerializer, PlaylistEntrySerializer, TopArtistSerializer, ShowStatisticsSerializer, PlayCountSerializer
 
 import logging
 
@@ -109,9 +109,9 @@ def reports(request):
                                         '&endDate=' + unicode(form.cleaned_data.get('endDate')) + '&format=' + unicode(form.cleaned_data.get('reportFormat')))
     else:
         form = SummaryReportForm()
-    context = RequestContext(request, {
+    context =  {
         'form': form,
-    })
+    }
     return render(request, 'playlist/reports.html', context)
 
 ###############

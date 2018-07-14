@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='playlistentry',
             name='catalogueEntry',
-            field=models.ForeignKey(to='playlist.Cdtrack', null=True),
+            field=models.ForeignKey(to='playlist.Cdtrack', on_delete=models.PROTECT, null=True),
         ),
     ]

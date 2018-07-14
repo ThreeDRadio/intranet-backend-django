@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from models import Whitelist
+from .models import Whitelist
 
 # Register your models here.
 

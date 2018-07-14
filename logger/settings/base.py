@@ -27,13 +27,12 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE= (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
@@ -67,6 +66,7 @@ REST_FRAMEWORK = {
             'rest_framework.authentication.TokenAuthentication',
             ),
         'DEFAULT_PERMISSION_CLASSES': (
+            'rest_framework.permissions.AllowAny',
             )
         }
 

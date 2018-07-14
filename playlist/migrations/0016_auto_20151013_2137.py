@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='playlist',
             name='show',
-            field=models.ForeignKey(null=True, to='playlist.Show'),
+            field=models.ForeignKey(null=True, on_delete=models.PROTECT, to='playlist.Show'),
             preserve_default=False,
         ),
     ]

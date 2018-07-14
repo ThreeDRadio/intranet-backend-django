@@ -87,7 +87,7 @@ class Migration(migrations.Migration):
                 ('local', models.BooleanField()),
                 ('female', models.BooleanField()),
                 ('newRelease', models.BooleanField()),
-                ('catalogueEntry', models.ForeignKey(to='playlist.Cdtrack')),
+                ('catalogueEntry', models.ForeignKey(to='playlist.Cdtrack', on_delete=models.PROTECT)),
             ],
         ),
     ]

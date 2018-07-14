@@ -31,7 +31,10 @@ class Release(models.Model):
 
 
 class Comment(models.Model):
-    release = models.ForeignKey(Release, db_column='cdid', related_name="comments")
+    release = models.ForeignKey(Release, on_delete=models.PROTECT, db_column='cdid', related_name="comments")
+    
+    # Needed to run the remove_dead_comments script
+    # cdid = models.BigIntegerField()
     cdtrackid = models.BigIntegerField()
     comment = models.TextField(blank=True, null=True)
     createwho = models.BigIntegerField()
@@ -45,7 +48,7 @@ class Comment(models.Model):
 
 class Track(models.Model):
     trackid = models.BigIntegerField(primary_key=True)
-    release = models.ForeignKey(Release, db_column='cdid', related_name="tracks")
+    release = models.ForeignKey(Release, on_delete=models.PROTECT, db_column='cdid', related_name="tracks")
     tracknum = models.BigIntegerField()
     tracktitle = models.CharField(max_length=200, blank=True, null=True)
     trackartist = models.CharField(max_length=200, blank=True, null=True)

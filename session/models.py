@@ -11,7 +11,7 @@ def init_new_user(sender, instance, signal, created, **kqargs):
 
 
 class OldPassword(models.Model):
-    user = models.OneToOneField(User, primary_key=True)
+    user = models.OneToOneField(User, on_delete=models.PROTECT, primary_key=True)
     password = models.CharField(max_length=200)
 
 class Whitelist(models.Model):

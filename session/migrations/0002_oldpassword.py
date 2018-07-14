@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='OldPassword',
             fields=[
-                ('user', models.OneToOneField(primary_key=True, serialize=False, to=settings.AUTH_USER_MODEL)),
+                ('user', models.OneToOneField(primary_key=True, on_delete=models.PROTECT, serialize=False, to=settings.AUTH_USER_MODEL)),
                 ('password', models.CharField(max_length=200)),
             ],
         ),
