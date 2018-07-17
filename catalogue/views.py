@@ -9,7 +9,7 @@ from rest_framework import generics
 from rest_framework import viewsets
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.views import APIView
-from rest_framework.decorators import list_route, detail_route
+from rest_framework.decorators import list_route, detail_route, action
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 import unicodecsv as csv
@@ -22,6 +22,7 @@ from .models import Release, Track
 from .serializers import ReleaseSerializer, TrackSerializer, CommentSerializer
 from downloads.models import DownloadLink
 from session.permissions import IsAuthenticatedOrWhitelist
+import os
 
 # Create your views here.
 class ArtistViewSet(viewsets.ViewSet):
@@ -107,6 +108,20 @@ class TrackViewSet(viewsets.ModelViewSet):
     serializer_class = TrackSerializer
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend, )
     filter_class = TrackFilter
+
+    @action(methods=['put'],detail=True)
+    def audio(self, request, pk=None):
+        track = self.get_object()
+        file = request.FILES['file']
+        directory = os.path.dirname(track.hiPath)
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+        with open(track.hiPath, 'wb+') as destination:
+            for chunk in file.chunks():
+                destination.write(chunk)
+        serializer = TrackSerializer(track)
+        return Response(serializer.data)
+
 
     @detail_route()
     def requestDownload(self, request, pk=None):

@@ -1,4 +1,6 @@
 from django.db import models
+from django.conf import settings
+import os.path
 
 # Create your models here.
 class Release(models.Model):
@@ -53,6 +55,23 @@ class Track(models.Model):
     tracktitle = models.CharField(max_length=200, blank=True, null=True)
     trackartist = models.CharField(max_length=200, blank=True, null=True)
     tracklength = models.BigIntegerField(blank=True, null=True)
+
+    @property
+    def hiPath(self): 
+        return settings.DOWNLOAD_BASE_PATH + 'music/hi/' + format(
+            self.release.id,
+            '07') + '/' + format(self.release.id, '07') + '-' + format(
+                self.tracknum, '02') + '.mp3'
+
+    def loPath(self): 
+        return settings.DOWNLOAD_BASE_PATH + 'music/lo/' + format(
+            self.release.id,
+            '07') + '/' + format(self.release.id, '07') + '-' + format(
+                self.tracknum, '02') + '.mp3'
+    
+    @property
+    def hiAvailable(self):
+        return os.path.exists(self.hiPath)
 
     class Meta:
         db_table = 'cdtrack'
