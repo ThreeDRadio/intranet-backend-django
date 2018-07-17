@@ -19,6 +19,7 @@ from rest_framework import routers
 from playlist import views
 from session.views import UserViewSet, MigrateAndLogin
 from catalogue.views import ReleaseViewSet, TrackViewSet, ArtistViewSet
+from downloads import views as downloadViews
 from django.conf.urls import url
 from rest_framework_swagger.views import get_swagger_view
 
@@ -41,5 +42,6 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^api/', include(router.urls)),
     url(r'^logger/', include('playlist.urls')),
+    url(r'^download/([a-f0-9\-]+)', downloadViews.download),
     url(r'^swagger', schema_view)
 ]
