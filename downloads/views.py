@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404, Http404
-from models import DownloadLink
+from .models import DownloadLink
 from django.http import HttpResponse
 
 

@@ -18,8 +18,8 @@ from django.db.models import Count
 from django.shortcuts import render
 from django.conf import settings
 
-from models import Release, Track
-from serializers import ReleaseSerializer, TrackSerializer, CommentSerializer
+from .models import Release, Track
+from .serializers import ReleaseSerializer, TrackSerializer, CommentSerializer
 from downloads.models import DownloadLink
 
 
@@ -54,12 +54,12 @@ class ReleaseFilter(django_filters.FilterSet):
   release = django_filters.CharFilter(name="title", lookup_expr="icontains")
   
 
-    class Meta:
-        model = Release
-        fields = [
-            'arrivaldate', 'artist', 'tracks__tracktitle', 'year', 'country',
-            'title', 'local', 'demo', 'compilation', 'female'
-        ]
+  class Meta:
+    model = Release
+    fields = [
+      'arrivaldate', 'artist', 'tracks__tracktitle', 'year', 'country',
+      'title', 'local', 'demo', 'compilation', 'female'
+    ]
 
 
 class ReleaseViewSet(viewsets.ModelViewSet):
