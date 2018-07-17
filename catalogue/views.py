@@ -21,10 +21,11 @@ from django.conf import settings
 from .models import Release, Track
 from .serializers import ReleaseSerializer, TrackSerializer, CommentSerializer
 from downloads.models import DownloadLink
-
+from session.permissions import IsAuthenticatedOrWhitelist
 
 # Create your views here.
 class ArtistViewSet(viewsets.ViewSet):
+    permission_classes = (IsAuthenticatedOrWhitelist,)
     filter_backends = (filters.SearchFilter, )
     search_fields = ('artist', )
 
@@ -63,6 +64,7 @@ class ReleaseFilter(django_filters.FilterSet):
 
 
 class ReleaseViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticatedOrWhitelist,)
     queryset = Release.objects.all()
     serializer_class = ReleaseSerializer
     filter_backends = (filters.OrderingFilter, filters.SearchFilter,
@@ -100,6 +102,7 @@ class TrackFilter(django_filters.FilterSet):
 
 
 class TrackViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticatedOrWhitelist,)
     queryset = Track.objects.all()
     serializer_class = TrackSerializer
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend, )
