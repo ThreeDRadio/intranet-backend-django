@@ -36,11 +36,11 @@ class ArtistViewSet(viewsets.ViewSet):
         return Response(artists)
 
 class ReleaseFilter(django_filters.FilterSet):
-  min_arrival = django_filters.DateFilter(name="arrivaldate", lookup_type="gte")
-  artist = django_filters.CharFilter(name="artist", lookup_type="icontains")
-  track  = django_filters.CharFilter(name="tracks__tracktitle", lookup_type="icontains")
-  country = django_filters.CharFilter(name="cpa", lookup_type="icontains")
-  release = django_filters.CharFilter(name="title", lookup_type="icontains")
+  min_arrival = django_filters.DateFilter(name="arrivaldate", lookup_expr="gte")
+  artist = django_filters.CharFilter(name="artist", lookup_expr="icontains")
+  track  = django_filters.CharFilter(name="tracks__tracktitle", lookup_expr="icontains")
+  country = django_filters.CharFilter(name="cpa", lookup_expr="icontains")
+  release = django_filters.CharFilter(name="title", lookup_expr="icontains")
   
 
   class Meta:
@@ -72,8 +72,8 @@ class ReleaseViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 class TrackFilter(django_filters.FilterSet):
-    artist = django_filters.CharFilter(name="album__artist", lookup_type='icontains')
-    track = django_filters.CharFilter(name="tracktitle", lookup_type='icontains')
+    artist = django_filters.CharFilter(name="album__artist", lookup_expr='icontains')
+    track = django_filters.CharFilter(name="tracktitle", lookup_expr='icontains')
 
     class Meta:
         model = Track
