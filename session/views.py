@@ -84,7 +84,7 @@ class MigrateAndLogin(APIView):
                 user = oldPassword.user
                 user.set_password(password)
                 user.save()
-                oldPassword.delete()
+                # oldPassword.delete()
                 return Response({
                     'token': user.auth_token.key,
                     'user': user.id
