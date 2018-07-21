@@ -25,7 +25,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
     def retrieve(self, request, pk=None):
         if pk == 'me':
-            if request.user.is_authenticated():
+            if request.user.is_authenticated:
                 self.check_object_permissions(request, request.user)
                 return Response(UserSerializer(request.user).data)
             else:

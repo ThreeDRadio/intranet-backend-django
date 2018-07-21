@@ -4,7 +4,7 @@ import os.path
 
 # Create your models here.
 class Release(models.Model):
-    id = models.BigIntegerField(primary_key=True)
+    id = models.BigAutoField(primary_key=True)
     artist = models.CharField(max_length=200, blank=True, null=True)
     title = models.CharField(max_length=200, blank=True, null=True)
     year = models.SmallIntegerField(blank=True, null=True)
@@ -49,7 +49,7 @@ class Comment(models.Model):
 
 
 class Track(models.Model):
-    trackid = models.BigIntegerField(primary_key=True)
+    id = models.BigAutoField(db_column='trackid', primary_key=True)
     release = models.ForeignKey(Release, on_delete=models.PROTECT, db_column='cdid', related_name="tracks")
     tracknum = models.BigIntegerField()
     tracktitle = models.CharField(max_length=200, blank=True, null=True)

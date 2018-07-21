@@ -109,7 +109,7 @@ class TrackViewSet(viewsets.ModelViewSet):
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend, )
     filter_class = TrackFilter
 
-    @action(methods=['put'],detail=True)
+    @action(methods=['post'],detail=True)
     def audio(self, request, pk=None):
         track = self.get_object()
         file = request.FILES['file']
