@@ -1,17 +1,17 @@
-from session.models import OldUser, OldPassword
-from django.contrib.auth.models import User, Group
 
 
 def createEditorsGroup():
+    from django.contrib.auth.models import Group
     if not Group.objects.filter(name="Catalogue Editors").exists():
-        print "Editors group not found, creating"
+        print("Editors group not found, creating")
         return Group.objects.create(name="Catalogue Editors")
     else:
-        print "Using existing editors group"
+        print("Using existing editors group")
         return Group.objects.get(name="Catalogue Editors")
 
-def importUsers():
-    editors = createEditorsGroup()
+def importUsers(editors):
+    from session.models import OldUser, OldPassword
+    from django.contrib.auth.models import User
     all_users = OldUser.objects.all()
     for u in all_users:
         if User.objects.filter(username=u.username).exists():
@@ -36,4 +36,5 @@ def importUsers():
         newUser.save()
     
 
-importUsers()
+editors = createEditorsGroup()
+importUsers(editors)

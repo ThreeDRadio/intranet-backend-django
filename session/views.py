@@ -79,7 +79,7 @@ class MigrateAndLogin(APIView):
         # Try to migrate their password
         oldPassword = self.getOldPassword(username)
         if oldPassword is not None:
-            passwordHash = md5(password).hexdigest()
+            passwordHash = md5(password.encode('utf-8')).hexdigest()
             if oldPassword.password == passwordHash:
                 user = oldPassword.user
                 user.set_password(password)

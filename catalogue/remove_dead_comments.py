@@ -4,7 +4,7 @@ for comment in Comment.objects.all():
     if Release.objects.filter(id=comment.cdid).exists():
         pass
     else:
-        print comment.cdid
+        print(comment.cdid)
         comment.delete()
 
-print "Done!"
+print("Done!")
