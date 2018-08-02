@@ -1,4 +1,4 @@
-
+from django.utils import six, timezone
 
 def createEditorsGroup():
     from django.contrib.auth.models import Group
@@ -12,12 +12,33 @@ def createEditorsGroup():
 def importUsers(editors):
     from session.models import OldUser, OldPassword
     from django.contrib.auth.models import User
+    from django.utils import six, timezone
+    
     all_users = OldUser.objects.all()
     for u in all_users:
+        if u.username == 'God':
+            continue
         if User.objects.filter(username=u.username).exists():
             newUser = User.objects.get(username=u.username)
         else:
-            newUser = User.objects.create_user(u.username)
+            # We want the user id to match the old user id, so
+            # comments and everything else continue to work.
+            # Therefore we aren't using the usual function to 
+            # create a user:
+            # newUser = User.objects.create_user(u.username)
+            #
+            # Instead we do it manually
+            now = timezone.now()
+            newUser = User(username=u.username,
+                              is_staff=False, is_active=True,
+                              is_superuser=False,
+                              date_joined=now)
+
+            newUser.id = u.id
+            newUser.save()
+
+            # now we copy over some properties 
+
         if u.first is not None:
             newUser.first_name = u.first
         if u.last is not None:
