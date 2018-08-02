@@ -19,4 +19,8 @@ class ReleaseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Release 
-        fields = ('id', 'arrivaldate', 'artist', 'title', 'year','company','genre','format', 'local', 'cpa', 'compilation', 'female', 'tracks', 'comments')
+        fields = ('id', 'arrivaldate', 'artist',
+                  'title', 'year','company','genre',
+                  'format', 'local', 'cpa', 'compilation',
+                  'female', 'tracks', 'comments','createwho',
+                  'createwhen','copies','modifywho','modifywhen')
