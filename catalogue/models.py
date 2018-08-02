@@ -35,8 +35,6 @@ class Release(models.Model):
 class Comment(models.Model):
     release = models.ForeignKey(Release, on_delete=models.PROTECT, db_column='cdid', related_name="comments")
     
-    # Needed to run the remove_dead_comments script
-    # cdid = models.BigIntegerField()
     cdtrackid = models.BigIntegerField()
     comment = models.TextField(blank=True, null=True)
     createwho = models.BigIntegerField()
@@ -47,6 +45,8 @@ class Comment(models.Model):
     class Meta:
         db_table = 'cdcomment'
 
+    def __unicode__(self):
+        return self.comment 
 
 class Track(models.Model):
     id = models.BigAutoField(db_column='trackid', primary_key=True)

@@ -5,6 +5,7 @@ from .models import Comment
 # Register your models here.
 class CommentAdmin(admin.ModelAdmin):
     model = Comment
+    exclude = ['release','cdtrackid']
 
 
 admin.site.register(Comment, CommentAdmin)
