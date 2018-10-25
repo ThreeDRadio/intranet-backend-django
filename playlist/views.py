@@ -70,10 +70,10 @@ def playlist(request, playlist_id):
 
     tracks = PlaylistEntry.objects.filter(playlist_id=playlist.pk).order_by("pk")
 
-    context = RequestContext(request, {
+    context = {
         'playlist': playlist,
         'tracks': tracks,
-    })
+    }
 
     if request.method == 'GET':
         if request.GET.get('format') == 'text':
