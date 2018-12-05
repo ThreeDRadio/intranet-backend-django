@@ -59,4 +59,4 @@ class PlaylistEntry(models.Model):
         return '(' + self.playlist.show + ') ' + self.artist + " - " + self.title
 
     def __str__(self):
-        return '(' + self.playlist.show + ') ' + self.artist + " - " + self.title
+        return '(' + str(self.playlist.show) + ') ' + self.artist + " - " + self.title
