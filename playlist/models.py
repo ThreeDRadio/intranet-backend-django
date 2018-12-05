@@ -33,6 +33,11 @@ class Playlist(models.Model):
     complete = models.BooleanField(default=False)
     fillin = models.BooleanField(default=False)
 
+    # We record the quotas required for each playlist, to account for changes over time
+    femaleQuota = models.IntegerField()
+    localQuota = models.IntegerField()
+    australianQuota = models.IntegerField()
+
     def __unicode__(self):
         return str(self.show) + ' - ' + str(self.date)
 
