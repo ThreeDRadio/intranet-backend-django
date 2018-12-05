@@ -26,6 +26,7 @@ class Playlist(models.Model):
     date = models.DateField()
     notes = models.TextField(blank=True, null=True)
     complete = models.BooleanField(default=False)
+    fillin = models.BooleanField(default=False)
 
     def __unicode__(self):
         return str(self.show) + ' - ' + str(self.date)
