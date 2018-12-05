@@ -22,6 +22,7 @@ class PlaylistAdmin(admin.ModelAdmin):
 class ShowAdmin(admin.ModelAdmin):
     model = Show
     ordering = ('name',)
+    list_display = ('name','active','defaultHost')
 
 
 admin.site.register(Playlist, PlaylistAdmin)
