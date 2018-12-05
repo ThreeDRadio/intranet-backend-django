@@ -16,6 +16,8 @@ class Show(models.Model):
     def __unicode__(self):
         return self.name
 
+    def __str__(self):
+        return self.name
 
 class Playlist(models.Model):
     show = models.ForeignKey(Show, on_delete=models.PROTECT, null=True, related_name="playlists")
@@ -28,6 +30,8 @@ class Playlist(models.Model):
     def __unicode__(self):
         return str(self.show) + ' - ' + str(self.date)
 
+    def __str__(self):
+        return str(self.show) + ' - ' + str(self.date)
 
 class PlaylistEntry(models.Model):
     playlist = models.ForeignKey(Playlist, on_delete=models.PROTECT, related_name='tracks')
@@ -51,4 +55,7 @@ class PlaylistEntry(models.Model):
     #catalogueEntry = models.ForeignKey(Cdtrack, null=True)
 
     def __unicode__(self):
+        return '(' + self.playlist.show + ') ' + self.artist + " - " + self.title
+
+    def __str__(self):
         return '(' + self.playlist.show + ') ' + self.artist + " - " + self.title
