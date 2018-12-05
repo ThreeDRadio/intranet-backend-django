@@ -58,7 +58,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Cdtrack',
             fields=[
-                ('trackid', models.BigIntegerField(serialize=False, primary_key=True)),
+                ('id', models.BigAutoField(db_column='trackid', serialize=False, primary_key=True)),
                 ('tracknum', models.BigIntegerField()),
                 ('tracktitle', models.CharField(max_length=200, null=True, blank=True)),
                 ('trackartist', models.CharField(max_length=200, null=True, blank=True)),
