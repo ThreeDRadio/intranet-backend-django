@@ -60,3 +60,10 @@ class PlaylistEntry(models.Model):
 
     def __str__(self):
         return '(' + str(self.playlist.show) + ') ' + self.artist + " - " + self.title
+
+
+
+class Setting(models.Model):
+    id = models.CharField(max_length=50, primary_key=True)
+    value = models.CharField(max_length=200)
+    description = models.TextField()
