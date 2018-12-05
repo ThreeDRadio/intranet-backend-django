@@ -13,6 +13,11 @@ class Show(models.Model):
     startTime = models.TimeField()
     endTime = models.TimeField()
 
+    customQuotas = models.BooleanField(default=False)
+    femaleQuota = models.IntegerField(null=True)
+    localQuota = models.IntegerField(null=True)
+    australianQuota = models.IntegerField(null=True)
+
     def __unicode__(self):
         return self.name
 
