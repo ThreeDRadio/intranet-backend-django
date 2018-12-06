@@ -15,7 +15,7 @@ from django.shortcuts import get_object_or_404
 import unicodecsv as csv
 from datetime import date
 from django.db.models import Count
-
+from django_filters.rest_framework import DjangoFilterBackend
 from .forms import SummaryReportForm
 from .models import Playlist, PlaylistEntry, Show
 from session.permissions import IsAuthenticatedOrWhitelist
@@ -121,6 +121,8 @@ class ShowViewSet(viewsets.ModelViewSet):
     serializer_class = ShowSerializer
     pagination_class = None
     permission_classes = [IsAuthenticatedOrWhitelist,]
+    filter_backends = (DjangoFilterBackend,)
+    filter_fields = ('active',)
 
     @detail_route()
     def topartists(self, request, pk=None):
