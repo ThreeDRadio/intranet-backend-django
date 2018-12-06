@@ -41,6 +41,7 @@ class Playlist(models.Model):
 
     @classmethod
     def applyQuotas(cls, sender, instance, raw, using, update_fields, *args, **kwargs):
+        print('Applying Quotas')
         if instance.pk == None:
             if instance.show.customQuotas:
                 instance.femaleQuota = instance.show.femaleQuota

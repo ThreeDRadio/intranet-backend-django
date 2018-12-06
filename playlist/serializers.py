@@ -29,7 +29,7 @@ class ShowSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Show
-        fields = ('id', 'name', 'startTime', 'endTime', 'defaultHost', 'playlists', 'topartists', 'statistics') 
+        fields = ('id', 'name', 'startTime', 'endTime', 'defaultHost', 'playlists', 'topartists', 'statistics','customQuotas','femaleQuota','localQuota','australianQuota') 
 
 class PlaylistEntrySerializer(serializers.ModelSerializer):
 
@@ -44,4 +44,4 @@ class PlaylistSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Playlist
-        fields = ('id', 'show','showname', 'host', 'date', 'notes', 'tracks', 'complete')
+        fields = ('id', 'show','showname', 'host', 'date', 'notes', 'tracks', 'complete','femaleQuota','localQuota','australianQuota')
