@@ -15,9 +15,9 @@ class Show(models.Model):
     endTime = models.TimeField()
 
     customQuotas = models.BooleanField(default=False)
-    femaleQuota = models.IntegerField(null=True)
-    localQuota = models.IntegerField(null=True)
-    australianQuota = models.IntegerField(null=True)
+    femaleQuota = models.IntegerField(null=True, blank=True)
+    localQuota = models.IntegerField(null=True, blank=True)
+    australianQuota = models.IntegerField(null=True, blank=True)
 
     def __unicode__(self):
         return self.name
