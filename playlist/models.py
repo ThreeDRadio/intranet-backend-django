@@ -1,5 +1,6 @@
 from django.db import models
 from datetime import timedelta
+from django.db.models.signals import post_save, pre_save
 
 
 # from catalogue.models import Cdtrack
@@ -38,11 +39,25 @@ class Playlist(models.Model):
     localQuota = models.IntegerField()
     australianQuota = models.IntegerField()
 
+    @classmethod
+    def applyQuotas(cls, sender, instance, raw, using, update_fields, *args, **kwargs):
+        if instance.pk == None:
+            if instance.show.customQuotas:
+                instance.femaleQuota = instance.show.femaleQuota
+                instance.localQuota= instance.show.localQuota
+                instance.australianQuota= instance.show.australianQuota
+            else:
+                instance.femaleQuota = int(Setting.objects.get(pk="female_quota").value)
+                instance.localQuota = int(Setting.objects.get(pk="local_quota").value)
+                instance.australianQuota = int(Setting.objects.get(pk="australian_quota").value)
+
     def __unicode__(self):
         return str(self.show) + ' - ' + str(self.date)
 
     def __str__(self):
         return str(self.show) + ' - ' + str(self.date)
+
+pre_save.connect(Playlist.applyQuotas, sender=Playlist)
 
 class PlaylistEntry(models.Model):
     playlist = models.ForeignKey(Playlist, on_delete=models.PROTECT, related_name='tracks')
