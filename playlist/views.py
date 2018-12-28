@@ -105,8 +105,8 @@ def reports(request):
     if request.method == 'POST':
         form = SummaryReportForm(request.POST)
         if form.is_valid():
-            return HttpResponseRedirect('/logger/summary/?startDate=' + unicode(form.cleaned_data.get('startDate')) +
-                                        '&endDate=' + unicode(form.cleaned_data.get('endDate')) + '&format=' + unicode(form.cleaned_data.get('reportFormat')))
+            return HttpResponseRedirect('/backend/logger/summary/?startDate=' + str(form.cleaned_data.get('startDate')) +
+                                        '&endDate=' + str(form.cleaned_data.get('endDate')) + '&format=' + str(form.cleaned_data.get('reportFormat')))
     else:
         form = SummaryReportForm()
     context =  {
@@ -120,7 +120,7 @@ class ShowViewSet(viewsets.ModelViewSet):
     queryset = Show.objects.all()
     serializer_class = ShowSerializer
     pagination_class = None
-    permission_classes = [IsAuthenticatedOrWhitelist,]
+    # permission_classes = [IsAuthenticatedOrWhitelist,]
     filter_backends = (DjangoFilterBackend,)
     filter_fields = ('active',)
 
@@ -176,7 +176,7 @@ class PlaylistViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.OrderingFilter,)
     queryset = Playlist.objects.all()
     serializer_class = PlaylistSerializer
-    permission_classes = [IsAuthenticatedOrWhitelist,]
+    # permission_classes = [IsAuthenticatedOrWhitelist,]
     ordering_fields = ('date',)
 
     @detail_route()
@@ -188,7 +188,7 @@ class PlaylistViewSet(viewsets.ModelViewSet):
 class PlaylistEntryViewSet(viewsets.ModelViewSet):
     queryset = PlaylistEntry.objects.all()
     serializer_class = PlaylistEntrySerializer
-    permission_classes = [IsAuthenticatedOrWhitelist,]
+    # permission_classes = [IsAuthenticatedOrWhitelist,]
 
     @list_route()
     def today(self, request):
