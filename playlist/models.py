@@ -35,9 +35,9 @@ class Playlist(models.Model):
     fillin = models.BooleanField(default=False)
 
     # We record the quotas required for each playlist, to account for changes over time
-    femaleQuota = models.IntegerField()
-    localQuota = models.IntegerField()
-    australianQuota = models.IntegerField()
+    femaleQuota = models.IntegerField(blank=True)
+    localQuota = models.IntegerField(blank=True)
+    australianQuota = models.IntegerField(blank=True)
 
     @classmethod
     def applyQuotas(cls, sender, instance, raw, using, update_fields, *args, **kwargs):
