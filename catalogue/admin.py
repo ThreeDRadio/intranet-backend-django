@@ -6,6 +6,10 @@ from .models import Comment
 class CommentAdmin(admin.ModelAdmin):
     model = Comment
     exclude = ['release','cdtrackid']
+    list_display = ['comment','author','visible']
+    list_editable = ['visible']
+    list_filter = ['author']
+    search_fields = ['comment']
 
 
 admin.site.register(Comment, CommentAdmin)

@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 import os.path
+from django.contrib.auth.models import User 
 
 # Create your models here.
 class Release(models.Model):
@@ -37,10 +38,11 @@ class Comment(models.Model):
     
     cdtrackid = models.BigIntegerField()
     comment = models.TextField(blank=True, null=True)
-    createwho = models.BigIntegerField()
+    author = models.ForeignKey(User, on_delete=models.PROTECT, db_column='createwho')
     createwhen = models.BigIntegerField()
     modifywho = models.BigIntegerField()
     modifywhen = models.BigIntegerField()
+    visible = models.BooleanField(default=True)
 
     class Meta:
         db_table = 'cdcomment'
