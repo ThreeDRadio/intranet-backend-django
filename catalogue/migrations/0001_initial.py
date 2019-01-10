@@ -46,7 +46,7 @@ class Migration(migrations.Migration):
                 ('cdid', models.BigIntegerField()),
                 ('cdtrackid', models.BigIntegerField()),
                 ('comment', models.TextField(null=True, blank=True)),
-                ('createwho', models.BigIntegerField()),
+                ('author', models.ForeignKey(on_delete=models.PROTECT, db_column='createwho', to='auth.User')),
                 ('createwhen', models.BigIntegerField()),
                 ('modifywho', models.BigIntegerField()),
                 ('modifywhen', models.BigIntegerField()),
