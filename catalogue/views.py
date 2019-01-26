@@ -7,7 +7,7 @@ import django_filters
 from rest_framework import filters
 from rest_framework import generics
 from rest_framework import viewsets
-from rest_framework.pagination import PageNumberPagination
+from rest_framework.pagination import PageNumberPagination, LimitOffsetPagination
 from rest_framework.views import APIView
 from rest_framework.decorators import list_route, detail_route, action
 from rest_framework.response import Response
@@ -71,8 +71,9 @@ class ReleaseViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.OrderingFilter, filters.SearchFilter,
                        django_filters.rest_framework.DjangoFilterBackend)
     search_fields = ('artist', 'title', 'tracks__tracktitle')
-    ordering_fields = ('arrivaldate', 'artist', 'title')
+    ordering_fields = ('arrivaldate', 'artist', 'title','year','createwhen')
     filter_class = ReleaseFilter
+    pagination_class = LimitOffsetPagination
 
     @detail_route()
     def tracks(self, request, pk=None):
