@@ -25,6 +25,7 @@ class Release(models.Model):
     comment = models.TextField(blank=True, null=True)
     status = models.SmallIntegerField(blank=True, null=True)
     format = models.SmallIntegerField(blank=True, null=True)
+    digital = models.BooleanField(blank=True, default=False)
 
     class Meta:
         db_table = 'cd'
@@ -57,6 +58,7 @@ class Track(models.Model):
     tracktitle = models.CharField(max_length=200, blank=True, null=True)
     trackartist = models.CharField(max_length=200, blank=True, null=True)
     tracklength = models.BigIntegerField(blank=True, null=True)
+    needsEncoding = models.BooleanField(default = False)
 
     @property
     def hiPath(self): 
@@ -74,6 +76,10 @@ class Track(models.Model):
     @property
     def hiAvailable(self):
         return os.path.exists(self.hiPath)
+
+    @property
+    def loAvailable(self):
+        return os.path.exists(self.loPath)
 
     class Meta:
         db_table = 'cdtrack'
