@@ -8,7 +8,7 @@ class CommentAdmin(admin.ModelAdmin):
     exclude = ['release','cdtrackid']
     list_display = ['comment','author','visible']
     list_editable = ['visible']
-    list_filter = ['author']
+    list_filter = ['author','visible']
     search_fields = ['comment']
 
 
