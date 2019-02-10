@@ -116,8 +116,8 @@ class TrackViewSet(viewsets.ModelViewSet):
         file = request.FILES['file']
         directory = os.path.dirname(track.hiPath)
         if not os.path.exists(directory):
-            os.makedirs(directory)
-        with open(track.hiPath, 'wb+') as destination:
+            os.makedirs(directory, 0o777)
+        with open(track.hiPath, 'wb') as destination:
             for chunk in file.chunks():
                 destination.write(chunk)
         serializer = TrackSerializer(track)
