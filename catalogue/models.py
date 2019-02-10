@@ -58,7 +58,7 @@ class Track(models.Model):
     tracktitle = models.CharField(max_length=200, blank=True, null=True)
     trackartist = models.CharField(max_length=200, blank=True, null=True)
     tracklength = models.BigIntegerField(blank=True, null=True)
-    needsEncoding = models.BooleanField(default = False)
+    needsencoding = models.BooleanField(default = False)
 
     @property
     def hiPath(self): 
