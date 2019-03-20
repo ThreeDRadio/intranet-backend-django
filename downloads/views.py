@@ -13,7 +13,7 @@ def download(request, linkID):
     raise Http404("Invalid download link: " + linkID)
 
   if link.isCurrent():
-    if settings.DOWNLOAD_X_SENDFILE:
+    if hasattr(settings, 'DOWNLOAD_X_SENDFILE') and settings.DOWNLOAD_X_SENDFILE:
       return serve(request, os.path.basename(link.path), os.path.dirname(link.path))
     else:
       response = HttpResponse()
