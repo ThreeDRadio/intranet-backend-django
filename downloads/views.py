@@ -14,12 +14,12 @@ def download(request, linkID):
 
   if link.isCurrent():
     if hasattr(settings, 'DOWNLOAD_X_SENDFILE') and settings.DOWNLOAD_X_SENDFILE:
-      return serve(request, os.path.basename(link.path), os.path.dirname(link.path))
-    else:
       response = HttpResponse()
       response['X-Sendfile'] = link.path
       response['X-Accel-Redirect'] = link.path + ';'
       return response
+    else:
+      return serve(request, os.path.basename(link.path), os.path.dirname(link.path))
   else:
     raise Http404("Download link expired: " + linkID)
 
