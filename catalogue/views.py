@@ -18,8 +18,8 @@ from django.db.models import Count
 from django.shortcuts import render
 from django.conf import settings
 
-from .models import Release, Track
-from .serializers import ReleaseSerializer, TrackSerializer, CommentSerializer
+from .models import Comment, Release, Track
+from .serializers import CommentSerializer, ReleaseSerializer, TrackSerializer, CommentSerializer
 from downloads.models import DownloadLink
 from session.permissions import IsAuthenticatedOrWhitelist
 import os
@@ -94,6 +94,15 @@ class ReleaseViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
+class CommentViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticatedOrWhitelist,)
+    queryset = Comment.objects.filter(visible = True)
+    serializer_class = CommentSerializer
+    filter_backends = (filters.OrderingFilter, filters.SearchFilter,
+                       django_filters.rest_framework.DjangoFilterBackend)
+    ordering_fields = ('createwhen',)
+    pagination_class = LimitOffsetPagination
+
 class TrackFilter(django_filters.FilterSet):
     artist = django_filters.CharFilter(field_name="album__artist", lookup_expr='icontains')
     track = django_filters.CharFilter(field_name="tracktitle", lookup_expr='icontains')
@@ -101,6 +110,7 @@ class TrackFilter(django_filters.FilterSet):
     class Meta:
         model = Track
         fields = ['track', 'artist']
+
 
 
 class TrackViewSet(viewsets.ModelViewSet):

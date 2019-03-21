@@ -18,7 +18,7 @@ from django.contrib import admin
 from rest_framework import routers
 from playlist import views
 from session.views import UserViewSet, MigrateAndLogin
-from catalogue.views import ReleaseViewSet, TrackViewSet, ArtistViewSet
+from catalogue.views import ReleaseViewSet, TrackViewSet, ArtistViewSet, CommentViewSet
 from downloads import views as downloadViews
 from django.conf.urls import url
 from rest_framework_swagger.views import get_swagger_view
@@ -29,6 +29,7 @@ router = routers.DefaultRouter()
 router.register(r'releases', ReleaseViewSet, 'release')
 router.register(r'tracks', TrackViewSet, 'track')
 router.register(r'artists', ArtistViewSet, 'Artist')
+router.register(r'comments', CommentViewSet, 'Comment')
 
 router.register(r'shows', views.ShowViewSet, 'Show')
 router.register(r'users', UserViewSet, 'user')
