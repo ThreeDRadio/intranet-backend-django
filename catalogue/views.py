@@ -6,6 +6,7 @@ from django.contrib import messages
 import django_filters
 from rest_framework import filters
 from rest_framework import generics
+from rest_framework  import permissions
 from rest_framework import viewsets
 from rest_framework.pagination import PageNumberPagination, LimitOffsetPagination
 from rest_framework.views import APIView
@@ -26,7 +27,7 @@ import os
 
 # Create your views here.
 class ArtistViewSet(viewsets.ViewSet):
-    permission_classes = (IsAuthenticatedOrWhitelist,)
+    permission_classes = (permissions.IsAuthenticated,)
     filter_backends = (filters.SearchFilter, )
     search_fields = ('artist', )
 
@@ -65,7 +66,7 @@ class ReleaseFilter(django_filters.FilterSet):
 
 
 class ReleaseViewSet(viewsets.ModelViewSet):
-    permission_classes = (IsAuthenticatedOrWhitelist,)
+    permission_classes = (permissions.IsAuthenticated,)
     queryset = Release.objects.all()
     serializer_class = ReleaseSerializer
     filter_backends = (filters.OrderingFilter, filters.SearchFilter,
@@ -95,7 +96,7 @@ class ReleaseViewSet(viewsets.ModelViewSet):
 
 
 class CommentViewSet(viewsets.ModelViewSet):
-    permission_classes = (IsAuthenticatedOrWhitelist,)
+    permission_classes = (permissions.IsAuthenticated,)
     queryset = Comment.objects.filter(visible = True)
     serializer_class = CommentSerializer
     filter_backends = (filters.OrderingFilter, filters.SearchFilter,
@@ -106,19 +107,20 @@ class CommentViewSet(viewsets.ModelViewSet):
 class TrackFilter(django_filters.FilterSet):
     artist = django_filters.CharFilter(field_name="album__artist", lookup_expr='icontains')
     track = django_filters.CharFilter(field_name="tracktitle", lookup_expr='icontains')
+    needsencoding = django_filters.BooleanFilter(field_name="needsencoding")
 
     class Meta:
         model = Track
-        fields = ['track', 'artist']
-
+        fields = ['track', 'artist','needsencoding']
 
 
 class TrackViewSet(viewsets.ModelViewSet):
-    permission_classes = (IsAuthenticatedOrWhitelist,)
+    permission_classes = (permissions.IsAuthenticated,)
     queryset = Track.objects.all()
     serializer_class = TrackSerializer
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend, )
     filter_class = TrackFilter
+
 
     @action(methods=['post'],detail=True)
     def audio(self, request, pk=None):

@@ -32,7 +32,7 @@ class TrackSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Track
-        fields = ('id', 'tracknum', 'trackartist', 'tracktitle', 'tracklength', 'release', 'hiAvailable')
+        fields = ('id','release', 'tracknum', 'trackartist', 'tracktitle', 'tracklength', 'release', 'hiAvailable','needsencoding')
 
 class ReleaseSerializer(serializers.ModelSerializer):
     tracks = serializers.HyperlinkedIdentityField(view_name='release-tracks')
