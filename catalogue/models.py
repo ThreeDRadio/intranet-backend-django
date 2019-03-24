@@ -67,6 +67,7 @@ class Track(models.Model):
             '07') + '/' + format(self.release.id, '07') + '-' + format(
                 self.tracknum, '02') + '.mp3'
 
+    @property
     def loPath(self): 
         return settings.DOWNLOAD_BASE_PATH + 'music/lo/' + format(
             self.release.id,
