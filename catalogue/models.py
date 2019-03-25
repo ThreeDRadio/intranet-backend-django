@@ -54,7 +54,7 @@ class Comment(models.Model):
 class Track(models.Model):
     id = models.BigAutoField(db_column='trackid', primary_key=True)
     release = models.ForeignKey(Release, on_delete=models.PROTECT, db_column='cdid', related_name="tracks")
-    tracknum = models.BigIntegerField(blank=True)
+    tracknum = models.BigIntegerField()
     tracktitle = models.CharField(max_length=200, blank=True, null=True)
     trackartist = models.CharField(max_length=200, blank=True, null=True)
     tracklength = models.BigIntegerField(blank=True, null=True)
