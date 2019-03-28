@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.template import RequestContext
 from django.forms.models import modelformset_factory
 from django.contrib import messages
@@ -136,10 +136,18 @@ class TrackViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
-    @detail_route()
-    def requestDownload(self, request, pk=None):
-        track = self.get_object()
-        path = settings.DOWNLOAD_BASE_PATH + 'music/hi/' + format(
+    @detail_route(url_path='download/(?P<quality>[a-z]+)')
+    def download(self, request, quality, pk=None ):
+        f = 'hi'
+        if quality== 'lo':
+            f = 'lo'
+        elif quality == 'hi':
+            f = 'hi'
+        else:
+            raise Http404
+
+        track = get_object_or_404(Track, pk=pk)
+        path = settings.DOWNLOAD_BASE_PATH + 'music/'+ f + '/' + format(
             track.release.id,
             '07') + '/' + format(track.release.id, '07') + '-' + format(
                 track.tracknum, '02') + '.mp3'
