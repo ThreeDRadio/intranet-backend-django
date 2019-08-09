@@ -4,21 +4,21 @@ from django.contrib.auth.models import User
 # Create your models here.
 
 class Supporter(models.Model):
-  first_name = models.CharField(max_length = 200)
-  last_name = models.CharField(max_length = 200)
-  address1 = models.CharField(max_length = 200)
-  address2 = models.CharField(max_length = 200, blank=True)
-  town = models.CharField(max_length = 200)
-  state = models.CharField(max_length = 200)
-  postcode = models.CharField(max_length = 200)
-  country = models.CharField(max_length = 200, blank=True)
+  first_name = models.CharField(max_length = 200, null=True)
+  last_name = models.CharField(max_length = 200, null=True)
+  address1 = models.CharField(max_length = 200, null=True)
+  address2 = models.CharField(max_length = 200, null=True, blank=True)
+  town = models.CharField(max_length = 200, null=True)
+  state = models.CharField(max_length = 200, default='SA', null=True)
+  postcode = models.CharField(max_length = 200, null=True)
+  country = models.CharField(max_length = 200, default='Australia', null=True, blank=True)
 
-  phone_mobile = models.CharField(max_length = 200, blank=True)
-  phone_home = models.CharField(max_length = 200, blank=True)
-  phone_work = models.CharField(max_length = 200, blank=True)
-  email = models.CharField(max_length = 200, blank=True)
-  gender = models.CharField(max_length = 200, blank=True)
-  dob = models.DateField()
+  phone_mobile = models.CharField(max_length = 200, null=True, blank=True)
+  phone_home = models.CharField(max_length = 200, null=True, blank=True)
+  phone_work = models.CharField(max_length = 200, null=True, blank=True)
+  email = models.CharField(max_length = 200, null=True, blank=True)
+  gender = models.CharField(max_length = 200, null=True, blank=True)
+  dob = models.DateField( null=True)
   excluded = models.BooleanField(default=False, blank=True)
   prefer_email = models.BooleanField(default=True, blank=True)
 
@@ -37,8 +37,10 @@ class SupporterNote(models.Model):
 
 class Transaction(models.Model):
   created_at = models.DateTimeField(auto_now_add=True)
+  expires_at = models.DateTimeField()
   supporter = models.ForeignKey(Supporter, on_delete=models.PROTECT, related_name='transactions')
   author = models.ForeignKey(User, on_delete=models.PROTECT, related_name='supporter_transactions')
   payment_processed = models.BooleanField(default=False, blank=True)
   pack_sent = models.BooleanField(default=False, blank=True)
-  note = models.TextField()
+  transaction_type = models.CharField(max_length = 200, null=True)
+  note = models.TextField(null=True, blank=True)
