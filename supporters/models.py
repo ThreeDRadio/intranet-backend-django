@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User 
 
 # Create your models here.
 
@@ -26,3 +27,10 @@ class Supporter(models.Model):
 
   def __unicode__(self):
     return str(self.first_name) + str(self.last_name)
+
+
+class SupporterNote(models.Model):
+  supporter = models.ForeignKey(Supporter, on_delete=models.PROTECT, related_name='notes')
+  author = models.ForeignKey(User, on_delete=models.PROTECT)
+  created_at = models.DateTimeField(auto_now_add=True)
+  note = models.TextField()
