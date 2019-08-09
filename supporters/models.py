@@ -31,6 +31,14 @@ class Supporter(models.Model):
 
 class SupporterNote(models.Model):
   supporter = models.ForeignKey(Supporter, on_delete=models.PROTECT, related_name='notes')
-  author = models.ForeignKey(User, on_delete=models.PROTECT)
+  author = models.ForeignKey(User, on_delete=models.PROTECT, related_name='supporter_notes')
   created_at = models.DateTimeField(auto_now_add=True)
+  note = models.TextField()
+
+class Transaction(models.Model):
+  created_at = models.DateTimeField(auto_now_add=True)
+  supporter = models.ForeignKey(Supporter, on_delete=models.PROTECT, related_name='transactions')
+  author = models.ForeignKey(User, on_delete=models.PROTECT, related_name='supporter_transactions')
+  payment_processed = models.BooleanField(default=False, blank=True)
+  pack_sent = models.BooleanField(default=False, blank=True)
   note = models.TextField()
