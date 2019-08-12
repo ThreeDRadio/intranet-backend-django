@@ -4,13 +4,13 @@ from django.contrib.auth.models import User
 # Create your models here.
 
 class Supporter(models.Model):
-  first_name = models.CharField(max_length = 200, null=True)
-  last_name = models.CharField(max_length = 200, null=True)
-  address1 = models.CharField(max_length = 200, null=True)
+  first_name = models.CharField(max_length = 200, null=True, blank=True)
+  last_name = models.CharField(max_length = 200, null=True, blank=True)
+  address1 = models.CharField(max_length = 200, null=True, blank=True)
   address2 = models.CharField(max_length = 200, null=True, blank=True)
-  town = models.CharField(max_length = 200, null=True)
+  town = models.CharField(max_length = 200, null=True, blank=True)
   state = models.CharField(max_length = 200, default='SA', null=True)
-  postcode = models.CharField(max_length = 200, null=True)
+  postcode = models.CharField(max_length = 200, null=True, blank=True)
   country = models.CharField(max_length = 200, default='Australia', null=True, blank=True)
 
   phone_mobile = models.CharField(max_length = 200, null=True, blank=True)
@@ -18,7 +18,7 @@ class Supporter(models.Model):
   phone_work = models.CharField(max_length = 200, null=True, blank=True)
   email = models.CharField(max_length = 200, null=True, blank=True)
   gender = models.CharField(max_length = 200, null=True, blank=True)
-  dob = models.DateField( null=True)
+  dob = models.DateField( null=True, blank=True)
   excluded = models.BooleanField(default=False, blank=True)
   prefer_email = models.BooleanField(default=True, blank=True)
 
@@ -37,7 +37,7 @@ class SupporterNote(models.Model):
 
 class Transaction(models.Model):
   created_at = models.DateTimeField(auto_now_add=True)
-  expires_at = models.DateTimeField()
+  expires_at = models.DateField()
   supporter = models.ForeignKey(Supporter, on_delete=models.PROTECT, related_name='transactions')
   author = models.ForeignKey(User, on_delete=models.PROTECT, related_name='supporter_transactions')
   payment_processed = models.BooleanField(default=False, blank=True)

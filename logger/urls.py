@@ -20,6 +20,7 @@ from playlist import views
 from session.views import UserViewSet, MigrateAndLogin
 from catalogue.views import ReleaseViewSet, TrackViewSet, ArtistViewSet, CommentViewSet
 from downloads import views as downloadViews
+from supporters import views as supporterViews
 from django.conf.urls import url
 from rest_framework_swagger.views import get_swagger_view
 
@@ -36,6 +37,9 @@ router.register(r'users', UserViewSet, 'user')
 router.register(r'playlists', views.PlaylistViewSet, 'Playlist')
 router.register(r'playlistentries', views.PlaylistEntryViewSet,
                 'PlaylistEntry')
+
+router.register(r'supporters', supporterViews.SupporterViewSet, 'Supporter')
+router.register(r'transactions', supporterViews.TransactionViewSet, 'Transaction')
 
 urlpatterns = [
     #url(r'^api-token-auth/', 'rest_framework.authtoken.views.obtain_auth_token'),
