@@ -44,3 +44,4 @@ class Transaction(models.Model):
   pack_sent = models.BooleanField(default=False, blank=True)
   transaction_type = models.CharField(max_length = 200, null=True)
   note = models.TextField(null=True, blank=True)
+  shipping = models.CharField(max_length = 200, null=True, blank=True)

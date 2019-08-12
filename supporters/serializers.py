@@ -18,12 +18,18 @@ class SupporterNoteSerializer(serializers.ModelSerializer):
     fields = ('supporter','author','created_at','note')
 
 
+
+class EmbeddedSupporterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Supporter 
+        fields = ('id', 'first_name', 'last_name')
 class TransactionSerializer(serializers.ModelSerializer):
+  supporter = EmbeddedSupporterSerializer()
   class Meta:
     model = Transaction
-    fields = ('id','created_at','expires_at','supporter','author','payment_processed','pack_sent','transaction_type','note')
+    fields = ('id','created_at','expires_at','supporter','author','payment_processed','pack_sent','transaction_type','note','shipping')
 
 class SupporterTransactionRequest(serializers.ModelSerializer):
   class Meta:
     model = Transaction
-    fields = ('expires_at','payment_processed','transaction_type','note')
+    fields = ('expires_at','payment_processed','transaction_type','note','shipping')

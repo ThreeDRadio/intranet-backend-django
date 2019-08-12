@@ -80,8 +80,19 @@ class SupporterNoteViewSet(viewsets.ModelViewSet):
   serializer_class = SupporterNoteSerializer 
   pagination_class = LimitOffsetPagination
 
+
+class TransactionFilter(django_filters.FilterSet):
+
+  class Meta:
+    model = Transaction
+    fields = ('id','created_at','supporter__last_name','expires_at','supporter','author','payment_processed','pack_sent','transaction_type','note','shipping')
+
 class TransactionViewSet(viewsets.ModelViewSet):
   permission_classes = (permissions.DjangoModelPermissions,)
   queryset = Transaction.objects.all()
   serializer_class = TransactionSerializer 
   pagination_class = LimitOffsetPagination
+  filter_backends = (filters.OrderingFilter, filters.SearchFilter,
+                     django_filters.rest_framework.DjangoFilterBackend)
+  filter_class = TransactionFilter
+  search_fields = ('supporter__last_name','=supporter__id')
