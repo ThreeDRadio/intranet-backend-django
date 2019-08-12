@@ -27,8 +27,19 @@ import os
 from .models import Supporter, SupporterNote, Transaction
 from .serializers import SupporterSerializer, SupporterNoteSerializer, TransactionSerializer, SupporterTransactionRequest
 
+class DjangoModelPermissionsStrict(permissions.DjangoModelPermissions):
+  perms_map = {
+      'GET': ['%(app_label)s.view_%(model_name)s'],
+      'OPTIONS': [],
+      'HEAD': [],
+      'POST': ['%(app_label)s.add_%(model_name)s'],
+      'PUT': ['%(app_label)s.change_%(model_name)s'],
+      'PATCH': ['%(app_label)s.change_%(model_name)s'],
+      'DELETE': ['%(app_label)s.delete_%(model_name)s'],
+  }
+
 class SupporterViewSet(viewsets.ModelViewSet):
-  permission_classes = (permissions.DjangoModelPermissions,)
+  permission_classes = (DjangoModelPermissionsStrict,)
   queryset = Supporter.objects.filter(excluded = False)
   filter_backends = (filters.OrderingFilter, filters.SearchFilter,
                      django_filters.rest_framework.DjangoFilterBackend)
@@ -88,7 +99,7 @@ class TransactionFilter(django_filters.FilterSet):
     fields = ('id','created_at','supporter__last_name','expires_at','supporter','author','payment_processed','pack_sent','transaction_type','note','shipping')
 
 class TransactionViewSet(viewsets.ModelViewSet):
-  permission_classes = (permissions.DjangoModelPermissions,)
+  permission_classes = (DjangoModelPermissionsStrict,)
   queryset = Transaction.objects.all()
   serializer_class = TransactionSerializer 
   pagination_class = LimitOffsetPagination
