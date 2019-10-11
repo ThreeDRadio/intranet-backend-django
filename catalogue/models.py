@@ -26,6 +26,7 @@ class Release(models.Model):
     status = models.SmallIntegerField(blank=True, null=True)
     format = models.SmallIntegerField(blank=True, null=True)
     digital = models.BooleanField(blank=True, default=False)
+    ghoul_approved = models.BooleanField(blank=True, default=True)
 
     class Meta:
         db_table = 'cd'
