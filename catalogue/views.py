@@ -154,5 +154,5 @@ class TrackViewSet(viewsets.ModelViewSet):
         link = DownloadLink(name=track.tracktitle, path=path)
         link.save()
         finalUrl = request.build_absolute_uri(
-            '/download/' + str(link.id) + '/')
+            settings.API_PREFIX + 'download/' + str(link.id) + '/')
         return HttpResponse('{"url":"' + finalUrl + '"}')
