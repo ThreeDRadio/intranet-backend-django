@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+from corsheaders.defaults import default_headers
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -26,6 +27,9 @@ SECRET_KEY = 'quual-o8ahjb)v&0h=h@wo!_ha@r!#$trtg1pi855(^$w_!(wd'
 DEBUG = True
 
 ALLOWED_HOSTS = []
+CORS_ALLOW_HEADERS = list(default_headers) + [
+    'sentry-trace',
+]
 
 MIDDLEWARE= (
     'django.contrib.sessions.middleware.SessionMiddleware',
