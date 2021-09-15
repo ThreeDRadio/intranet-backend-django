@@ -10,7 +10,7 @@ from rest_framework  import permissions
 from rest_framework import viewsets
 from rest_framework.pagination import PageNumberPagination, LimitOffsetPagination
 from rest_framework.views import APIView
-from rest_framework.decorators import list_route, detail_route, action
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 import unicodecsv as csv
@@ -76,7 +76,7 @@ class ReleaseViewSet(viewsets.ModelViewSet):
     filter_class = ReleaseFilter
     pagination_class = LimitOffsetPagination
 
-    @detail_route()
+    @action(detail=True)
     def tracks(self, request, pk=None):
         release = self.get_object()
         serializer = TrackSerializer(
@@ -85,7 +85,7 @@ class ReleaseViewSet(viewsets.ModelViewSet):
             many=True)
         return Response(serializer.data)
 
-    @detail_route()
+    @action(detail=True)
     def comments(self, request, pk=None):
         release = self.get_object()
         serializer = CommentSerializer(
@@ -136,7 +136,7 @@ class TrackViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
-    @detail_route(url_path='download/(?P<quality>[a-z]+)')
+    @action(detail=True, url_path='download/(?P<quality>[a-z]+)')
     def download(self, request, quality, pk=None ):
         f = 'hi'
         if quality== 'lo':

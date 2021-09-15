@@ -9,7 +9,7 @@ from rest_framework import generics
 from rest_framework import viewsets
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.views import APIView
-from rest_framework.decorators import list_route, detail_route
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 import unicodecsv as csv
@@ -68,7 +68,7 @@ def summary(request):
 def playlist(request, playlist_id):
     playlist = get_object_or_404(Playlist, pk=playlist_id)
 
-    tracks = PlaylistEntry.objects.filter(playlist_id=playlist.pk).order_by("pk")
+    tracks = PlaylistEntry.objects.filter(playlist_id=playlist.pk).order_by("index","pk")
 
     context = {
         'playlist': playlist,
@@ -78,7 +78,7 @@ def playlist(request, playlist_id):
     if request.method == 'GET':
         if request.GET.get('format') == 'text':
             if request.GET.get('album') == 'true':
-                context.push({'printalbum': True})
+                context['printalbum'] = True
             response = render(request, 'playlist/textview.html', context)
             response['Content-Type'] = 'text/plain; charset=utf-8'
             return response
@@ -124,14 +124,14 @@ class ShowViewSet(viewsets.ModelViewSet):
     filter_backends = (DjangoFilterBackend,)
     filter_fields = ('active',)
 
-    @detail_route()
+    @action(detail=True)
     def topartists(self, request, pk=None):
         show = self.get_object()
         top = PlaylistEntry.objects.filter(playlist__show=show).values('artist').annotate(plays=Count('artist')).order_by('-plays')[:10]
         serializer = TopArtistSerializer(top, many=True)
         return Response(serializer.data)
 
-    @detail_route()
+    @action(detail=True)
     def statistics(self, request, pk=None):
         show = self.get_object()
         tracks = PlaylistEntry.objects.filter(playlist__show=show).count()
@@ -166,7 +166,7 @@ class ShowViewSet(viewsets.ModelViewSet):
 
         return Response(serializer.data)
 
-    @detail_route()
+    @action(detail=True)
     def playlists (self, request, pk=None):
         show = self.get_object()
         serializer = PlaylistSerializer(show.playlists.all().order_by('-date'), context={'request': request}, many=True)
@@ -179,7 +179,7 @@ class PlaylistViewSet(viewsets.ModelViewSet):
     # permission_classes = [IsAuthenticatedOrWhitelist,]
     ordering_fields = ('date',)
 
-    @detail_route()
+    @action(detail=True)
     def tracks(self, request, pk=None):
         post = self.get_object()
         serializer = PlaylistEntrySerializer(post.tracks.all().order_by('index','pk'), context={'request': request}, many=True)
@@ -190,7 +190,7 @@ class PlaylistEntryViewSet(viewsets.ModelViewSet):
     serializer_class = PlaylistEntrySerializer
     # permission_classes = [IsAuthenticatedOrWhitelist,]
 
-    @list_route()
+    @action(detail=False)
     def today(self, request):
         queryset = PlaylistEntry.objects.filter(playlist__date=date.today()).values('artist', 'title', 'album').annotate(plays=Count('title')).order_by('artist', '-plays')
         page = self.paginate_queryset(queryset)

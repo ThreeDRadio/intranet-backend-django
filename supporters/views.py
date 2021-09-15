@@ -10,7 +10,7 @@ from rest_framework  import permissions
 from rest_framework import viewsets
 from rest_framework.pagination import PageNumberPagination, LimitOffsetPagination
 from rest_framework.views import APIView
-from rest_framework.decorators import list_route, detail_route, action
+from rest_framework.decorators import  action
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 import unicodecsv as csv
@@ -49,7 +49,7 @@ class SupporterViewSet(viewsets.ModelViewSet):
   pagination_class = LimitOffsetPagination
 
 
-  @detail_route()
+  @action(detail=True)
   def notes(self, request, pk=None):
     supporter = self.get_object()
     serializer = SupporterNoteSerializer(
