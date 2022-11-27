@@ -95,7 +95,7 @@ def playlist(request, playlist_id):
             out = csv.writer(response)
             out.writerow(['artist', 'track', 'album', 'local', 'australian', 'female', 'new release'])
 
-            for track in playlist.tracks.all():
+            for track in playlist.tracks.all().order_by('index'):
                 out.writerow([track.artist, track.title, track.album, track.local, track.australian, track.female,
                               track.newRelease])
             return response

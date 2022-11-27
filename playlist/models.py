@@ -32,6 +32,9 @@ class Playlist(models.Model):
     date = models.DateField()
     notes = models.TextField(blank=True, null=True)
     complete = models.BooleanField(default=False)
+
+    # Whether this has been sent to the website
+    published= models.BooleanField(default=False)
     fillin = models.BooleanField(default=False)
 
     # We record the quotas required for each playlist, to account for changes over time
