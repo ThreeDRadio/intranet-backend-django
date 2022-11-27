@@ -31,13 +31,14 @@ def create_category_for_show(showName):
   response = requests.post(api_url,headers=wordpress_header, json=data)
   return response.json()
 
-def createPost(title, categoryId, content):
+def createPost(title, categoryId, content, date):
   api_url = 'https://www.threedradio.com/wp-json/wp/v2/posts'
   data = {
     'title' : title,
     'status': 'publish',
     'content': content,
-    'categories': [categoryId]
+    'categories': [categoryId],
+    'date': date
   }
   response = requests.post(api_url,headers=wordpress_header, json=data)
 
@@ -63,16 +64,14 @@ def playlist_to_wordpress(sender, instance, **kwargs):
         print('No category found, creating')
         category = create_category_for_show(instance.show.name)
 
-      print(instance.show.name)
-      print(instance.date)
-
       content = '<ol>\n'
       for track in instance.tracks.all().order_by('index'):
         content += '  <li>' + track.artist + ' - ' + track.title + '</li>\n'
       content += '</ol>\n'
 
-      print(content)
-      createPost(instance.show.name + ': ' + str(instance.date), category['id'], content)
+      timestamp = str(instance.date) + ' ' + str(instance.show.endTime)
+
+      createPost(instance.show.name + ': ' + str(instance.date), category['id'], content, timestamp)
       instance.published = True
       instance.save()
   except Exception as e:
