@@ -16,6 +16,13 @@ def importUsers(editors):
     
     all_users = OldUser.objects.all()
     for u in all_users:
+        firstNameMax = User._meta.get_field('first_name').max_length
+
+        if u.first is not None and len(u.first) > firstNameMax:
+            print("ERROR - user {0}'s first name is longer than the allowed first name length {1}. Skipping.".format(str(u.username), str(firstNameMax)))
+            continue
+        
+        # Keep going after error handling above.
         if u.username == 'God':
             continue
         if User.objects.filter(username=u.username).exists():
