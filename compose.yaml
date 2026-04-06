@@ -8,9 +8,11 @@
 # database or a cache. For examples, see the Awesome Compose repository:
 # https://github.com/docker/awesome-compose
 services:
-  server:
+  intranet-backend-django:
     build:
       context: .
+    image:
+      dockerhost01v:5000/intranet-backend-django:latest
     ports:
       - 8000:8000
 

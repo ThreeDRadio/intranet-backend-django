@@ -6,7 +6,7 @@
 
 # Want to help us make this template better? Share your feedback here: https://forms.gle/ybq9Krt8jtBL3iCk7
 
-ARG PYTHON_VERSION=3.12.3
+ARG PYTHON_VERSION=2.7.17
 FROM python:${PYTHON_VERSION}-slim as base
 
 # Prevents Python from writing pyc files.
@@ -17,6 +17,9 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
+
+# Install requirements for building psycopg2
+RUN apt-get update && apt-get -y install libpq-dev gcc
 
 # Create a non-privileged user that the app will run under.
 # See https://docs.docker.com/go/dockerfile-user-best-practices/
@@ -48,4 +51,5 @@ COPY . .
 EXPOSE 8000
 
 # Run the application.
-CMD gunicorn 'logger.wsgi' --bind=0.0.0.0:8000
+#CMD gunicorn 'logger.wsgi' --bind=0.0.0.0:8000
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
