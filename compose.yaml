@@ -15,6 +15,8 @@ services:
       dockerhost01v:5000/intranet-backend-django:latest
     ports:
       - 8000:8000
+    volumes:
+      - ./secrets/local_settings.py:/app/logger/local_settings.py
 
 # The commented out section below is an example of how to define a PostgreSQL
 # database that your application can use. `depends_on` tells Docker Compose to
