@@ -24,7 +24,6 @@ RUN apt-get update \
  && apt-get -y install gcc \
  && apt-get -y install apache2 \
  && apt-get -y install apache2-dev \
-# && apt-get -y install libapache2-mod-wsgi-py3 \
  && apt-get -y install w3m
 
 # Create a non-privileged user that the app will run under.
@@ -48,13 +47,12 @@ RUN mkdir /home/appuser
 RUN --mount=type=cache,target=/root/.cache/pip \
     --mount=type=bind,source=requirements.txt,target=requirements.txt \
     python3 -m pip install -r requirements.txt
-#RUN python3 -m pip install mod_wsgi
 
 # Do mod_wsgi setup
 ARG MOD_WSGI_VERSION=4.8.0
 ADD https://github.com/GrahamDumpleton/mod_wsgi/archive/refs/tags/${MOD_WSGI_VERSION}.tar.gz /tmp/${MOD_WSGI_VERSION}.tar.gz
-RUN tar xvfz /tmp/4.8.0.tar.gz -C /tmp
-WORKDIR /tmp/mod_wsgi-4.8.0
+RUN tar xvfz /tmp/${MOD_WSGI_VERSION}.tar.gz -C /tmp
+WORKDIR /tmp/mod_wsgi-${MOD_WSGI_VERSION}
 RUN ./configure --with-python=/usr/local/bin/python3
 RUN make install
 RUN mkdir /etc/apache2/modules
@@ -76,14 +74,6 @@ RUN chmod -R 777 /home/appuser
 # Add server config
 RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 RUN echo "WSGIPythonPath /usr/local/bin/python3" >> /etc/apache2/apache2.conf
-# RUN echo "WSGIPassAuthorization On" >> /etc/apache2/apache2.conf
-# RUN echo "WSGIDaemonProcess backend \
-#     display-name=backend \
-#     user=appuser \
-#     group=appuser \
-#     python-home=/usr/local/bin \
-#     python-path=/usr/local/bin/python"  >> /etc/apache2/apache2.conf
-# RUN echo "WSGIProcessGroup backend" >> /etc/apache2/apache2.conf
 RUN echo "LoadModule wsgi_module modules/mod_wsgi.so" >> /etc/apache2/apache2.conf
 RUN echo "LogLevel debug" >> /etc/apache2/apache2.conf
 
@@ -96,11 +86,10 @@ USER appuser
 COPY . .
 
 # Expose the port that the application listens on.
-EXPOSE 8000
+EXPOSE 8001
 
 # Run the Apache2 instance.
 RUN a2enmod status
-#RUN a2enmod wsgi
 RUN a2enmod lbmethod_byrequests
 RUN a2dissite 000-default.conf 
 RUN a2ensite intranet-backend.conf
