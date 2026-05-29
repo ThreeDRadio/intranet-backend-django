@@ -34,10 +34,10 @@ jobs:
     - name: Write local_setting to the remote
       uses: appleboy/ssh-action@v1
       with:
-        host: ${{ secrets.SSH_HOST }}
+        host: ${{ vars.SSH_HOST }}
         username: ${{ secrets.SSH_USER }}
         key: ${{ secrets.SSH_KEY }}
-        port: ${{ secrets.SSH_PORT }}
+        port: ${{ vars.SSH_PORT }}
         script: > 
           [ -f /srv/docker/intranet-backend-django/local_settings.py ] && rm /srv/docker/intranet-backend-django/local_settings.py;
           base64 -d ${{ secrets.LOCAL_SETTINGS_BASE64 }} >> /srv/docker/intranet-backend-django/local_settings.py
