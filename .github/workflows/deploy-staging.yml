@@ -1,0 +1,43 @@
+name: Deploy to staging
+
+on:
+  workflow_dispatch:
+
+env:
+  CR_PAT: ${{ vars.CR_PAT }}
+
+jobs:
+  build:
+    environment: test
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --tag ghcr.io/threedradio/intranet-backend-django:testing
+      
+    - name: Login to the GitHub Docker registry
+      run: echo $CR_PAT | docker login ghcr.io -u threedradio --password-stdin
+      
+    - name: Push the Docker image to ghcr.io
+      run: docker push ghcr.io/threedradio/intranet-backend-django:testing
+  
+  deploy:
+    needs: build
+    environment: test
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Set current date
+      run: echo "CURRENT_DATE=$(date +'%d-%m-%Y')" >> $GITHUB_ENV
+    
+    - name: Write local_setting to the remote
+      uses: appleboy/ssh-action@v1
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USER }}
+        key: ${{ secrets.SSH_KEY }}
+        port: ${{ secrets.SSH_PORT }}
+        script: > 
+          [ -f /srv/docker/intranet-backend-django/local_settings.py ] && rm /srv/docker/intranet-backend-django/local_settings.py;
+          base64 -d ${{ secrets.LOCAL_SETTINGS_BASE64 }} >> /srv/docker/intranet-backend-django/local_settings.py
