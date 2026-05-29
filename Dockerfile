@@ -77,6 +77,7 @@ RUN echo "WSGIPythonPath /usr/local/bin/python3" >> /etc/apache2/apache2.conf
 RUN echo "LoadModule wsgi_module modules/mod_wsgi.so" >> /etc/apache2/apache2.conf
 RUN echo "LogLevel debug" >> /etc/apache2/apache2.conf
 
+# copy the backend configuration to the container's sites list.
 COPY ./intranet-backend.conf /etc/apache2/sites-available/intranet-backend.conf
 
 # Switch to the non-privileged user to run the application.
