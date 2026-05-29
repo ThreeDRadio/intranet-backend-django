@@ -26,3 +26,6 @@ CORS_ORIGIN_ALLOW_ALL = True
 DOWNLOAD_BASE_PATH='/Users/Michael/test/'
 DOWNLOAD_X_SENDFILE=  True
 API_PREFIX='/'
+
+WORDPRESS_USER='<wordpress user here>'
+WORDPRESS_API_KEY='<wordpress API key here>'
