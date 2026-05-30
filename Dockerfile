@@ -81,6 +81,10 @@ RUN echo "LogLevel debug" >> /etc/apache2/apache2.conf
 COPY ./intranet-backend.conf /etc/apache2/sites-available/intranet-backend.conf
 
 # Switch to the non-privileged user to run the application.
+# IF YOU RUN INTO PERMISSIONS ISSUES
+# See UID above, it's 10001
+# DO chown 10001 <path-to-cert> 
+# DO chown 10001 <path-to-key> 
 USER appuser
 
 # Copy the source code into the container.
