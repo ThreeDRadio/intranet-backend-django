@@ -40,4 +40,4 @@ jobs:
         port: ${{ vars.SSH_PORT }}
         script: > 
           [ -f /srv/docker/intranet-backend-django/local_settings.py ] && rm /srv/docker/intranet-backend-django/local_settings.py;
-          base64 -d ${{ secrets.LOCAL_SETTINGS_BASE64 }} >> /srv/docker/intranet-backend-django/local_settings.py
+          echo "${{ secrets.LOCAL_SETTINGS_BASE64 }}" | base64 -d >> /srv/docker/intranet-backend-django/local_settings.py
