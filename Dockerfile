@@ -90,8 +90,7 @@ COPY . .
 EXPOSE 8001
 
 # Run the Apache2 instance.
-RUN a2enmod status
-RUN a2enmod lbmethod_byrequests
+RUN a2enmod status && a2enmod lbmethod_byrequests && a2enmod ssl && a2enmod rewrite
 RUN a2dissite 000-default.conf 
 RUN a2ensite intranet-backend.conf
 RUN python3 /app/manage.py collectstatic --noinput
