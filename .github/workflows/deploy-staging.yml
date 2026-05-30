@@ -41,3 +41,25 @@ jobs:
         script: > 
           [ -f /srv/docker/intranet-backend-django/local_settings.py ] && rm /srv/docker/intranet-backend-django/local_settings.py;
           echo "${{ secrets.LOCAL_SETTINGS_BASE64 }}" | base64 -d >> /srv/docker/intranet-backend-django/local_settings.py
+    
+    - name: Pull the new Docker image from GitHub and restart the container
+      uses: appleboy/ssh-action@v1
+      with:
+        host: ${{ vars.SSH_HOST }}
+        username: ${{ secrets.SSH_USER }}
+        key: ${{ secrets.SSH_KEY }}
+        port: ${{ vars.SSH_PORT }}
+        script: |
+          echo ${{ vars.CR_PAT }} | docker login ghcr.io -u threedradio --password-stdin
+          docker stop intranet-backend-django
+          docker container rm intranet-backend-django
+          docker pull ghcr.io/threedradio/intranet-backend-django:testing
+          docker run \
+            -p 8001:443 \
+            --name intranet-backend-django \
+            -v /srv/docker/intranet-backend-django/keys/server.key:/etc/apache2/ssl/ssl.key/server.key:z \
+            -v /srv/docker/intranet-backend-django/certs/server.crt:/etc/apache2/ssl/ssl.crt/server.crt:z \
+            -v /srv/docker/intranet-backend-django/local_settings.py:/app/logger/local_settings.py:z \
+            -v /data:/data:z \
+            -d \
+            -t ghcr.io/threedradio/intranet-backend-django:testing
