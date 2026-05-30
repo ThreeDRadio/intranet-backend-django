@@ -1,0 +1,67 @@
+name: Deploy to staging
+
+on:
+  workflow_dispatch:
+
+env:
+  CR_PAT: ${{ vars.CR_PAT }}
+
+jobs:
+  build:
+    environment: prod
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --tag ghcr.io/threedradio/intranet-backend-django:latest
+      
+    - name: Login to the GitHub Docker registry
+      run: echo $CR_PAT | docker login ghcr.io -u threedradio --password-stdin
+      
+    - name: Push the Docker image to ghcr.io
+      run: docker push ghcr.io/threedradio/intranet-backend-django:latest
+  
+  deploy:
+    needs: build
+    environment: prod
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Set current date
+      run: echo "CURRENT_DATE=$(date +'%d-%m-%Y')" >> $GITHUB_ENV
+    
+    - name: Write local_setting to the remote
+      uses: appleboy/ssh-action@v1
+      with:
+        host: ${{ vars.SSH_HOST }}
+        username: ${{ secrets.SSH_USER }}
+        key: ${{ secrets.SSH_KEY }}
+        port: ${{ vars.SSH_PORT }}
+        script: > 
+          [ -f /srv/docker/intranet-backend-django/local_settings.py ] && rm /srv/docker/intranet-backend-django/local_settings.py;
+          echo "${{ secrets.LOCAL_SETTINGS_BASE64 }}" | base64 -d >> /srv/docker/intranet-backend-django/local_settings.py
+    
+    - name: Pull the new Docker image from GitHub and restart the container
+      uses: appleboy/ssh-action@v1
+      with:
+        host: ${{ vars.SSH_HOST }}
+        username: ${{ secrets.SSH_USER }}
+        key: ${{ secrets.SSH_KEY }}
+        port: ${{ vars.SSH_PORT }}
+        script: |
+          echo ${{ vars.CR_PAT }} | docker login ghcr.io -u threedradio --password-stdin
+          # chown 10001 /srv/docker/intranet-backend-django/keys/server.key
+          # chown 10001 /srv/docker/intranet-backend-django/certs/server.crt
+          docker stop intranet-backend-django
+          docker container rm intranet-backend-django
+          docker pull ghcr.io/threedradio/intranet-backend-django:latest
+          docker run \
+            -p 8001:443 \
+            --name intranet-backend-django \
+            -v /srv/docker/intranet-backend-django/keys/server.key:/etc/apache2/ssl/ssl.key/server.key:z \
+            -v /srv/docker/intranet-backend-django/certs/server.crt:/etc/apache2/ssl/ssl.crt/server.crt:z \
+            -v /srv/docker/intranet-backend-django/local_settings.py:/app/logger/local_settings.py:z \
+            -v /data:/data:z \
+            -d \
+            -t ghcr.io/threedradio/intranet-backend-django:latest
