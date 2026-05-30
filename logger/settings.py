@@ -1,5 +1,8 @@
 from split_settings.tools import optional, include
 
+WORDPRESS_USER=''
+WORDPRESS_API_KEY=''
+
 include(
     'settings/base.py',
     'settings/bower.py',
