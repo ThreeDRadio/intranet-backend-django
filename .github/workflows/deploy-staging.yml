@@ -51,6 +51,8 @@ jobs:
         port: ${{ vars.SSH_PORT }}
         script: |
           echo ${{ vars.CR_PAT }} | docker login ghcr.io -u threedradio --password-stdin
+          # chown 10001 /srv/docker/intranet-backend-django/keys/server.key
+          # chown 10001 /srv/docker/intranet-backend-django/certs/server.crt
           docker stop intranet-backend-django
           docker container rm intranet-backend-django
           docker pull ghcr.io/threedradio/intranet-backend-django:testing
