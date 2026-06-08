@@ -1,0 +1,20 @@
+/* Change the top header background and text color */
+#header {
+    background: #2c3e50 !important;
+    color: #ffffff !important;
+}
+
+/* Change header links */
+#header a:link, #header a:visited {
+    color: #ecf0f1 !important;
+}
+
+/* Style the buttons */
+.button, input[type=submit] {
+    background: #1abc9c !important;
+    border-radius: 4px;
+}
+
+.button:hover, input[type=submit]:hover {
+    background: #16a085 !important;
+}
