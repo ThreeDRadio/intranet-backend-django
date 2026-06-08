@@ -70,8 +70,6 @@ RUN chmod -R 777 /var/lock/apache2
 RUN chmod -R 777 /etc/apache2
 RUN chmod -R 777 /app
 RUN chmod -R 777 /home/appuser
-RUN chown appuser:appuser -R /app/
-RUN chmod +x /app
 
 # Add server config
 RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
@@ -81,6 +79,8 @@ RUN echo "LogLevel debug" >> /etc/apache2/apache2.conf
 
 # copy the backend configuration to the container's sites list.
 COPY ./intranet-backend.conf /etc/apache2/sites-available/intranet-backend.conf
+# Create static files.
+RUN python3 /app/manage.py collectstatic --noinput
 
 # Switch to the non-privileged user to run the application.
 # IF YOU RUN INTO PERMISSIONS ISSUES
@@ -99,5 +99,4 @@ EXPOSE 8001
 RUN a2enmod status && a2enmod lbmethod_byrequests && a2enmod ssl && a2enmod rewrite
 RUN a2dissite 000-default.conf 
 RUN a2ensite intranet-backend.conf
-RUN python3 /app/manage.py collectstatic --noinput
 CMD ["/usr/sbin/apache2ctl", "-DFOREGROUND"]
