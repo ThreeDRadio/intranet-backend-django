@@ -69,6 +69,7 @@ RUN chmod -R 777 /var/run/apache2
 RUN chmod -R 777 /var/lock/apache2
 RUN chmod -R 777 /etc/apache2
 RUN chmod -R 777 /app
+RUN chmod -R 777 /app/static
 RUN chmod -R 777 /home/appuser
 
 # Add server config
