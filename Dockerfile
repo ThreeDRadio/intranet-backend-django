@@ -69,8 +69,8 @@ RUN chmod -R 777 /var/run/apache2
 RUN chmod -R 777 /var/lock/apache2
 RUN chmod -R 777 /etc/apache2
 RUN chmod -R 777 /app
-RUN chmod -R 777 /app/static
 RUN chmod -R 777 /home/appuser
+RUN chown 10001 /app
 
 # Add server config
 RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
@@ -85,7 +85,7 @@ COPY ./intranet-backend.conf /etc/apache2/sites-available/intranet-backend.conf
 # IF YOU RUN INTO PERMISSIONS ISSUES
 # See UID above, it's 10001
 # DO chown 10001 <path-to-cert> 
-# DO chown 10001 <path-to-key> 
+# DO chown 10001 <path-to-key>
 USER appuser
 
 # Copy the source code into the container.
