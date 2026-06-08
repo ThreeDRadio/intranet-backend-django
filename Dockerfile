@@ -70,7 +70,8 @@ RUN chmod -R 777 /var/lock/apache2
 RUN chmod -R 777 /etc/apache2
 RUN chmod -R 777 /app
 RUN chmod -R 777 /home/appuser
-RUN chown 10001 /app
+RUN chown appuser:appuser -R /app/
+RUN chmod +x /app
 
 # Add server config
 RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
