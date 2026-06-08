@@ -66,6 +66,8 @@ jobs:
             -v /srv/docker/intranet-backend-django/keys/server.key:/etc/apache2/ssl/ssl.key/server.key:z \
             -v /srv/docker/intranet-backend-django/certs/server.crt:/etc/apache2/ssl/ssl.crt/server.crt:z \
             -v /srv/docker/intranet-backend-django/local_settings.py:/app/logger/local_settings.py:z \
+            -v /srv/docker/intranet-backend-django/html/admin/base_site.html:/app/templates/admin/base_site.html:z \
+            -v /srv/docker/intranet-backend-django/css/admin/custom_admin.css:/app/static/admin/css/custom_admin.css:z \
             -v /data:/data:z \
             -d \
             -t ghcr.io/threedradio/intranet-backend-django:testing
