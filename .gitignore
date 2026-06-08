@@ -2,5 +2,6 @@ env
 *.un~
 local_settings.py
 *.pyc
+static/
 components/
 .vscode

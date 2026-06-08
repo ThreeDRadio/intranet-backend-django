@@ -1,0 +1,12 @@
+body {
+    background-color: rgb(255, 146, 146);
+}
+
+#header {
+    background-color: #e25555;
+    color: gray; 
+}
+
+div.breadcrumbs {
+    background: #c87979;
+}
