@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - master
+  
+  workflow_dispatch:
 
 env:
   CR_PAT: ${{ vars.CR_PAT }}
