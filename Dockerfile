@@ -60,17 +60,18 @@ RUN cp /usr/lib/apache2/modules/mod_wsgi.so /etc/apache2/modules/mod_wsgi.so
 WORKDIR /app
 
 # Add the logging dir
-RUN mkdir -p /var/log/apache2
-RUN mkdir -p /var/run/apache2
-RUN mkdir -p /var/lock/apache2
-RUN chmod -R 10001:10001 /var/log/apache2
-RUN chmod -R 10001:10001 /var/lib/apache2
-RUN chmod -R 10001:10001 /var/run/apache2
-RUN chmod -R 10001:10001 /var/lock/apache2
-RUN chmod -R 777 /etc/apache2
-RUN chmod -R 777 /app
-RUN chmod -R 777 /home/appuser
-RUN chown -R 10001:10001 /app
+RUN mkdir -p /var/log/apache2 && \
+    mkdir -p /var/lib/apache2 && \
+    mkdir -p /var/run/apache2 && \
+    mkdir -p /var/lock/apache2 && \
+    chown -R appuser:appuser /var/log/apache2 && \
+    chown -R appuser:appuser /var/lib/apache2 && \
+    chown -R appuser:appuser /var/run/apache2 && \
+    chown -R appuser:appuser /var/lock/apache2 && \
+    chmod -R 777 /etc/apache2 && \
+    chmod -R 777 /app && \
+    chmod -R 777 /home/appuser && \
+    chmod 1777 /var/run/apache2
 
 # Add server config
 RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
@@ -96,13 +97,14 @@ FROM base AS django-production
 FROM django-${DJANGO_ENV} AS final
 COPY --exclude=/html . .
 RUN python3 /app/manage.py collectstatic --noinput
-USER appuser
+# Enable mods as root
+RUN a2enmod status && a2enmod lbmethod_byrequests && a2enmod ssl && a2enmod rewrite
+RUN a2dissite 000-default.conf 
+RUN a2ensite intranet-backend.conf
+#USER appuser
 
 # Expose the port that the application listens on.
 EXPOSE 8001
 
 # Run the Apache2 instance.
-RUN a2enmod status && a2enmod lbmethod_byrequests && a2enmod ssl && a2enmod rewrite
-RUN a2dissite 000-default.conf 
-RUN a2ensite intranet-backend.conf
 CMD ["/usr/sbin/apache2ctl", "-DFOREGROUND"]
