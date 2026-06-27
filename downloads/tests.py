@@ -5,7 +5,7 @@ from .models import DownloadLink
 from . import views
 from datetime import timedelta
 from django.test import RequestFactory
-
+import tempfile
 # Create your tests here.
 
 @override_settings(DOWNLOAD_BASE_PATH=os.getcwd())
@@ -62,13 +62,14 @@ class DownloadLinkModelTest(TestCase):
   @override_settings(DOWNLOAD_LIFETIME=60)
   def test_download_view_valid(self):
     """ Download should return the xfile header for a good link"""
-    link = DownloadLink(path='/home/blah/file')
-    link.save()
-    factory = RequestFactory()
-    request = factory.get('/downloads');
-    error = False
-    response = views.download(request, link.id);
-    self.assertEqual(response['X-SendFile'], link.path)
+    with tempfile.NamedTemporaryFile() as tf:
+      link = DownloadLink(path=tf.name)
+      link.save()
+      factory = RequestFactory()
+      request = factory.get('/downloads');
+      error = False
+      response = views.download(request, link.id);
+      self.assertEqual(response.get('X-SendFile'), link.path)
 
 
   @override_settings(DOWNLOAD_LIFETIME=60)
