@@ -18,10 +18,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Build the Docker image
-      run: docker build . \ 
-        --file Dockerfile \ 
-        --tag ghcr.io/threedradio/intranet-backend-django:testing \
-        --build-arg DJANGO_ENV=staging
+      run: docker build . --file Dockerfile --tag ghcr.io/threedradio/intranet-backend-django:testing --build-arg DJANGO_ENV=staging
       
     - name: Login to the GitHub Docker registry
       run: echo $CR_PAT | docker login ghcr.io -u threedradio --password-stdin
