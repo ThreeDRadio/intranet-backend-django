@@ -13,7 +13,7 @@ class MigrateAndLoginTest(APITestCase):
     self.newUser.save()
     self.oldUser = User.objects.create_user('oldUser')
     self.oldUser.save()
-    OldPassword.objects.create(user=self.oldUser, password=md5("pass2").hexdigest())
+    OldPassword.objects.create(user=self.oldUser, password=md5("pass2".encode("utf-8")).hexdigest())
 
   def test_getOldPassword(self):
     """ Makes sure we can get an old password from a username"""
