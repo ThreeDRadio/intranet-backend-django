@@ -1,4 +1,5 @@
 env
+.venv
 *.un~
 local_settings.py
 *.pyc
