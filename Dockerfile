@@ -5,7 +5,7 @@
 # https://docs.docker.com/go/dockerfile-reference/
 
 # Want to help us make this template better? Share your feedback here: https://forms.gle/ybq9Krt8jtBL3iCk7
-
+ARG DJANGO_ENV=staging
 ARG PYTHON_VERSION=3.9.25
 FROM python:${PYTHON_VERSION}-slim AS base
 
@@ -81,6 +81,11 @@ RUN echo "LogLevel debug" >> /etc/apache2/apache2.conf
 # copy the backend configuration to the container's sites list.
 COPY ./intranet-backend.conf /etc/apache2/sites-available/intranet-backend.conf
 
+FROM base AS django-staging
+COPY /html/admin/base_site.staging.html /app/templates/admin/base_site.html
+COPY /html/admin/custom_admin.staging.css /app/templates/admin/custom_admin.css
+
+FROM base AS django-production
 # Switch to the non-privileged user to run the application.
 # IF YOU RUN INTO PERMISSIONS ISSUES
 # See UID above, it's 10001
@@ -88,7 +93,8 @@ COPY ./intranet-backend.conf /etc/apache2/sites-available/intranet-backend.conf
 # DO chown 10001 <path-to-key>
 
 # Copy the source code into the container.
-COPY . .
+FROM django-${DJANGO_ENV} AS final
+COPY --exclude=/html . .
 RUN python3 /app/manage.py collectstatic --noinput
 USER appuser
 
