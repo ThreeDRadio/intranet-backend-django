@@ -84,7 +84,7 @@ COPY ./intranet-backend.conf /etc/apache2/sites-available/intranet-backend.conf
 
 FROM base AS django-staging
 COPY /html/admin/base_site.staging.html /app/templates/admin/base_site.html
-COPY /html/admin/custom_admin.staging.css /app/templates/admin/custom_admin.css
+COPY /html/admin/custom_admin.staging.css /app/static/admin/css/custom_admin.css
 
 FROM base AS django-production
 # Switch to the non-privileged user to run the application.
