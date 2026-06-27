@@ -63,10 +63,10 @@ WORKDIR /app
 RUN mkdir -p /var/log/apache2
 RUN mkdir -p /var/run/apache2
 RUN mkdir -p /var/lock/apache2
-RUN chmod -R 777 /var/log/apache2
-RUN chmod -R 777 /var/lib/apache2
-RUN chmod -R 777 /var/run/apache2
-RUN chmod -R 777 /var/lock/apache2
+RUN chmod -R 10001:10001 /var/log/apache2
+RUN chmod -R 10001:10001 /var/lib/apache2
+RUN chmod -R 10001:10001 /var/run/apache2
+RUN chmod -R 10001:10001 /var/lock/apache2
 RUN chmod -R 777 /etc/apache2
 RUN chmod -R 777 /app
 RUN chmod -R 777 /home/appuser
