@@ -1,8 +1,8 @@
 from django.test import TestCase, override_settings
 from django.shortcuts import Http404
 import os
-from models import DownloadLink
-import views
+from .models import DownloadLink
+from . import views
 from datetime import timedelta
 from django.test import RequestFactory
 

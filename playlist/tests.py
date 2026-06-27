@@ -2,12 +2,12 @@ from django.test import TestCase
 from django.template import Template, Context
 from django.contrib.auth.models import User
 from rest_framework.test import APIRequestFactory, force_authenticate, APITestCase
-from views import ShowViewSet
-from django.core.urlresolvers import reverse, resolve
+from .views import ShowViewSet
+from django.urls import reverse, resolve
 
 from session.models import Whitelist
 
-import views
+from . import views
 
 
 class ShowViewsetTest(APITestCase):

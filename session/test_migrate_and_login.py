@@ -1,11 +1,10 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
 from rest_framework.test import APIRequestFactory, force_authenticate, APITestCase
-from views import UserViewSet, MigrateAndLogin
-from django.core.urlresolvers import reverse, resolve
+from .views import UserViewSet, MigrateAndLogin
+from django.urls import reverse, resolve
 from hashlib import md5
-
-from models import OldPassword
+from .models import OldPassword
 
 
 class MigrateAndLoginTest(APITestCase):
