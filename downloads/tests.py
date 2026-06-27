@@ -60,17 +60,28 @@ class DownloadLinkModelTest(TestCase):
     self.assertTrue(error)
 
   @override_settings(DOWNLOAD_LIFETIME=60)
+  @override_settings(DOWNLOAD_X_SENDFILE=True)
   def test_download_view_valid(self):
     """ Download should return the xfile header for a good link"""
     with tempfile.NamedTemporaryFile() as tf:
       link = DownloadLink(path=tf.name)
       link.save()
       factory = RequestFactory()
-      request = factory.get('/downloads');
-      error = False
-      response = views.download(request, link.id);
+      request = factory.get('/downloads')
+      response = views.download(request, link.id)
       self.assertEqual(response.get('X-SendFile'), link.path)
 
+  @override_settings(DOWNLOAD_LIFETIME=60)
+  @override_settings(DOWNLOAD_X_SENDFILE=False)
+  def test_download_view_valid_no_setting(self):
+    """ Download should return the xfile header for a good link"""
+    with tempfile.NamedTemporaryFile() as tf:
+      link = DownloadLink(path=tf.name)
+      link.save()
+      factory = RequestFactory()
+      request = factory.get('/downloads')
+      response = views.download(request, link.id)
+      self.assertEqual(response.get('X-SendFile'), None)
 
   @override_settings(DOWNLOAD_LIFETIME=60)
   def test_download_view_expired(self):
