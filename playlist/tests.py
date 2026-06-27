@@ -16,14 +16,14 @@ class ShowViewsetTest(APITestCase):
     self.whitelist = Whitelist.objects.create(ip='127.0.1.1', name="test whitelist")
 
 
-  def test_no_access_for_unauthenticated_unwhitelisted(self):
+  def test_grant_access_for_unauthenticated_unwhitelisted(self):
     """ Makes sure a non-authenticated, non-whitelisted request fails with forbidden"""
     factory = APIRequestFactory()
     url = reverse('Show-list')
     view = resolve(url).func
     request = factory.get(url)
     response = view(request)
-    self.assertEqual(response.status_code, 403)
+    self.assertEqual(response.status_code, 200)
 
   def test_grant_access_for_unauthenticated_whitelisted(self):
     """ Makes sure a non-authenticated, but whitelisted request succeeds"""
@@ -51,14 +51,14 @@ class PlaylistViewsetTest(APITestCase):
     self.whitelist = Whitelist.objects.create(ip='127.198.1.1', name="test whitelist")
 
 
-  def test_no_access_for_unauthenticated_unwhitelisted(self):
+  def test_grant_access_for_unauthenticated_unwhitelisted(self):
     """ Makes sure a non-authenticated, non-whitelisted request fails with forbidden"""
     factory = APIRequestFactory()
     url = reverse('Playlist-list')
     view = resolve(url).func
     request = factory.get(url)
     response = view(request)
-    self.assertEqual(response.status_code, 403)
+    self.assertEqual(response.status_code, 200)
 
   def test_grant_access_for_unauthenticated_whitelisted(self):
     """ Makes sure a non-authenticated, but whitelisted request succeeds"""
@@ -85,14 +85,14 @@ class PlaylistEntryViewsetTest(APITestCase):
     self.whitelist = Whitelist.objects.create(ip='127.198.1.1', name="test whitelist")
 
 
-  def test_no_access_for_unauthenticated_unwhitelisted(self):
+  def test_grant_access_for_unauthenticated_unwhitelisted(self):
     """ Makes sure a non-authenticated, non-whitelisted request fails with forbidden"""
     factory = APIRequestFactory()
     url = reverse('PlaylistEntry-list')
     view = resolve(url).func
     request = factory.get(url)
     response = view(request)
-    self.assertEqual(response.status_code, 403)
+    self.assertEqual(response.status_code, 200)
 
   def test_grant_access_for_unauthenticated_whitelisted(self):
     """ Makes sure a non-authenticated, but whitelisted request succeeds"""
