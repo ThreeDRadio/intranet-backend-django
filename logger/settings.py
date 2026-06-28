@@ -3,7 +3,7 @@ from split_settings.tools import optional, include
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'localdb',
+        'NAME': 'threed',
         'USER': 'test_user',
         'PASSWORD': 'test_password',
         'HOST': 'localhost',

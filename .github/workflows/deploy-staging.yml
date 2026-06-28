@@ -21,7 +21,7 @@ jobs:
         env:
           POSTGRES_USER: test_user
           POSTGRES_PASSWORD: test_password
-          POSTGRES_DB: test_threed
+          POSTGRES_DB: threed
         # Ensure the container is fully healthy before starting workflow steps
         options: >-
           --health-cmd pg_isready
