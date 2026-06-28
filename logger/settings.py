@@ -1,7 +1,7 @@
 from split_settings.tools import optional, include
 
 DATABASES = {
-    'github_ci_db': {
+    'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'localdb',
         'USER': 'test_user',
