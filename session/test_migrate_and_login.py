@@ -1,11 +1,10 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
 from rest_framework.test import APIRequestFactory, force_authenticate, APITestCase
-from views import UserViewSet, MigrateAndLogin
-from django.core.urlresolvers import reverse, resolve
+from .views import UserViewSet, MigrateAndLogin
+from django.urls import reverse, resolve
 from hashlib import md5
-
-from models import OldPassword
+from .models import OldPassword
 
 
 class MigrateAndLoginTest(APITestCase):
@@ -14,7 +13,7 @@ class MigrateAndLoginTest(APITestCase):
     self.newUser.save()
     self.oldUser = User.objects.create_user('oldUser')
     self.oldUser.save()
-    OldPassword.objects.create(user=self.oldUser, password=md5("pass2").hexdigest())
+    OldPassword.objects.create(user=self.oldUser, password=md5("pass2".encode("utf-8")).hexdigest())
 
   def test_getOldPassword(self):
     """ Makes sure we can get an old password from a username"""
