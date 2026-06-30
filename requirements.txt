@@ -27,7 +27,7 @@ requests==2.26.0
 rest-framework-ember==1.3.2
 simplejson==3.13.2
 six==1.11.0
-sqlparse==0.3.0
+sqlparse==0.5.4
 unicodecsv==0.14.1
 uritemplate==3.0.0
 urllib3==1.26.6
