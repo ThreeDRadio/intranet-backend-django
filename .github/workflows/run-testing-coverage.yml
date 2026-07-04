@@ -9,6 +9,14 @@ jobs:
   test:
     environment: test
     runs-on: ubuntu-latest
+    
+    permissions:
+      # Allows the action to publish new comments directly on trusted PRs.
+      # Forked pull_request runs are downgraded to read-only by GitHub.
+      pull-requests: write
+      # Allows updating the python-coverage-comment-action branch and editing
+      # existing comments when direct publication is allowed.
+      contents: write
 
     services:
       postgres:
