@@ -17,6 +17,8 @@
 **/.toolstarget
 **/.vs
 **/.vscode
+**/.coveragerc
+**/.coverage
 **/*.*proj.user
 **/*.dbmdl
 **/*.jfm
