@@ -1,0 +1,14 @@
+[run]
+relative_files = true
+source = .
+omit =
+    *manage.py
+    *wsgi.py
+    *asgi.py
+    *settings*
+    *apps.py
+    *tests*
+    # Force ignore any directory named migrations anywhere in the tree
+    **/migrations/**
+    */migrations/*
+    *migrations*
