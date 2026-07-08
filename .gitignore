@@ -2,6 +2,8 @@ env
 .venv
 *.un~
 local_settings.py
+local_settings.station.py
+local_settings.local.py
 *.pyc
 static/
 components/
