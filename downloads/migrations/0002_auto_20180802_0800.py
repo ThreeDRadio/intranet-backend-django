@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('downloads', '0001_initial'),
+        ("downloads", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='downloadlink',
-            name='path',
-            field=models.FilePathField(path='/Users/Michael/test/', recursive=True),
+            model_name="downloadlink",
+            name="path",
+            field=models.FilePathField(path="/Users/Michael/test/", recursive=True),
         ),
     ]

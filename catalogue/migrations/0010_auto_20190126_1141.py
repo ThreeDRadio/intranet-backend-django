@@ -4,20 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('catalogue', '0009_comment_visible'),
+        ("catalogue", "0009_comment_visible"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='release',
-            name='digital',
+            model_name="release",
+            name="digital",
             field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='track',
-            name='needsEncoding',
+            model_name="track",
+            name="needsEncoding",
             field=models.BooleanField(default=False),
         ),
     ]

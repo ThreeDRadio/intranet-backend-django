@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('catalogue', '0011_auto_20190210_0001'),
+        ("catalogue", "0011_auto_20190210_0001"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='release',
-            name='digital',
+            model_name="release",
+            name="digital",
             field=models.BooleanField(blank=True, default=False),
         ),
     ]

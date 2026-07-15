@@ -1,7 +1,8 @@
 from django.db import models
 from django.conf import settings
 import os.path
-from django.contrib.auth.models import User 
+from django.contrib.auth.models import User
+
 
 # Create your models here.
 class Release(models.Model):
@@ -29,52 +30,69 @@ class Release(models.Model):
     ghoul_approved = models.BooleanField(blank=True, default=True)
 
     class Meta:
-        db_table = 'cd'
+        db_table = "cd"
 
     def __unicode__(self):
         return self.artist + " - " + self.title
 
 
 class Comment(models.Model):
-    release = models.ForeignKey(Release, on_delete=models.PROTECT, db_column='cdid', related_name="comments")
-    
+    release = models.ForeignKey(
+        Release, on_delete=models.PROTECT, db_column="cdid", related_name="comments"
+    )
+
     cdtrackid = models.BigIntegerField()
     comment = models.TextField(blank=True, null=True)
-    author = models.ForeignKey(User, on_delete=models.PROTECT, db_column='createwho')
+    author = models.ForeignKey(User, on_delete=models.PROTECT, db_column="createwho")
     createwhen = models.BigIntegerField()
     modifywho = models.BigIntegerField()
     modifywhen = models.BigIntegerField()
     visible = models.BooleanField(default=True)
 
     class Meta:
-        db_table = 'cdcomment'
+        db_table = "cdcomment"
 
     def __unicode__(self):
-        return self.comment 
+        return self.comment
+
 
 class Track(models.Model):
-    id = models.BigAutoField(db_column='trackid', primary_key=True)
-    release = models.ForeignKey(Release, on_delete=models.PROTECT, db_column='cdid', related_name="tracks")
+    id = models.BigAutoField(db_column="trackid", primary_key=True)
+    release = models.ForeignKey(
+        Release, on_delete=models.PROTECT, db_column="cdid", related_name="tracks"
+    )
     tracknum = models.BigIntegerField()
     tracktitle = models.CharField(max_length=200, blank=True, null=True)
     trackartist = models.CharField(max_length=200, blank=True, null=True)
     tracklength = models.BigIntegerField(blank=True, null=True)
-    needsencoding = models.BooleanField(default = False)
+    needsencoding = models.BooleanField(default=False)
 
     @property
-    def hiPath(self): 
-        return settings.DOWNLOAD_BASE_PATH + 'music/hi/' + format(
-            self.release.id,
-            '07') + '/' + format(self.release.id, '07') + '-' + format(
-                self.tracknum, '02') + '.mp3'
+    def hiPath(self):
+        return (
+            settings.DOWNLOAD_BASE_PATH
+            + "music/hi/"
+            + format(self.release.id, "07")
+            + "/"
+            + format(self.release.id, "07")
+            + "-"
+            + format(self.tracknum, "02")
+            + ".mp3"
+        )
 
     @property
-    def loPath(self): 
-        return settings.DOWNLOAD_BASE_PATH + 'music/lo/' + format(
-            self.release.id,
-            '07') + '/' + format(self.release.id, '07') + '-' + format(
-                self.tracknum, '02') + '.mp3'
-    
+    def loPath(self):
+        return (
+            settings.DOWNLOAD_BASE_PATH
+            + "music/lo/"
+            + format(self.release.id, "07")
+            + "/"
+            + format(self.release.id, "07")
+            + "-"
+            + format(self.tracknum, "02")
+            + ".mp3"
+        )
+
     @property
     def hiAvailable(self):
         return os.path.exists(self.hiPath)
@@ -84,4 +102,4 @@ class Track(models.Model):
         return os.path.exists(self.loPath)
 
     class Meta:
-        db_table = 'cdtrack'
+        db_table = "cdtrack"

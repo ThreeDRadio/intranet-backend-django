@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('playlist', '0020_auto_20160628_0031'),
+        ("playlist", "0020_auto_20160628_0031"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='show',
-            name='active',
+            model_name="show",
+            name="active",
             field=models.BooleanField(default=True),
         ),
     ]

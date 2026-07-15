@@ -1,7 +1,9 @@
 from django.utils import timezone
 
+
 def createEditorsGroup():
     from django.contrib.auth.models import Group
+
     if not Group.objects.filter(name="Catalogue Editors").exists():
         print("Editors group not found, creating")
         return Group.objects.create(name="Catalogue Editors")
@@ -9,41 +11,49 @@ def createEditorsGroup():
         print("Using existing editors group")
         return Group.objects.get(name="Catalogue Editors")
 
+
 def importUsers(editors):
     from session.models import OldUser, OldPassword
     from django.contrib.auth.models import User
-    
+
     all_users = OldUser.objects.all()
     for u in all_users:
-        firstNameMax = User._meta.get_field('first_name').max_length
+        firstNameMax = User._meta.get_field("first_name").max_length
 
         if u.first is not None and len(u.first) > firstNameMax:
-            print("ERROR - user {0}'s first name is longer than the allowed first name length {1}. Skipping.".format(str(u.username), str(firstNameMax)))
+            print(
+                "ERROR - user {0}'s first name is longer than the allowed first name length {1}. Skipping.".format(
+                    str(u.username), str(firstNameMax)
+                )
+            )
             continue
-        
+
         # Keep going after error handling above.
-        if u.username == 'God':
+        if u.username == "God":
             continue
         if User.objects.filter(username=u.username).exists():
             newUser = User.objects.get(username=u.username)
         else:
             # We want the user id to match the old user id, so
             # comments and everything else continue to work.
-            # Therefore we aren't using the usual function to 
+            # Therefore we aren't using the usual function to
             # create a user:
             # newUser = User.objects.create_user(u.username)
             #
             # Instead we do it manually
             now = timezone.now()
-            newUser = User(username=u.username,
-                              is_staff=False, is_active=True,
-                              is_superuser=False,
-                              date_joined=now)
+            newUser = User(
+                username=u.username,
+                is_staff=False,
+                is_active=True,
+                is_superuser=False,
+                date_joined=now,
+            )
 
             newUser.id = u.id
             newUser.save()
 
-            # now we copy over some properties 
+            # now we copy over some properties
 
         if u.first is not None:
             newUser.first_name = u.first
@@ -61,7 +71,7 @@ def importUsers(editors):
             OldPassword.objects.filter(user=newUser).delete()
             OldPassword.objects.create(user=newUser, password=u.password)
         newUser.save()
-    
+
 
 editors = createEditorsGroup()
 importUsers(editors)

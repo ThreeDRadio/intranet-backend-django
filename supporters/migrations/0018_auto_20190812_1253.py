@@ -4,30 +4,29 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('supporters', '0017_auto_20190812_0317'),
+        ("supporters", "0017_auto_20190812_0317"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='supporter',
-            name='excluded',
+            model_name="supporter",
+            name="excluded",
             field=models.BooleanField(blank=True, default=False),
         ),
         migrations.AlterField(
-            model_name='supporter',
-            name='prefer_email',
+            model_name="supporter",
+            name="prefer_email",
             field=models.BooleanField(blank=True, default=True),
         ),
         migrations.AlterField(
-            model_name='transaction',
-            name='pack_sent',
+            model_name="transaction",
+            name="pack_sent",
             field=models.BooleanField(blank=True, default=False),
         ),
         migrations.AlterField(
-            model_name='transaction',
-            name='payment_processed',
+            model_name="transaction",
+            name="payment_processed",
             field=models.BooleanField(blank=True, default=False),
         ),
     ]

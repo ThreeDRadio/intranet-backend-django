@@ -5,21 +5,22 @@ from django.db import models, migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('playlist', '0015_auto_20151013_1242'),
+        ("playlist", "0015_auto_20151013_1242"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='show',
-            old_name='show',
-            new_name='name',
+            model_name="show",
+            old_name="show",
+            new_name="name",
         ),
         migrations.AddField(
-            model_name='playlist',
-            name='show',
-            field=models.ForeignKey(null=True, on_delete=models.PROTECT, to='playlist.Show'),
+            model_name="playlist",
+            name="show",
+            field=models.ForeignKey(
+                null=True, on_delete=models.PROTECT, to="playlist.Show"
+            ),
             preserve_default=False,
         ),
     ]

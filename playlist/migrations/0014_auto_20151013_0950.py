@@ -5,22 +5,21 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('playlist', '0013_auto_20151012_1248'),
+        ("playlist", "0013_auto_20151012_1248"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='cd',
+            name="cd",
             options={},
         ),
         migrations.AlterModelOptions(
-            name='cdcomment',
+            name="cdcomment",
             options={},
         ),
         migrations.AlterModelOptions(
-            name='cdtrack',
+            name="cdtrack",
             options={},
         ),
     ]

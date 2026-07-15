@@ -5,14 +5,13 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('catalogue', '0001_initial'),
+        ("catalogue", "0001_initial"),
     ]
 
     operations = [
         migrations.RenameModel(
-            old_name='Cd',
-            new_name='Release',
+            old_name="Cd",
+            new_name="Release",
         ),
     ]

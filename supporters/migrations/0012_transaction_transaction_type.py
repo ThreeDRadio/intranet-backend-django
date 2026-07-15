@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('supporters', '0011_auto_20190809_0332'),
+        ("supporters", "0011_auto_20190809_0332"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='transaction',
-            name='transaction_type',
+            model_name="transaction",
+            name="transaction_type",
             field=models.CharField(max_length=200, null=True),
         ),
     ]

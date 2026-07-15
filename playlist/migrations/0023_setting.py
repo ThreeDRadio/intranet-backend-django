@@ -4,18 +4,20 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('playlist', '0022_playlist_fillin'),
+        ("playlist", "0022_playlist_fillin"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Setting',
+            name="Setting",
             fields=[
-                ('id', models.CharField(max_length=50, primary_key=True, serialize=False)),
-                ('value', models.CharField(max_length=200)),
-                ('description', models.TextField()),
+                (
+                    "id",
+                    models.CharField(max_length=50, primary_key=True, serialize=False),
+                ),
+                ("value", models.CharField(max_length=200)),
+                ("description", models.TextField()),
             ],
         ),
     ]

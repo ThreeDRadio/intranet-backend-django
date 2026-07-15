@@ -22,7 +22,7 @@ class UserViewSet(viewsets.ModelViewSet):
     ]
 
     def retrieve(self, request, pk=None):
-        if pk == 'me':
+        if pk == "me":
             if request.user.is_authenticated:
                 self.check_object_permissions(request, request.user)
                 return Response(UserSerializer(request.user).data)
@@ -34,15 +34,15 @@ class UserViewSet(viewsets.ModelViewSet):
 
 class MigrateAndLogin(APIView):
     error_messages = {
-        'invalid': "Invalid username or password",
-        'disabled': "Sorry, this account is suspended",
+        "invalid": "Invalid username or password",
+        "disabled": "Sorry, this account is suspended",
     }
 
     def _error_response(self, messageKey):
         data = {
-            'success': False,
-            'message': self.error_messages[messageKey],
-            'user_id': None,
+            "success": False,
+            "message": self.error_messages[messageKey],
+            "user_id": None,
         }
         return Response(data, status=status.HTTP_400_BAD_REQUEST)
 
@@ -52,18 +52,18 @@ class MigrateAndLogin(APIView):
         return None
 
     def post(self, request, *args, **kwargs):
-        username = request.POST.get('username')
-        password = request.POST.get('password')
+        username = request.POST.get("username")
+        password = request.POST.get("password")
 
         errors = {}
         error = False
         if username is None:
             error = True
-            errors['username'] = "This field is required"
+            errors["username"] = "This field is required"
 
         if password is None:
             error = True
-            errors['password'] = "This field is required"
+            errors["password"] = "This field is required"
 
         # Return errors if the username/password was empty
         if error:
@@ -72,20 +72,17 @@ class MigrateAndLogin(APIView):
         # Try authenticating with the posted data
         user = authenticate(username=username, password=password)
         if user is not None:
-            return Response({'token': user.auth_token.key, 'userId': user.id})
+            return Response({"token": user.auth_token.key, "userId": user.id})
 
         # Try to migrate their password
         oldPassword = self.getOldPassword(username)
         if oldPassword is not None:
-            passwordHash = md5(password.encode('utf-8')).hexdigest()
+            passwordHash = md5(password.encode("utf-8")).hexdigest()
             if oldPassword.password == passwordHash:
                 user = oldPassword.user
                 user.set_password(password)
                 user.save()
                 oldPassword.delete()
-                return Response({
-                    'token': user.auth_token.key,
-                    'user': user.id
-                })
+                return Response({"token": user.auth_token.key, "user": user.id})
 
-        return self._error_response('invalid')
+        return self._error_response("invalid")

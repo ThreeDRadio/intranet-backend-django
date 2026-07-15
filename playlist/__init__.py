@@ -1,1 +1,1 @@
-default_app_config = 'playlist.apps.PlaylistConfig'
+default_app_config = "playlist.apps.PlaylistConfig"

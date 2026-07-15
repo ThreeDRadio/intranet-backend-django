@@ -5,24 +5,23 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('playlist', '0019_playlistentry_index'),
+        ("playlist", "0019_playlistentry_index"),
     ]
 
     state_operations = [
         migrations.RemoveField(
-            model_name='playlistentry',
-            name='catalogueEntry',
+            model_name="playlistentry",
+            name="catalogueEntry",
         ),
         migrations.DeleteModel(
-            name='Cdcomment',
+            name="Cdcomment",
         ),
         migrations.DeleteModel(
-            name='Cd',
+            name="Cd",
         ),
         migrations.DeleteModel(
-            name='Cdtrack',
+            name="Cdtrack",
         ),
     ]
 
