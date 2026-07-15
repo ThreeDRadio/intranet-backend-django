@@ -57,7 +57,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Run Ruff Linter
-        run: ruff check .
+        run: ruff check --output-format=github .
 
       - name: Run Ruff Format Check
         run: ruff format --check .
