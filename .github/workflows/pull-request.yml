@@ -1,15 +1,15 @@
-name: Run tests with coverage
+name: Pull request checks
 
 on:
   pull_request:
-    branches: [ main, master ]
+    branches: [main, master]
   workflow_dispatch: # Allows manual triggering from the Actions tab
-  
+
 jobs:
   test:
     environment: test
     runs-on: ubuntu-latest
-    
+
     permissions:
       # Allows the action to publish new comments directly on trusted PRs.
       # Forked pull_request runs are downgraded to read-only by GitHub.
@@ -33,21 +33,27 @@ jobs:
           --health-retries 5
         ports:
           - 5432:5432
-    
+
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.9'
-    - name: Install dependencies
-      run: |
-        python -m pip install --no-build-isolation -r requirements.txt
-    - name: Run Tests with coverage
-      run: |
-        coverage run manage.py test
-        coverage xml
-    - name: Post Coverage Comment
-      uses: py-cov-action/python-coverage-comment-action@v3
-      with:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.9"
+      - name: Install dependencies
+        run: |
+          python -m pip install --no-build-isolation -r requirements.txt
+      - name: Run Tests with coverage
+        run: |
+          coverage run manage.py test
+          coverage xml
+      - name: Post Coverage Comment
+        uses: py-cov-action/python-coverage-comment-action@v3
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # 4. Run the linter
+      - name: Run Ruff Check
+        run: ruff check .
+      # 5. Optional: Verify code formatting
+      - name: Run Ruff Format Check
+        run: ruff format --check .
