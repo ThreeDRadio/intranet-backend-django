@@ -1,6 +1,6 @@
 from django.db import models
 from datetime import timedelta
-from django.db.models.signals import post_save, pre_save
+from django.db.models.signals import pre_save
 
 
 # from catalogue.models import Cdtrack
@@ -25,8 +25,11 @@ class Show(models.Model):
     def __str__(self):
         return self.name
 
+
 class Playlist(models.Model):
-    show = models.ForeignKey(Show, on_delete=models.PROTECT, null=True, related_name="playlists")
+    show = models.ForeignKey(
+        Show, on_delete=models.PROTECT, null=True, related_name="playlists"
+    )
     showname = models.CharField(max_length=200, blank=True)
     host = models.CharField(max_length=200)
     date = models.DateField()
@@ -34,7 +37,7 @@ class Playlist(models.Model):
     complete = models.BooleanField(default=False)
 
     # Whether this has been sent to the website
-    published= models.BooleanField(default=False)
+    published = models.BooleanField(default=False)
     fillin = models.BooleanField(default=False)
 
     # We record the quotas required for each playlist, to account for changes over time
@@ -44,27 +47,33 @@ class Playlist(models.Model):
 
     @classmethod
     def applyQuotas(cls, sender, instance, raw, using, update_fields, *args, **kwargs):
-        print('Applying Quotas')
-        if instance.pk == None:
+        print("Applying Quotas")
+        if instance.pk is None:
             if instance.show.customQuotas:
                 instance.femaleQuota = instance.show.femaleQuota
-                instance.localQuota= instance.show.localQuota
-                instance.australianQuota= instance.show.australianQuota
+                instance.localQuota = instance.show.localQuota
+                instance.australianQuota = instance.show.australianQuota
             else:
                 instance.femaleQuota = int(Setting.objects.get(pk="female_quota").value)
                 instance.localQuota = int(Setting.objects.get(pk="local_quota").value)
-                instance.australianQuota = int(Setting.objects.get(pk="australian_quota").value)
+                instance.australianQuota = int(
+                    Setting.objects.get(pk="australian_quota").value
+                )
 
     def __unicode__(self):
-        return str(self.show) + ' - ' + str(self.date)
+        return str(self.show) + " - " + str(self.date)
 
     def __str__(self):
-        return str(self.show) + ' - ' + str(self.date)
+        return str(self.show) + " - " + str(self.date)
+
 
 pre_save.connect(Playlist.applyQuotas, sender=Playlist)
 
+
 class PlaylistEntry(models.Model):
-    playlist = models.ForeignKey(Playlist, on_delete=models.PROTECT, related_name='tracks')
+    playlist = models.ForeignKey(
+        Playlist, on_delete=models.PROTECT, related_name="tracks"
+    )
 
     # entry order!
     index = models.IntegerField(null=True)
@@ -82,14 +91,13 @@ class PlaylistEntry(models.Model):
     newRelease = models.BooleanField()
 
     # found in catalogue
-    #catalogueEntry = models.ForeignKey(Cdtrack, null=True)
+    # catalogueEntry = models.ForeignKey(Cdtrack, null=True)
 
     def __unicode__(self):
-        return '(' + self.playlist.show + ') ' + self.artist + " - " + self.title
+        return "(" + self.playlist.show + ") " + self.artist + " - " + self.title
 
     def __str__(self):
-        return '(' + str(self.playlist.show) + ') ' + self.artist + " - " + self.title
-
+        return "(" + str(self.playlist.show) + ") " + self.artist + " - " + self.title
 
 
 class Setting(models.Model):

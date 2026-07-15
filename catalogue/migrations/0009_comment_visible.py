@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('catalogue', '0008_auto_20180802_0800'),
+        ("catalogue", "0008_auto_20180802_0800"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='comment',
-            name='visible',
+            model_name="comment",
+            name="visible",
             field=models.BooleanField(default=True),
         ),
     ]

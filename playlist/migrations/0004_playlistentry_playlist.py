@@ -5,16 +5,17 @@ from django.db import models, migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('playlist', '0003_playlist_host'),
+        ("playlist", "0003_playlist_host"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='playlistentry',
-            name='playlist',
-            field=models.ForeignKey(default=5, on_delete=models.PROTECT, to='playlist.Playlist'),
+            model_name="playlistentry",
+            name="playlist",
+            field=models.ForeignKey(
+                default=5, on_delete=models.PROTECT, to="playlist.Playlist"
+            ),
             preserve_default=False,
         ),
     ]

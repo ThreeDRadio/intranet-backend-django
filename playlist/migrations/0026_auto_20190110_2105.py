@@ -4,40 +4,39 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('playlist', '0025_auto_20181205_2306'),
+        ("playlist", "0025_auto_20181205_2306"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='playlist',
-            name='australianQuota',
+            model_name="playlist",
+            name="australianQuota",
             field=models.IntegerField(blank=True),
         ),
         migrations.AlterField(
-            model_name='playlist',
-            name='femaleQuota',
+            model_name="playlist",
+            name="femaleQuota",
             field=models.IntegerField(blank=True),
         ),
         migrations.AlterField(
-            model_name='playlist',
-            name='localQuota',
+            model_name="playlist",
+            name="localQuota",
             field=models.IntegerField(blank=True),
         ),
         migrations.AlterField(
-            model_name='show',
-            name='australianQuota',
+            model_name="show",
+            name="australianQuota",
             field=models.IntegerField(blank=True, null=True),
         ),
         migrations.AlterField(
-            model_name='show',
-            name='femaleQuota',
+            model_name="show",
+            name="femaleQuota",
             field=models.IntegerField(blank=True, null=True),
         ),
         migrations.AlterField(
-            model_name='show',
-            name='localQuota',
+            model_name="show",
+            name="localQuota",
             field=models.IntegerField(blank=True, null=True),
         ),
     ]

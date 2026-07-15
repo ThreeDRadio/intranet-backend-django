@@ -4,30 +4,29 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('playlist', '0023_setting'),
+        ("playlist", "0023_setting"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='show',
-            name='australianQuota',
+            model_name="show",
+            name="australianQuota",
             field=models.IntegerField(null=True),
         ),
         migrations.AddField(
-            model_name='show',
-            name='customQuotas',
+            model_name="show",
+            name="customQuotas",
             field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='show',
-            name='femaleQuota',
+            model_name="show",
+            name="femaleQuota",
             field=models.IntegerField(null=True),
         ),
         migrations.AddField(
-            model_name='show',
-            name='localQuota',
+            model_name="show",
+            name="localQuota",
             field=models.IntegerField(null=True),
         ),
     ]

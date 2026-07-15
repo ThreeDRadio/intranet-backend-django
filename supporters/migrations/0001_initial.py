@@ -4,33 +4,39 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Supporter',
+            name="Supporter",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('first_name', models.CharField(max_length=200)),
-                ('last_name', models.CharField(max_length=200)),
-                ('address1', models.CharField(max_length=200)),
-                ('address2', models.CharField(blank=True, max_length=200)),
-                ('town', models.CharField(max_length=200)),
-                ('state', models.CharField(max_length=200)),
-                ('postcode', models.CharField(max_length=200)),
-                ('country', models.CharField(blank=True, max_length=200)),
-                ('phone_mobile', models.CharField(blank=True, max_length=200)),
-                ('phone_home', models.CharField(blank=True, max_length=200)),
-                ('phone_work', models.CharField(blank=True, max_length=200)),
-                ('email', models.CharField(blank=True, max_length=200)),
-                ('gender', models.CharField(blank=True, max_length=200)),
-                ('dob', models.DateField()),
-                ('excluded', models.BooleanField(default=False)),
-                ('prefer_email', models.BooleanField(default=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("first_name", models.CharField(max_length=200)),
+                ("last_name", models.CharField(max_length=200)),
+                ("address1", models.CharField(max_length=200)),
+                ("address2", models.CharField(blank=True, max_length=200)),
+                ("town", models.CharField(max_length=200)),
+                ("state", models.CharField(max_length=200)),
+                ("postcode", models.CharField(max_length=200)),
+                ("country", models.CharField(blank=True, max_length=200)),
+                ("phone_mobile", models.CharField(blank=True, max_length=200)),
+                ("phone_home", models.CharField(blank=True, max_length=200)),
+                ("phone_work", models.CharField(blank=True, max_length=200)),
+                ("email", models.CharField(blank=True, max_length=200)),
+                ("gender", models.CharField(blank=True, max_length=200)),
+                ("dob", models.DateField()),
+                ("excluded", models.BooleanField(default=False)),
+                ("prefer_email", models.BooleanField(default=True)),
             ],
         ),
     ]

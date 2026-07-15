@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('supporters', '0013_transaction_expires_at'),
+        ("supporters", "0013_transaction_expires_at"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='transaction',
-            name='note',
+            model_name="transaction",
+            name="note",
             field=models.TextField(blank=True, null=True),
         ),
     ]

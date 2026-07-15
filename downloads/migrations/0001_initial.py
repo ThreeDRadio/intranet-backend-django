@@ -6,18 +6,24 @@ import uuid
 
 
 class Migration(migrations.Migration):
-
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='DownloadLink',
+            name="DownloadLink",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, serialize=False, editable=False, primary_key=True)),
-                ('name', models.CharField(max_length=100)),
-                ('path', models.FilePathField(path=b'/data/', recursive=True)),
-                ('createdAt', models.DateTimeField(auto_now_add=True)),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        serialize=False,
+                        editable=False,
+                        primary_key=True,
+                    ),
+                ),
+                ("name", models.CharField(max_length=100)),
+                ("path", models.FilePathField(path=b"/data/", recursive=True)),
+                ("createdAt", models.DateTimeField(auto_now_add=True)),
             ],
         ),
     ]
