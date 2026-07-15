@@ -1,14 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
-from django.template import RequestContext
-from django.forms.models import modelformset_factory
-from django.contrib import messages
-import django_filters
 from rest_framework import filters
-from rest_framework import generics
 from rest_framework import viewsets
-from rest_framework.pagination import PageNumberPagination
-from rest_framework.views import APIView
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
@@ -18,10 +11,8 @@ from django.db.models import Count
 from django_filters.rest_framework import DjangoFilterBackend
 from .forms import SummaryReportForm
 from .models import Playlist, PlaylistEntry, Show
-from session.permissions import IsAuthenticatedOrWhitelist
 from .serializers import ShowSerializer, PlaylistSerializer, PlaylistEntrySerializer, TopArtistSerializer, ShowStatisticsSerializer, PlayCountSerializer
 
-import logging
 
 
 # Create your views here.

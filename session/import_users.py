@@ -1,4 +1,4 @@
-from django.utils import six, timezone
+from django.utils import timezone
 
 def createEditorsGroup():
     from django.contrib.auth.models import Group
@@ -12,7 +12,6 @@ def createEditorsGroup():
 def importUsers(editors):
     from session.models import OldUser, OldPassword
     from django.contrib.auth.models import User
-    from django.utils import six, timezone
     
     all_users = OldUser.objects.all()
     for u in all_users:
@@ -50,11 +49,11 @@ def importUsers(editors):
             newUser.first_name = u.first
         if u.last is not None:
             newUser.last_name = u.last
-        if u.admin == True:
+        if u.admin:
             newUser.is_staff = True
-        if u.cdeditor == True:
+        if u.cdeditor:
             editors.user_set.add(newUser)
-        if u.active == True:
+        if u.active:
             newUser.is_active = True
         else:
             newUser.is_active = False

@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import Release, Track, Comment
 from django.contrib.auth.models import User 
-import urllib, hashlib
+import hashlib
 
 class ProfileSerializer(serializers.ModelSerializer):
     gravatar = serializers.SerializerMethodField('getGravatar')

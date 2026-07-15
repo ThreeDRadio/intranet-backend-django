@@ -1,5 +1,4 @@
 from django.test import TestCase, override_settings
-from django.shortcuts import Http404
 import os
 from .models import DownloadLink
 from . import views
@@ -50,11 +49,11 @@ class DownloadLinkModelTest(TestCase):
   def test_download_view_invalid_url(self):
     """ Download view should return a 404 if link doesn't exist"""
     factory = RequestFactory()
-    request = factory.get('/downloads');
+    request = factory.get('/downloads')
     error = False
     try:
-      response = views.download(request, 'fake_id');
-    except: 
+      _ = views.download(request, 'fake_id')
+    except Exception as _: 
       error = True
 
     self.assertTrue(error)
@@ -92,12 +91,12 @@ class DownloadLinkModelTest(TestCase):
     link.save()
 
     factory = RequestFactory()
-    request = factory.get('/downloads');
+    request = factory.get('/downloads')
 
     error = False
     try:
-      response = views.download(request, link.id);
-    except: 
+      _ = views.download(request, link.id)
+    except Exception as _: 
       error = True
 
     self.assertTrue(error)

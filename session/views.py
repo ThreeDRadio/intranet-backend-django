@@ -1,7 +1,5 @@
-from django.shortcuts import render
-from django.conf import settings
 from rest_framework import status
-from django.contrib.auth import authenticate, logout, login
+from django.contrib.auth import authenticate
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import viewsets
@@ -68,7 +66,7 @@ class MigrateAndLogin(APIView):
             errors['password'] = "This field is required"
 
         # Return errors if the username/password was empty
-        if error == True:
+        if error:
             return Response(errors, status=status.HTTP_400_BAD_REQUEST)
 
         # Try authenticating with the posted data

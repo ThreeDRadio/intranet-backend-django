@@ -1,14 +1,12 @@
-from django.test import TestCase
 from django.contrib.auth.models import User
 from rest_framework.test import APIRequestFactory, force_authenticate, APITestCase
-from .views import UserViewSet
 from django.urls import reverse, resolve
 
 
 class UserViewSetTest(APITestCase):
   def setUp(self):
-    self.user = User.objects.create_user('user', 'password', 'fake1@user.com');
-    self.admin = User.objects.create_user('admin', 'password', 'fake2@user.com');
+    self.user = User.objects.create_user('user', 'password', 'fake1@user.com')
+    self.admin = User.objects.create_user('admin', 'password', 'fake2@user.com')
     self.admin.is_staff=True
     self.admin.save()
 

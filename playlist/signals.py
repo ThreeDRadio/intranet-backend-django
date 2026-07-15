@@ -47,13 +47,13 @@ def createPost(title, showId, content, date ):
 def playlist_to_wordpress(sender, instance, **kwargs):
 
   try:
-    if settings.WORDPRESS_USER == False or settings.WORDPRESS_API_KEY == False:
+    if not settings.WORDPRESS_USER or not settings.WORDPRESS_API_KEY:
       print('No wordpress auth. Giving up')
       return
 
     if instance.published:
       print('Already published')
-    elif instance.complete == False:
+    elif not instance.complete:
       print('Playlist not complete yet')
     else:
       wpShow= find_show_for_playlist(instance.show.name)

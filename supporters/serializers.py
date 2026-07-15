@@ -1,7 +1,5 @@
 from rest_framework import serializers
 from .models import Supporter, SupporterNote, Transaction
-from django.contrib.auth.models import User 
-import urllib, hashlib
 
 
 

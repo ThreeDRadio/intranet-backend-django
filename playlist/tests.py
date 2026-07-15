@@ -1,18 +1,14 @@
-from django.test import TestCase
-from django.template import Template, Context
 from django.contrib.auth.models import User
 from rest_framework.test import APIRequestFactory, force_authenticate, APITestCase
-from .views import ShowViewSet
 from django.urls import reverse, resolve
 
 from session.models import Whitelist
 
-from . import views
 
 
 class ShowViewsetTest(APITestCase):
   def setUp(self):
-    self.user = User.objects.create_user('user', 'password', 'fake1@user.com');
+    self.user = User.objects.create_user('user', 'password', 'fake1@user.com')
     self.whitelist = Whitelist.objects.create(ip='127.0.1.1', name="test whitelist")
 
 
@@ -47,7 +43,7 @@ class ShowViewsetTest(APITestCase):
 
 class PlaylistViewsetTest(APITestCase):
   def setUp(self):
-    self.user = User.objects.create_user('user', 'password', 'fake1@user.com');
+    self.user = User.objects.create_user('user', 'password', 'fake1@user.com')
     self.whitelist = Whitelist.objects.create(ip='127.198.1.1', name="test whitelist")
 
 
@@ -81,7 +77,7 @@ class PlaylistViewsetTest(APITestCase):
 
 class PlaylistEntryViewsetTest(APITestCase):
   def setUp(self):
-    self.user = User.objects.create_user('user', 'password', 'fake1@user.com');
+    self.user = User.objects.create_user('user', 'password', 'fake1@user.com')
     self.whitelist = Whitelist.objects.create(ip='127.198.1.1', name="test whitelist")
 
 
