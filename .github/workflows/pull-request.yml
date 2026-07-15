@@ -36,24 +36,28 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.9"
+
       - name: Install dependencies
         run: |
           python -m pip install --no-build-isolation -r requirements.txt
+
       - name: Run Tests with coverage
         run: |
           coverage run manage.py test
           coverage xml
+
       - name: Post Coverage Comment
         uses: py-cov-action/python-coverage-comment-action@v3
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      # 4. Run the linter
-      - name: Run Ruff Check
+
+      - name: Run Ruff Linter
         run: ruff check .
-      # 5. Optional: Verify code formatting
+
       - name: Run Ruff Format Check
         run: ruff format --check .
