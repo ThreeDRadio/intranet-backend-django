@@ -19,5 +19,4 @@ INSTALLED_APPS = (
     "downloads",
     "playlist",
     "session",
-    "supporters",
 )
