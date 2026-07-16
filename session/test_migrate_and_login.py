@@ -1,8 +1,10 @@
+from hashlib import md5
+
 from django.contrib.auth.models import User
 from rest_framework.test import APIRequestFactory, APITestCase
-from .views import MigrateAndLogin
-from hashlib import md5
+
 from .models import OldPassword
+from .views import MigrateAndLogin
 
 
 class MigrateAndLoginTest(APITestCase):
@@ -81,3 +83,16 @@ class MigrateAndLoginTest(APITestCase):
         # new password should exist in user table
         user = User.objects.get(username="oldUser")
         self.assertEqual(user.check_password("pass2"), True)
+
+    def test_unknown_user_returns_error_response(self):
+        """Invalid state triggers the _error_response code."""
+        factory = APIRequestFactory()
+        request = factory.post(
+            "/api-token-auth", {"username": "oldBadUser", "password": "oldBadPassword"}
+        )
+        view = MigrateAndLogin.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data["success"], False)
+        self.assertEqual(response.data["message"], "Invalid username or password")
+        self.assertEqual(response.data["user_id"], None)
