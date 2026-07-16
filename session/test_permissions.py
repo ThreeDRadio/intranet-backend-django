@@ -1,7 +1,8 @@
-from django.test import TestCase
 from django.contrib.auth.models import User
+from django.test import TestCase
 from rest_framework.test import APIRequestFactory, force_authenticate
 from rest_framework.viewsets import ModelViewSet
+
 from . import permissions
 from .models import Whitelist
 
@@ -126,6 +127,17 @@ class IsStaffOrTargetUserTest(TestCase):
         factory = APIRequestFactory()
         request = factory.get("api/users")
         request.user = self.user
+        permission = permissions.IsStaffOrTargetUser()
+        view = ModelViewSet()
+        view.action = "retrieve"
+        self.assertEqual(
+            permission.has_object_permission(request, view, self.admin), False
+        )
+
+    def test_has_no_object_permission_invalid(self):
+        """Makes sure that any invalid state returns false"""
+        factory = APIRequestFactory()
+        request = factory.get("api/users")
         permission = permissions.IsStaffOrTargetUser()
         view = ModelViewSet()
         view.action = "retrieve"

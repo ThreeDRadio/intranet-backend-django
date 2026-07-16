@@ -8,6 +8,9 @@ omit =
     *settings*
     *apps.py
     *tests*
+    */test_*
+    # This is a utility script that will go away eventually. Forget about it.
+    session/import_users.py
     # Force ignore any directory named migrations anywhere in the tree
     **/migrations/**
     */migrations/*
