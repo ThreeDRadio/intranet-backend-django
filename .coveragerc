@@ -8,6 +8,7 @@ omit =
     *settings*
     *apps.py
     *tests*
+    */test_*
     # Force ignore any directory named migrations anywhere in the tree
     **/migrations/**
     */migrations/*
