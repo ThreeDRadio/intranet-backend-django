@@ -1,7 +1,9 @@
-from rest_framework import serializers
-from .models import Release, Track, Comment
-from django.contrib.auth.models import User
 import hashlib
+
+from django.contrib.auth.models import User
+from rest_framework import serializers
+
+from .models import Comment, Release, Track
 
 
 class ProfileSerializer(serializers.ModelSerializer):
