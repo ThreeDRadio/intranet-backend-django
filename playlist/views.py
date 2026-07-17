@@ -2,7 +2,7 @@ from datetime import date
 
 import unicodecsv as csv
 from django.db.models import Count
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, viewsets
@@ -173,26 +173,6 @@ def playlist(request, playlist_id):
                     ]
                 )
             return response
-
-
-def reports(request):
-    if request.method == "POST":
-        form = SummaryReportForm(request.POST)
-        if form.is_valid():
-            return HttpResponseRedirect(
-                "/backend/logger/summary/?startDate="
-                + str(form.cleaned_data.get("startDate"))
-                + "&endDate="
-                + str(form.cleaned_data.get("endDate"))
-                + "&format="
-                + str(form.cleaned_data.get("reportFormat"))
-            )
-    else:
-        form = SummaryReportForm()
-    context = {
-        "form": form,
-    }
-    return render(request, "playlist/reports.html", context)
 
 
 ###############
