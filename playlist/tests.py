@@ -1,11 +1,15 @@
+import csv
 from datetime import timezone
 from unittest.mock import MagicMock, patch
 
 from django.contrib.auth.models import User
+from django.http import Http404
+from django.test import RequestFactory
 from django.urls import resolve, reverse
 from rest_framework.test import APIRequestFactory, APITestCase, force_authenticate
 
-from playlist.models import Playlist, Setting, Show
+from playlist.models import Playlist, PlaylistEntry, Setting, Show
+from playlist.views import playlist, summary
 from session.models import Whitelist
 
 
@@ -237,6 +241,311 @@ class PlaylistModelTest(APITestCase):
             update_fields=None,
         )
 
-        # Assert: Attributes remain unset (raise AttributeError) because the code inside the if block skipped
-        with self.assertRaises(AttributeError):
-            _ = playlist_instance.femaleQuota
+        self.assertEqual(playlist_instance.femaleQuota, None)
+        self.assertEqual(playlist_instance.localQuota, None)
+        self.assertEqual(playlist_instance.australianQuota, None)
+
+
+class PlaylistEntryModelTest(APITestCase):
+    def setUp(self):
+        self.show = Show.objects.create(
+            name="Existing Show",
+            customQuotas=True,
+            startTime="18:00",
+            endTime="19:00",
+        )
+        self.playlist_instance = Playlist.objects.create(
+            id=999,
+            show=self.show,
+            date="2026-01-01",
+            australianQuota=20,
+            localQuota=20,
+            femaleQuota=40,
+        )
+        self.playlist_entry = PlaylistEntry.objects.create(
+            playlist=self.playlist_instance,
+            artist="test artist",
+            title="test title",
+            local=False,
+            female=False,
+            australian=False,
+            newRelease=False,
+        )
+
+    def test_string_converters(self):
+        expected = "(Existing Show) test artist - test title"
+
+        self.assertEqual(
+            self.playlist_entry.__unicode__(),
+            expected,
+        )
+
+        self.assertEqual(
+            self.playlist_entry.__str__(),
+            expected,
+        )
+
+
+class SummaryViewTests(APITestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+
+        # Set up a dummy show
+        self.show = Show.objects.create(
+            name="Morning Beats", startTime="08:00", endTime="10:00"
+        )
+
+        # Set up a playlist with a show
+        self.playlist_with_show = Playlist.objects.create(
+            id=888,
+            date="2026-07-01",
+            show=self.show,
+            showname="Test",
+            australianQuota=20,
+            localQuota=20,
+            femaleQuota=40,
+        )
+
+        # Set up a playlist without a show (uses showname)
+        self.playlist_no_show = Playlist.objects.create(
+            id=999,
+            date="2026-07-02",
+            show=None,
+            showname="Late Night Jazz",
+            australianQuota=20,
+            localQuota=20,
+            femaleQuota=40,
+        )
+
+        self.playlist_entry1 = PlaylistEntry.objects.create(
+            playlist=self.playlist_with_show,
+            artist="test artist",
+            title="test title",
+            local=False,
+            female=False,
+            australian=False,
+            newRelease=False,
+        )
+
+        self.playlist_entry2 = PlaylistEntry.objects.create(
+            playlist=self.playlist_no_show,
+            artist="test local female artist",
+            title="test local female title",
+            local=True,
+            female=True,
+            australian=False,
+            newRelease=False,
+        )
+
+    def test_top20_format_returns_csv(self):
+        """Test that the top20 format returns a valid CSV file with correct headers."""
+        request = self.factory.get("/summary/", {"format": "top20"})
+        response = summary(request)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "text/csv")
+        self.assertEqual(
+            response["Content-Disposition"], 'attachment; filename="play_summary.csv"'
+        )
+
+        # Parse CSV content
+        content = response.content.decode("utf-8").splitlines()
+        reader = csv.reader(content)
+        headers = next(reader)
+
+        expected_headers = [
+            "show",
+            "date",
+            "start time",
+            "artist",
+            "track",
+            "album",
+            "local",
+            "australian",
+            "female",
+            "new release",
+        ]
+        self.assertEqual(headers, expected_headers)
+
+    def test_top20_format_with_show(self):
+        """Test CSV row output when a playlist is linked to a Show object."""
+        request = self.factory.get(
+            "/summary/",
+            {"format": "top20", "startDate": "2026-07-01", "endDate": "2026-07-01"},
+        )
+        response = summary(request)
+
+        content = response.content.decode("utf-8").splitlines()
+        reader = csv.reader(content)
+        next(reader)  # Skip header
+        row = next(reader)
+
+        self.assertEqual(row[0], "Morning Beats")
+        self.assertEqual(row[1], "2026-07-01")
+        self.assertEqual(row[2], "08:00:00")
+        self.assertEqual(row[3], "test artist")
+        self.assertEqual(row[4], "test title")
+
+    def test_top20_format_without_show(self):
+        """Test CSV row output when a playlist fallback to showname and 0:00 time."""
+        request = self.factory.get(
+            "/summary/",
+            {"format": "top20", "startDate": "2026-07-02", "endDate": "2026-07-02"},
+        )
+        response = summary(request)
+
+        content = response.content.decode("utf-8").splitlines()
+        reader = csv.reader(content)
+        next(reader)  # Skip header
+        row = next(reader)
+
+        self.assertEqual(row[0], "Late Night Jazz")
+        self.assertEqual(row[1], "2026-07-02")
+        self.assertEqual(row[2], "0:00")
+        self.assertEqual(row[3], "test local female artist")
+        self.assertEqual(row[4], "test local female title")
+
+    def test_default_format_else_branch(self):
+        """Test the fallback branch when format is not top20."""
+        request = self.factory.get("/summary/", {"format": "apra"})
+        response = summary(request)
+
+        self.assertEqual(response.status_code, 200)
+        content = response.content.decode("utf-8").splitlines()
+        reader = csv.reader(content)
+        headers = next(reader)
+
+        expected_headers = [
+            "Title of Work",
+            "Composer/Arranger",
+            "Artist",
+            "Record Label",
+            "Total No Usages Per Week",
+            "Duration",
+            "APRA use only",
+        ]
+        self.assertEqual(headers, expected_headers)
+
+
+class PlaylistViewTests(APITestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+
+        # 1. Create a dummy Show
+        self.show = Show.objects.create(
+            id=100, name="Afternoon Mix", startTime="14:00", endTime="17:00"
+        )
+
+        # 2. Create Playlists (with and without a bound Show)
+        self.playlist_with_show = Playlist.objects.create(
+            id=998,
+            date="2026-07-17",
+            show=self.show,
+            australianQuota=20,
+            localQuota=20,
+            femaleQuota=40,
+        )
+        self.playlist_no_show = Playlist.objects.create(
+            id=999,
+            date="2026-07-18",
+            show=None,
+            showname="Midnight Indie",
+            australianQuota=20,
+            localQuota=20,
+            femaleQuota=40,
+        )
+
+        # 3. Create Tracks (assuming standard fields)
+        # Note: Your CSV code uses track.newRelease (camelCase), matching it here
+        self.track1 = PlaylistEntry.objects.create(
+            playlist=self.playlist_with_show,
+            artist="The Chats",
+            title="Smoko",
+            album="High Risk Behaviour",
+            local=True,
+            australian=True,
+            female=False,
+            newRelease=False,
+            index=1,
+        )
+        self.track2 = PlaylistEntry.objects.create(
+            playlist=self.playlist_with_show,
+            artist="Amyl and the Sniffers",
+            title="Guided by Angels",
+            album="Comfort to Me",
+            local=True,
+            australian=True,
+            female=True,
+            newRelease=True,
+            index=2,
+        )
+
+        # 5. Populate playlist.tracks.all() ManyToMany if your CSV logic iterates there directly
+        self.playlist_with_show.tracks.add(self.track1, self.track2)
+
+    def test_playlist_not_found_raises_404(self):
+        """View should return a 404 response if the playlist ID does not exist."""
+        request = self.factory.get("/playlist/9999/")
+        with self.assertRaises(Http404):
+            playlist(request, playlist_id=9999)
+
+    def test_text_format_view(self):
+        """Text format returns plain text response and maps context correctly."""
+        request = self.factory.get("/playlist/", {"format": "text"})
+        response = playlist(request, playlist_id=self.playlist_with_show.pk)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "text/plain; charset=utf-8")
+
+    def test_text_format_with_album_true(self):
+        """Setting album=true flag injects printalbum into the template context."""
+        request = self.factory.get("/playlist/", {"format": "text", "album": "true"})
+        response = playlist(request, playlist_id=self.playlist_with_show.pk)
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_csv_format_filename_with_show(self):
+        """CSV filename uses the Show name if a relation exists."""
+        request = self.factory.get("/playlist/", {"format": "csv"})
+        response = playlist(request, playlist_id=self.playlist_with_show.pk)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "text/csv")
+        expected_disposition = 'attachment; filename="Afternoon Mix-2026-07-17.csv"'
+        self.assertEqual(response["Content-Disposition"], expected_disposition)
+
+    def test_csv_format_filename_without_show(self):
+        """CSV filename falls back to showname string if no Show object is linked."""
+        request = self.factory.get("/playlist/", {"format": "csv"})
+        response = playlist(request, playlist_id=self.playlist_no_show.pk)
+
+        expected_disposition = 'attachment; filename="Midnight Indie-2026-07-18.csv"'
+        self.assertEqual(response["Content-Disposition"], expected_disposition)
+
+    def test_csv_content_and_headers(self):
+        """CSV contains accurate tracking data structured into the exact columns."""
+        request = self.factory.get("/playlist/", {"format": "csv"})
+        response = playlist(request, playlist_id=self.playlist_with_show.pk)
+
+        # Parse output data
+        csv_data = response.content.decode("utf-8").splitlines()
+        reader = csv.reader(csv_data)
+
+        headers = next(reader)
+        expected_headers = [
+            "artist",
+            "track",
+            "album",
+            "local",
+            "australian",
+            "female",
+            "new release",
+        ]
+        self.assertEqual(headers, expected_headers)
+
+        # Check first track row value mapping
+        first_row = next(reader)
+        self.assertEqual(first_row[0], "The Chats")
+        self.assertEqual(first_row[1], "Smoko")
+        self.assertEqual(first_row[2], "High Risk Behaviour")
+        self.assertEqual(first_row[3], "True")
