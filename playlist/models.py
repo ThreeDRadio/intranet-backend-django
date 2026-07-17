@@ -91,7 +91,14 @@ class PlaylistEntry(models.Model):
     # catalogueEntry = models.ForeignKey(Cdtrack, null=True)
 
     def __unicode__(self):
-        return "(" + self.playlist.show + ") " + self.artist + " - " + self.title
+        return (
+            "("
+            + self.playlist.show.__unicode__()
+            + ") "
+            + self.artist
+            + " - "
+            + self.title
+        )
 
     def __str__(self):
         return "(" + str(self.playlist.show) + ") " + self.artist + " - " + self.title
