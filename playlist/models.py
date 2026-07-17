@@ -1,10 +1,7 @@
-from django.db import models
 from datetime import timedelta
+
+from django.db import models
 from django.db.models.signals import pre_save
-
-
-# from catalogue.models import Cdtrack
-# Create your models here.
 
 
 class Show(models.Model):
@@ -47,7 +44,7 @@ class Playlist(models.Model):
 
     @classmethod
     def applyQuotas(cls, sender, instance, raw, using, update_fields, *args, **kwargs):
-        print("Applying Quotas")
+        # print("Applying Quotas")
         if instance.pk is None:
             if instance.show.customQuotas:
                 instance.femaleQuota = instance.show.femaleQuota
