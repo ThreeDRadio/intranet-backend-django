@@ -48,6 +48,7 @@ class WordPressSignalTests(TestCase):
         post_save.connect(playlist_to_wordpress, sender=Playlist)
 
     @patch("requests.get")
+    @override_settings(WORDPRESS_USER="FakeUser", WORDPRESS_API_KEY="Fake-Key")
     def test_find_show_for_playlist_success(self, mock_get):
         """Verify standard API response processing when a show match is found."""
         mock_response = MagicMock()
@@ -63,6 +64,7 @@ class WordPressSignalTests(TestCase):
         )
 
     @patch("requests.get")
+    @override_settings(WORDPRESS_USER="FakeUser", WORDPRESS_API_KEY="Fake-Key")
     def test_find_show_for_playlist_empty(self, mock_get):
         """Verify None is returned safely when the external API returns no records."""
         mock_response = MagicMock()
@@ -73,6 +75,7 @@ class WordPressSignalTests(TestCase):
         self.assertIsNone(result)
 
     @patch("requests.post")
+    @override_settings(WORDPRESS_USER="FakeUser", WORDPRESS_API_KEY="Fake-Key")
     def test_create_post(self, mock_post):
         """Verify createPost executes a payload containing the correct WordPress parameters."""
         createPost("Title", 42, "<p>Content</p>", "2026-03-01 18:00:00")
@@ -89,6 +92,7 @@ class WordPressSignalTests(TestCase):
             self.playlist.save()
             mock_get.assert_not_called()
 
+    @override_settings(WORDPRESS_USER="FakeUser", WORDPRESS_API_KEY="Fake-Key")
     def test_signal_aborts_if_already_published(self):
         """Signal must abort gracefully if the playlist is marked as published."""
         self.playlist.published = True
@@ -96,6 +100,7 @@ class WordPressSignalTests(TestCase):
             self.playlist.save()
             mock_get.assert_not_called()
 
+    @override_settings(WORDPRESS_USER="FakeUser", WORDPRESS_API_KEY="Fake-Key")
     def test_signal_aborts_if_playlist_not_complete(self):
         """Signal must abort if the complete boolean evaluates to False."""
         self.playlist.complete = False
