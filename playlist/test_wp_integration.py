@@ -109,6 +109,7 @@ class WordPressSignalTests(TestCase):
             mock_get.assert_not_called()
 
     @patch("requests.get")
+    @override_settings(WORDPRESS_USER="FakeUser", WORDPRESS_API_KEY="Fake-Key")
     def test_signal_aborts_if_show_not_found(self, mock_get):
         """Signal must abort if no show is found in WordPress."""
         # Mock finding the WordPress program id
@@ -126,6 +127,7 @@ class WordPressSignalTests(TestCase):
         self.assertFalse(self.playlist.published)
 
     @patch("playlist.signals.find_show_for_playlist")
+    @override_settings(WORDPRESS_USER="FakeUser", WORDPRESS_API_KEY="Fake-Key")
     def test_signal_aborts_if_exception_occurs(self, mock_fs4p):
         """Signal must abort if no show is found in WordPress."""
         # Mock finding the WordPress program id
@@ -141,6 +143,7 @@ class WordPressSignalTests(TestCase):
 
     @patch("requests.post")
     @patch("requests.get")
+    @override_settings(WORDPRESS_USER="FakeUser", WORDPRESS_API_KEY="Fake-Key")
     def test_signal_publishes_successfully(self, mock_get, mock_post):
         """Validates playlist content assembly and state mutation upon success."""
         # Mock finding the WordPress program id
