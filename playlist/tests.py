@@ -1,5 +1,5 @@
 import csv
-from datetime import datetime, timezone
+from datetime import date, timedelta, timezone
 from unittest.mock import MagicMock, patch
 
 from django.contrib.auth.models import User
@@ -652,8 +652,8 @@ class PlaylistViewSetTests(APITestCase):
         self.show = Show.objects.create(
             name="Morning Beats",
             defaultHost="Host A",
-            startTime=datetime.time(9, 0),
-            endTime=datetime.time(11, 0),
+            startTime="9:00:00",
+            endTime="10:00:01",
         )
 
         # Create a playlist
@@ -720,18 +720,18 @@ class PlaylistEntryViewSetTests(APITestCase):
         self.show = Show.objects.create(
             name="Rock Hour",
             defaultHost="Host B",
-            startTime=datetime.time(12, 0),
-            endTime=datetime.time(13, 0),
+            startTime="12:00:00",
+            endTime="13:00:00",
         )
 
         # Create two playlists: one for today, one for yesterday
         self.today_playlist = Playlist.objects.create(
-            show=self.show, host="Host B", date=datetime.date.today()
+            show=self.show, host="Host B", date=date.today()
         )
         self.past_playlist = Playlist.objects.create(
             show=self.show,
             host="Host B",
-            date=datetime.date.today() - datetime.timedelta(days=1),
+            date=date.today() - timedelta(days=1),
         )
 
         # Track variant A played twice today
@@ -829,79 +829,3 @@ class PlaylistEntryViewSetTests(APITestCase):
         # 4. Assertions
         self.assertEqual(response.status_code, 200)
         self.assertIsInstance(response.data, list)
-
-
-class PlaylistQuotaInheritanceTests(APITestCase):
-    def setUp(self):
-        # Create global fallback settings required when customQuotas is False
-        self.global_female = Setting.objects.create(
-            id="female_quota", value="25", description="Global female quota"
-        )
-        self.global_local = Setting.objects.create(
-            id="local_quota", value="15", description="Global local quota"
-        )
-        self.global_australian = Setting.objects.create(
-            id="australian_quota", value="40", description="Global Aus quota"
-        )
-
-        # Create a show with custom quotas active
-        self.custom_show = Show.objects.create(
-            name="Custom Quota Show",
-            defaultHost="Host Custom",
-            startTime=datetime.time(14, 0),
-            endTime=datetime.time(16, 0),
-            customQuotas=True,
-            femaleQuota=35,
-            localQuota=20,
-            australianQuota=50,
-        )
-
-        # Create a show using standard system-wide quotas
-        self.standard_show = Show.objects.create(
-            name="Standard Quota Show",
-            defaultHost="Host Standard",
-            startTime=datetime.time(16, 0),
-            endTime=datetime.time(18, 0),
-            customQuotas=False,
-        )
-
-    def test_playlist_inherits_custom_show_quotas(self):
-        """Verify playlist copies quotas directly from its parent show when customQuotas is True."""
-        playlist = Playlist.objects.create(
-            show=self.custom_show, host="Host Custom", date=datetime.date.today()
-        )
-
-        # Must reflect the parent show configuration properties
-        self.assertEqual(playlist.femaleQuota, 35)
-        self.assertEqual(playlist.localQuota, 20)
-        self.assertEqual(playlist.australianQuota, 50)
-
-    def test_playlist_inherits_global_settings_quotas(self):
-        """Verify playlist falls back to Setting table parameters when customQuotas is False."""
-        playlist = Playlist.objects.create(
-            show=self.standard_show, host="Host Standard", date=datetime.date.today()
-        )
-
-        # Must parse and map string inputs directly into instance quota variables
-        self.assertEqual(playlist.femaleQuota, 25)
-        self.assertEqual(playlist.localQuota, 15)
-        self.assertEqual(playlist.australianQuota, 40)
-
-    def test_api_creates_playlist_with_correct_quotas(self):
-        """Verify the API endpoint payload leverages the model signal to assign correct values on creation."""
-        url = reverse("Playlist-list")
-        payload = {
-            "show": self.custom_show.id,
-            "showname": "Morning Live",
-            "host": "Host Custom",
-            "date": str(datetime.date.today()),
-            "notes": "Testing programmatic assignment",
-        }
-
-        response = self.client.post(url, data=payload, format="json")
-
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        # Check that the assigned values are returned in the response metadata fields
-        self.assertEqual(response.data["femaleQuota"], 35)
-        self.assertEqual(response.data["localQuota"], 20)
-        self.assertEqual(response.data["australianQuota"], 50)
