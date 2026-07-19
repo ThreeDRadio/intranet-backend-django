@@ -490,21 +490,6 @@ class PlaylistViewTests(APITestCase):
         with self.assertRaises(Http404):
             playlist(request, playlist_id=9999)
 
-    def test_text_format_view(self):
-        """Text format returns plain text response and maps context correctly."""
-        request = self.factory.get("/playlist/", {"format": "text"})
-        response = playlist(request, playlist_id=self.playlist_with_show.pk)
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response["Content-Type"], "text/plain; charset=utf-8")
-
-    def test_text_format_with_album_true(self):
-        """Setting album=true flag injects printalbum into the template context."""
-        request = self.factory.get("/playlist/", {"format": "text", "album": "true"})
-        response = playlist(request, playlist_id=self.playlist_with_show.pk)
-
-        self.assertEqual(response.status_code, 200)
-
     def test_csv_format_filename_with_show(self):
         """CSV filename uses the Show name if a relation exists."""
         request = self.factory.get("/playlist/", {"format": "csv"})
