@@ -1,11 +1,9 @@
-certifi==2017.11.5
 chardet==3.0.4
 coreapi==2.3.3
 coreschema==0.0.4
 coverage==7.10.7
 setuptools==79.0.1
 Django==4.2.30
-django-bootstrap3==23.1
 django-cors-headers==4.9.0
 django-countries==5.0
 django-datetime-widget==0.9.3

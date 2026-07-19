@@ -9,7 +9,6 @@ INSTALLED_APPS = (
     "django.contrib.staticfiles",
     "django_filters",
     "datetimewidget",
-    "bootstrap3",
     "rest_framework",
     "rest_framework_swagger",
     "rest_framework.authtoken",
