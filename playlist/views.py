@@ -3,7 +3,7 @@ from datetime import date
 import unicodecsv as csv
 from django.db.models import Count
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, viewsets
 from rest_framework.decorators import action
@@ -111,24 +111,8 @@ def summary(request):
 def playlist(request, playlist_id):
     playlist = get_object_or_404(Playlist, pk=playlist_id)
 
-    tracks = PlaylistEntry.objects.filter(playlist_id=playlist.pk).order_by(
-        "index", "pk"
-    )
-
-    context = {
-        "playlist": playlist,
-        "tracks": tracks,
-    }
-
     if request.method == "GET":
-        if request.GET.get("format") == "text":
-            if request.GET.get("album") == "true":
-                context["printalbum"] = True
-            response = render(request, "playlist/textview.html", context)
-            response["Content-Type"] = "text/plain; charset=utf-8"
-            return response
-
-        elif request.GET.get("format") == "csv":
+        if request.GET.get("format") == "csv":
             response = HttpResponse(content_type="text/csv")
             if playlist.show is None:
                 response["Content-Disposition"] = (
