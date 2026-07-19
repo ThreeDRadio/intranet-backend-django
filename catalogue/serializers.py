@@ -9,7 +9,7 @@ from .models import Comment, Release, Track
 class ProfileSerializer(serializers.ModelSerializer):
     gravatar = serializers.SerializerMethodField("getGravatar")
 
-    def getGravatar(self, obj):
+    def getGravatar(self, obj) -> str:
         name = obj.email if obj.email else obj.username
         gravatar_url = (
             "https://www.gravatar.com/avatar/"

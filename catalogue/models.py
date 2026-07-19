@@ -1,7 +1,8 @@
-from django.db import models
-from django.conf import settings
 import os.path
+
+from django.conf import settings
 from django.contrib.auth.models import User
+from django.db import models
 
 
 # Create your models here.
@@ -94,11 +95,11 @@ class Track(models.Model):
         )
 
     @property
-    def hiAvailable(self):
+    def hiAvailable(self) -> bool:
         return os.path.exists(self.hiPath)
 
     @property
-    def loAvailable(self):
+    def loAvailable(self) -> bool:
         return os.path.exists(self.loPath)
 
     class Meta:
