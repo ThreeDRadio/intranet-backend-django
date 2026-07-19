@@ -16,12 +16,7 @@ Including another URLconf
 
 from django.conf.urls import include
 from django.contrib import admin
-from django.urls import path, re_path
-from drf_spectacular.views import (
-    SpectacularAPIView,
-    SpectacularRedocView,
-    SpectacularSwaggerView,
-)
+from django.urls import re_path
 from rest_framework import routers
 
 from catalogue.views import ArtistViewSet, CommentViewSet, ReleaseViewSet, TrackViewSet
@@ -47,17 +42,16 @@ urlpatterns = [
     re_path(r"^api/", include(router.urls)),
     re_path(r"^logger/", include("playlist.urls")),
     re_path(r"^download/([a-f0-9\-]+)", downloadViews.download),
-    # YOUR PATTERNS
-    path("schema/", SpectacularAPIView.as_view(), name="schema"),
+    # path("schema/", SpectacularAPIView.as_view(), name="schema"),
     # Optional UI:
-    path(
-        "schema/swagger-ui/",
-        SpectacularSwaggerView.as_view(url_name="schema"),
-        name="swagger-ui",
-    ),
-    path(
-        "schema/redoc/",
-        SpectacularRedocView.as_view(url_name="schema"),
-        name="redoc",
-    ),
+    # path(
+    #    "schema/swagger-ui/",
+    #    SpectacularSwaggerView.as_view(url_name="schema"),
+    #    name="swagger-ui",
+    # ),
+    # path(
+    #    "schema/redoc/",
+    #    SpectacularRedocView.as_view(url_name="schema"),
+    #    name="redoc",
+    # ),
 ]
