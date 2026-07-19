@@ -1,4 +1,4 @@
-from split_settings.tools import optional, include
+from split_settings.tools import include, optional
 
 DATABASES = {
     "default": {
@@ -16,7 +16,6 @@ WORDPRESS_API_KEY = ""
 
 include(
     "settings/base.py",
-    "settings/bower.py",
     "settings/installed_apps.py",
     "settings/downloads.py",
     optional("local_settings.py"),
