@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+
 from corsheaders.defaults import default_headers
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -79,9 +80,7 @@ STATIC_URL = "/static/"
 STATICFILES_FINDERS = {
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
-    "djangobower.finders.BowerFinder",
 }
-BOWER_COMPONENTS_ROOT = os.path.join(BASE_DIR, "components")
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/

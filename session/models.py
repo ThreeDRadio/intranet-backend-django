@@ -1,5 +1,5 @@
-from django.db import models
 from django.contrib.auth.models import User
+from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
@@ -29,10 +29,10 @@ class OldUser(models.Model):
     password = models.CharField(max_length=100, blank=True, null=True)
     first = models.CharField(max_length=100, blank=True, null=True)
     last = models.CharField(max_length=100, blank=True, null=True)
-    admin = models.NullBooleanField()
-    active = models.NullBooleanField()
-    cdeditor = models.NullBooleanField()
-    adminbook = models.NullBooleanField()
+    admin = models.BooleanField(null=True)
+    active = models.BooleanField(null=True)
+    cdeditor = models.BooleanField(null=True)
+    adminbook = models.BooleanField(null=True)
 
     class Meta:
         managed = False
