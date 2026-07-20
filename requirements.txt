@@ -1,5 +1,6 @@
 certifi==2026.6.17
 chardet==7.4.3
+coverage==7.10.7
 setuptools==83.0.0
 Django==6.0.7
 django-cors-headers==4.9.0
