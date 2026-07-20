@@ -20,7 +20,7 @@ jobs:
 
     services:
       postgres:
-        image: postgres:12 # Specify your required PostgreSQL version
+        image: postgres:16 # Specify your required PostgreSQL version
         env:
           POSTGRES_USER: test_user
           POSTGRES_PASSWORD: test_password
@@ -40,7 +40,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.9"
+          python-version: "3.14"
 
       - name: Install dependencies
         run: |

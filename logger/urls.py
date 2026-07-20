@@ -18,14 +18,11 @@ from django.conf.urls import include
 from django.contrib import admin
 from django.urls import re_path
 from rest_framework import routers
-from rest_framework_swagger.views import get_swagger_view
 
 from catalogue.views import ArtistViewSet, CommentViewSet, ReleaseViewSet, TrackViewSet
 from downloads import views as downloadViews
 from playlist import views
 from session.views import MigrateAndLogin, UserViewSet
-
-schema_view = get_swagger_view(title="Intranet")
 
 router = routers.DefaultRouter()
 router.register(r"releases", ReleaseViewSet, "release")
@@ -45,5 +42,5 @@ urlpatterns = [
     re_path(r"^api/", include(router.urls)),
     re_path(r"^logger/", include("playlist.urls")),
     re_path(r"^download/([a-f0-9\-]+)", downloadViews.download),
-    re_path(r"^swagger", schema_view),
+    # re_path(r"^swagger", schema_view),
 ]
