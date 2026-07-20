@@ -6,7 +6,7 @@
 
 # Want to help us make this template better? Share your feedback here: https://forms.gle/ybq9Krt8jtBL3iCk7
 ARG DJANGO_ENV=staging
-ARG PYTHON_VERSION=3.9.25
+ARG PYTHON_VERSION=3.14.6
 FROM python:${PYTHON_VERSION}-slim AS base
 
 # Prevents Python from writing pyc files.
@@ -49,8 +49,8 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     python3 -m pip install -r requirements.txt
 
 # Do mod_wsgi setup
-ARG MOD_WSGI_VERSION=4.8.0
-ADD https://github.com/GrahamDumpleton/mod_wsgi/archive/refs/tags/${MOD_WSGI_VERSION}.tar.gz /tmp/${MOD_WSGI_VERSION}.tar.gz
+ARG MOD_WSGI_VERSION=6.0.5
+ADD https://github.com/GrahamDumpleton/mod_wsgi/releases/download/mod_wsgi-${MOD_WSGI_VERSION}/mod_wsgi-${MOD_WSGI_VERSION}.tar.gz /tmp/${MOD_WSGI_VERSION}.tar.gz
 RUN tar xvfz /tmp/${MOD_WSGI_VERSION}.tar.gz -C /tmp
 WORKDIR /tmp/mod_wsgi-${MOD_WSGI_VERSION}
 RUN ./configure --with-python=/usr/local/bin/python3
