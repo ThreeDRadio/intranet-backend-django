@@ -42,5 +42,9 @@ urlpatterns = [
     re_path(r"^api/", include(router.urls)),
     re_path(r"^logger/", include("playlist.urls")),
     re_path(r"^download/([a-f0-9\-]+)", downloadViews.download),
-    # re_path(r"^swagger", schema_view),
+    # YOUR PATTERNS
+    # path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+    # Optional UI:
+    # path('api/schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    # path('api/schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
 ]

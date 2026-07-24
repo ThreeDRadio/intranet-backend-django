@@ -1,18 +1,18 @@
-from django.http import HttpResponse, Http404
+import os
+
 import django_filters
-from rest_framework import filters
-from rest_framework import permissions
-from rest_framework import viewsets
-from rest_framework.pagination import LimitOffsetPagination
-from rest_framework.decorators import action
-from rest_framework.response import Response
-from django.shortcuts import get_object_or_404
 from django.conf import settings
+from django.http import Http404, HttpResponse
+from django.shortcuts import get_object_or_404
+from rest_framework import filters, permissions, viewsets
+from rest_framework.decorators import action
+from rest_framework.pagination import LimitOffsetPagination
+from rest_framework.response import Response
+
+from downloads.models import DownloadLink
 
 from .models import Comment, Release, Track
-from .serializers import ReleaseSerializer, TrackSerializer, CommentSerializer
-from downloads.models import DownloadLink
-import os
+from .serializers import CommentSerializer, ReleaseSerializer, TrackSerializer
 
 
 # Create your views here.
@@ -92,7 +92,7 @@ class ReleaseViewSet(viewsets.ModelViewSet):
     def comments(self, request, pk=None):
         release = self.get_object()
         serializer = CommentSerializer(
-            release.comments.all().order_by("pk"),
+            release.comments.filter(visible=True).order_by("pk"),
             context={"request": request},
             many=True,
         )
