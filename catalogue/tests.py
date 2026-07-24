@@ -199,8 +199,13 @@ class ReleaseViewSetTest(APITestCase):
             tracktitle="Everything in Its Right Place",
             tracknum=1,
         )
+
         self.track2 = Track.objects.create(
             id=2, release=self.release1, tracktitle="Kid A", tracknum=2
+        )
+
+        self.track3 = Track.objects.create(
+            id=3, release=self.release2, tracktitle="Kid Z", tracknum=1
         )
 
         self.comment1 = Comment.objects.create(
@@ -214,11 +219,38 @@ class ReleaseViewSetTest(APITestCase):
             modifywhen=0,
         )
 
+        self.bad_comment = Comment.objects.create(
+            id=2,
+            cdtrackid=3,
+            release=self.release2,
+            comment="I am a bad person and need to shut up",
+            author=self.user,
+            createwhen=100,
+            modifywho=0,
+            modifywhen=0,
+            visible=False,
+        )
+
+        self.good_comment = Comment.objects.create(
+            id=3,
+            cdtrackid=3,
+            release=self.release2,
+            comment="I am a good person and am ok to speak :)",
+            author=self.user,
+            createwhen=100,
+            modifywho=0,
+            modifywhen=0,
+            visible=True,
+        )
+
         # URL Helpers
         self.list_url = reverse("release-list")
         self.detail_url = reverse("release-detail", kwargs={"pk": self.release1.pk})
         self.tracks_url = reverse("release-tracks", kwargs={"pk": self.release1.pk})
         self.comments_url = reverse("release-comments", kwargs={"pk": self.release1.pk})
+        self.comments_url_2 = reverse(
+            "release-comments", kwargs={"pk": self.release2.pk}
+        )
 
     # --- PERMISSION TESTS ---
     def test_unauthenticated_user_is_forbidden(self):
@@ -276,6 +308,16 @@ class ReleaseViewSetTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
         self.assertEqual(response.data[0]["comment"], "Masterpiece")
+
+    def test_get_comments_does_not_return_invisible(self):
+        """Verify custom comments action does NOT return hidden comments."""
+        self.client.force_authenticate(user=self.user)
+        response = self.client.get(self.comments_url_2)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(
+            response.data[0]["comment"], "I am a good person and am ok to speak :)"
+        )
 
 
 # Create a temporary directory for file path testing
