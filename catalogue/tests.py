@@ -1,4 +1,5 @@
 import hashlib
+import json
 import os
 import tempfile
 from unittest.mock import patch
@@ -432,3 +433,59 @@ class TrackViewSetTest(APITestCase):
         invalid_url = "/api/v1/tracks/99999/download/hi/"
         response = self.client.get(invalid_url)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+
+class CommentViewSetTest(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="testuser", password="password123"
+        )
+        self.client.force_authenticate(user=self.user)
+
+        self.release = Release.objects.create(
+            artist="Daft Punk", title="Discovery", year=2001, arrivaldate="2026-02-01"
+        )
+
+        self.bad_comment = Comment.objects.create(
+            id=1,
+            cdtrackid=1,
+            release=self.release,
+            comment="I am a bad person and need to shut up",
+            author=self.user,
+            createwhen=100,
+            modifywho=0,
+            modifywhen=0,
+            visible=True,
+        )
+
+        self.good_comment = Comment.objects.create(
+            id=2,
+            cdtrackid=1,
+            release=self.release,
+            comment="I am a good person and am ok to speak :)",
+            author=self.user,
+            createwhen=100,
+            modifywho=0,
+            modifywhen=0,
+            visible=True,
+        )
+
+        self.comment_1_url = "/api/comments/1/"
+        self.comment_2_url = "/api/comments/2/"
+
+    def test_patch_visible_hides_comment(self):
+        response1 = self.client.get(self.comment_1_url)
+        response2 = self.client.get(self.comment_2_url)
+        self.assertEqual(response1.status_code, status.HTTP_200_OK)
+        self.assertEqual(response2.status_code, status.HTTP_200_OK)
+        patch_data = {"visible": "false"}
+        result = self.client.patch(
+            self.comment_1_url,
+            data=json.dumps(patch_data),
+            content_type="application/json",
+        )
+        # Comment 1 should no longer be accessible via the comments API
+        response_404 = self.client.get(self.comment_1_url)
+        response_200 = self.client.get(self.comment_2_url)
+        self.assertEqual(response_404.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response_200.status_code, status.HTTP_200_OK)
