@@ -479,7 +479,7 @@ class CommentViewSetTest(APITestCase):
         self.assertEqual(response1.status_code, status.HTTP_200_OK)
         self.assertEqual(response2.status_code, status.HTTP_200_OK)
         patch_data = {"visible": "false"}
-        result = self.client.patch(
+        _ = self.client.patch(
             self.comment_1_url,
             data=json.dumps(patch_data),
             content_type="application/json",
