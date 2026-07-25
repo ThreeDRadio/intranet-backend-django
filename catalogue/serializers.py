@@ -34,7 +34,7 @@ class CommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        fields = ("id", "comment", "author", "createwhen", "release")
+        fields = ("id", "comment", "author", "createwhen", "release", "visible")
 
 
 class TrackSerializer(serializers.ModelSerializer):
