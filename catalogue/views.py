@@ -91,8 +91,14 @@ class ReleaseViewSet(viewsets.ModelViewSet):
     @action(detail=True)
     def comments(self, request, pk=None):
         release = self.get_object()
+        all = self.request.user.groups.filter(name="Comment Moderators").exists()
+        comment_filter = (
+            release.comments.all().order_by("pk")
+            if all
+            else release.comments.filter(visible=True).order_by("pk")
+        )
         serializer = CommentSerializer(
-            release.comments.filter(visible=True).order_by("pk"),
+            comment_filter,
             context={"request": request},
             many=True,
         )
@@ -101,7 +107,6 @@ class ReleaseViewSet(viewsets.ModelViewSet):
 
 class CommentViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticated,)
-    queryset = Comment.objects.filter(visible=True)
     serializer_class = CommentSerializer
     filter_backends = (
         filters.OrderingFilter,
@@ -110,6 +115,14 @@ class CommentViewSet(viewsets.ModelViewSet):
     )
     ordering_fields = ("createwhen",)
     pagination_class = LimitOffsetPagination
+
+    def get_queryset(self):
+        all = self.request.user.groups.filter(name="Comment Moderators").exists()
+
+        if all:
+            return Comment.objects.all()
+
+        return Comment.objects.filter(visible=True)
 
 
 class TrackFilter(django_filters.FilterSet):
