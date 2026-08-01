@@ -13,7 +13,7 @@ inflection==0.5.1
 itypes==1.2.0
 Markdown==3.9
 MarkupSafe==3.0.3
-psycopg==3.2.13
+psycopg2==2.9.12
 pytz==2026.2
 requests==2.32.5
 ruff==0.15.21
