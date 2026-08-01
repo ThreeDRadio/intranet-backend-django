@@ -94,6 +94,7 @@ jobs:
             docker pull ghcr.io/threedradio/intranet-backend-django:testing
             docker run \
               -p 8001:443 \
+              --restart always \
               --name intranet-backend-django \
               -v /srv/docker/intranet-backend-django/keys/server.key:/etc/apache2/ssl/ssl.key/server.key:z \
               -v /srv/docker/intranet-backend-django/certs/server.crt:/etc/apache2/ssl/ssl.crt/server.crt:z \
