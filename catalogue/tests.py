@@ -293,6 +293,14 @@ class ReleaseViewSetTest(APITestCase):
         response = self.client.get(self.list_url, {"ordering": "year"})
         self.assertEqual(response.data["results"][0]["title"], "Kid A")
 
+    def test_min_arrival_filterset_works(self):
+        """Verify filtering results via the search query parameter."""
+        self.client.force_authenticate(user=self.user)
+        response = self.client.get(self.list_url, {"min_arrival": "2026-02-01"})
+        self.assertEqual(len(response.data["results"]), 1)
+        self.assertEqual(response.data["results"][0]["year"], 2001)
+        self.assertEqual(response.data["results"][0]["title"], "Discovery")
+
     # --- CUSTOM ACTION TESTS ---
     def test_get_tracks_ordered_by_tracknum(self):
         """Verify custom tracks action returns nested tracks sorted by track number."""
