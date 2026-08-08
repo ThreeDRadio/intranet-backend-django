@@ -329,7 +329,6 @@ class ReleaseViewSetTest(APITestCase):
         )
 
 
-
 # Create a temporary directory for file path testing
 TEMP_DIR = tempfile.mkdtemp()
 
