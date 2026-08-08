@@ -75,7 +75,7 @@ class ReleaseViewSet(viewsets.ModelViewSet):
     )
     search_fields = ("artist", "title", "tracks__tracktitle")
     ordering_fields = ("arrivaldate", "artist", "title", "year", "createwhen")
-    filter_class = ReleaseFilter
+    filterset_class = ReleaseFilter
     pagination_class = LimitOffsetPagination
 
     @action(detail=True)
