@@ -5,4 +5,4 @@ class PlaylistConfig(AppConfig):
     verbose_name = "Online Logging Sheets"
 
     def ready(self):
-        from . import signals
+        from . import signals # noqa: F401
