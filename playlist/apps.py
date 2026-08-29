@@ -6,5 +6,4 @@ class PlaylistConfig(AppConfig):
     verbose_name = "Online Logging Sheets"
 
     def ready(self):
-        # Implicitly connect signal handlers decorated with @receiver.
-        pass
+        from . import signals  # noqa: F401
