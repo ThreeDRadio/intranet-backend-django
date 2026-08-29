@@ -1,10 +1,8 @@
 from django.apps import AppConfig
 
-
 class PlaylistConfig(AppConfig):
     name = "playlist"
     verbose_name = "Online Logging Sheets"
 
     def ready(self):
-        # Implicitly connect signal handlers decorated with @receiver.
-        pass
+        from . import signals
