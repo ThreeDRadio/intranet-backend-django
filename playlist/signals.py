@@ -46,7 +46,7 @@ def createPost(title, showId, content, date):
     }
     pretty_json = json.dumps(data, indent=2)
     print(pretty_json)
-    response = requests.post(api_url,headers=wordpress_header, json=data)
+    response = requests.post(api_url, headers=wordpress_header, json=data)
     print(response.status_code)
     print(response.json())
 
