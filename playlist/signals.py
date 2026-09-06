@@ -1,3 +1,5 @@
+import json
+
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from .models import Playlist
@@ -42,8 +44,11 @@ def createPost(title, showId, content, date):
         "date": date,
         "program": [showId],
     }
+    pretty_json = json.dumps(data, indent=2)
+    print(pretty_json)
     response = requests.post(api_url, headers=wordpress_header, json=data)
-    print(response)
+    print(response.status_code)
+    print(response.json())
 
 
 @receiver(post_save, sender=Playlist)
