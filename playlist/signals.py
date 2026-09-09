@@ -1,4 +1,5 @@
 import json
+import logging
 
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -22,6 +23,8 @@ wordpress_header = {
 headers = {"user-agent": "threedradio-api", "accept": "application/json"}
 
 """ Finds the website's show for this playlist """
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 
 def find_show_for_playlist(showName):
@@ -53,42 +56,42 @@ def createPost(title, showId, content, date):
 
 @receiver(post_save, sender=Playlist)
 def playlist_to_wordpress(sender, instance, **kwargs):
-
     try:
         if not settings.WORDPRESS_USER or not settings.WORDPRESS_API_KEY:
-            print("No wordpress auth. Giving up")
+            logger.error("No wordpress auth. Giving up")
             return
 
-        if instance.published:
-            print("Already published")
-        elif not instance.complete:
-            print("Playlist not complete yet")
+        if instance.published or not instance.complete:
+            return
+
+        wpShow = find_show_for_playlist(instance.show.name)
+
+        if wpShow:
+            logger.info("Found Wordpress Show: " + str(wpShow["slug"]))
         else:
-            wpShow = find_show_for_playlist(instance.show.name)
-
-            if wpShow:
-                print("Found Wordpress Show: " + str(wpShow["slug"]))
-            else:
-                print("No show found, bailing")
-                return
-
-            content = "<ol>"
-            for track in instance.tracks.all().order_by("index"):
-                content += "<li>" + track.artist + " - " + track.title + "</li>\n"
-            content += "</ol>"
-
-            timestamp = str(instance.date) + " " + str(instance.show.endTime)
-
-            print("Publishing playlist...")
-            createPost(
-                instance.show.name + ": " + str(instance.date),
-                wpShow["id"],
-                content,
-                timestamp,
+            logger.error(
+                f"No Wordpress show found for showId {instance.show.name} (showId={instance.show.id}). Bailing."
             )
-            print("Published!")
-            instance.published = True
-            instance.save()
+            return
+
+        content = "<ol>"
+        for track in instance.tracks.all().order_by("index"):
+            content += "<li>" + track.artist + " - " + track.title + "</li>\n"
+        content += "</ol>"
+
+        timestamp = str(instance.date) + " " + str(instance.show.endTime)
+
+        logger.info(f"Publishing playlist {str(wpShow)} timestamp={timestamp}")
+        createPost(
+            instance.show.name + ": " + str(instance.date),
+            wpShow["id"],
+            content,
+            timestamp,
+        )
+        logger.info(f"Published playlist {str(wpShow)} timestamp={timestamp}!")
+        instance.published = True
+        instance.save()
     except Exception as e:
-        print("Could not upload playlist")
-        print(e)
+        logger.error(
+            f"Error when publishing playlist {str(wpShow)} timestamp={timestamp}. ", e
+        )

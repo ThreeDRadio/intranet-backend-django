@@ -1,9 +1,12 @@
-import os
-
 from split_settings.tools import include, optional
 import logging
 import sentry_sdk
-from sentry_sdk.integrations.logging import LoggingIntegration
+from sentry_sdk.integrations.django import DjangoIntegration
+from sentry_sdk.integrations.logging import (
+    LoggingIntegration,
+    ignore_logger_for_sentry_logs,
+)
+from sentry_sdk.integrations.logging import ignore_logger
 
 DATABASES = {
     "default": {
@@ -27,18 +30,19 @@ include(
     scope=globals(),
 )
 
-
-# Set up Sentry logging levels
 sentry_logging = LoggingIntegration(
-    level=logging.INFO,        # Captures INFO and above as breadcrumbs
-    event_level=logging.ERROR  # Captures ERROR and above as Sentry events
+    level=logging.INFO,
+    event_level=logging.ERROR,
+    capture_sentry_logs=True,
+    sentry_logs_level=logging.INFO,
 )
 
+ignore_logger("django.server")
+ignore_logger("django.utils.autoreload")
+ignore_logger_for_sentry_logs("django.server")
+ignore_logger_for_sentry_logs("django.utils.autoreload")
+
 sentry_sdk.init(
-    dsn=os.getenv("SENTRY_DSN"),
-    # Add data like request headers and IP for users,
-    # see https://docs.sentry.io/platforms/python/data-management/data-collected/ for more info
-    # Don't keep anything.
     send_default_pii=False,
     integrations=[sentry_logging],
 )
