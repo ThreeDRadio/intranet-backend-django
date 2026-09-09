@@ -94,6 +94,9 @@ jobs:
               -p 8001:443 \
               --restart always \
               --name intranet-backend-django \
+              -e SENTRY_DSN="${{ secrets.SENTRY_DSN }}" \
+              -e SENTRY_ENVIRONMENT="${{ vars.SENTRY_ENVIRONMENT }}" \
+              -e SENTRY_RELEASE="${{ github.sha }}" \
               -v /srv/docker/intranet-backend-django/keys/server.key:/etc/apache2/ssl/ssl.key/server.key:z \
               -v /srv/docker/intranet-backend-django/certs/server.crt:/etc/apache2/ssl/ssl.crt/server.crt:z \
               -v /srv/docker/intranet-backend-django/local_settings.py:/app/logger/local_settings.py:z \
