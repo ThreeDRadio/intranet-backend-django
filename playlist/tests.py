@@ -10,7 +10,7 @@ from rest_framework import status
 from rest_framework.test import APIRequestFactory, APITestCase, force_authenticate
 
 from playlist.models import Playlist, PlaylistEntry, Setting, Show
-from playlist.views import PlaylistEntryViewSet, playlist, summary
+from playlist.views import PlaylistEntryViewSet, ShowViewSet, playlist, summary
 from session.models import Whitelist
 
 
@@ -19,8 +19,32 @@ class ShowViewsetTest(APITestCase):
         self.user = User.objects.create_user("user", "password", "fake1@user.com")
         self.whitelist = Whitelist.objects.create(ip="127.0.1.1", name="test whitelist")
         self.show = Show.objects.create(
-            name="radio", startTime="17:00", endTime="19:00"
+            id=1, name="radio", startTime="17:00", endTime="19:00", active=True
         )
+        self.show2 = Show.objects.create(
+            id=2, name="radio2", startTime="14:00", endTime="15:00", active=False
+        )
+
+    def test_filter_active_shows(self):
+        factory = APIRequestFactory()
+        request = factory.get("/api/shows/active")
+        view = ShowViewSet.as_view({"get": "active"})
+        response = view(request)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # Verify only the active show is returned
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]["id"], self.show.id)
+
+    def test_no_filter_returns_all_shows(self):
+        factory = APIRequestFactory()
+        request = factory.get("/api/shows")
+        view = ShowViewSet.as_view({"get": "list"})
+        response = view(request)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # Verify both shows are returned
+        self.assertEqual(len(response.data), 2)
 
     def test_grant_access_for_unauthenticated_unwhitelisted(self):
         """Makes sure a non-authenticated, non-whitelisted request fails with forbidden"""

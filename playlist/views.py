@@ -243,6 +243,15 @@ class ShowViewSet(viewsets.ModelViewSet):
         )
         return Response(serializer.data)
 
+    @action(detail=False)
+    def active(self, request, pk=None):
+        serializer = ShowSerializer(
+            Show.objects.filter(active=True).order_by("id"),
+            context={"request": request},
+            many=True,
+        )
+        return Response(serializer.data)
+
 
 class PlaylistViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.OrderingFilter,)
