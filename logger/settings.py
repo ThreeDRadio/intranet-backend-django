@@ -1,14 +1,13 @@
+import logging
 import sys
 
-from split_settings.tools import include, optional
-import logging
 import sentry_sdk
-from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.logging import (
     LoggingIntegration,
+    ignore_logger,
     ignore_logger_for_sentry_logs,
 )
-from sentry_sdk.integrations.logging import ignore_logger
+from split_settings.tools import include, optional
 
 DATABASES = {
     "default": {
