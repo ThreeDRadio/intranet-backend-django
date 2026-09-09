@@ -48,10 +48,17 @@ def createPost(title, showId, content, date):
         "program": [showId],
     }
     pretty_json = json.dumps(data, indent=2)
-    print(pretty_json)
+    logger.info("request:" + pretty_json)
     response = requests.post(api_url, headers=wordpress_header, json=data)
-    print(response.status_code)
-    print(response.json())
+    # Check if the request was successful
+    if response.status_code == 200:
+        try:
+            pretty_resp = json.dumps(response.json(), indent=2)
+            logger.info("response:" + pretty_resp)
+        except ValueError:
+            logger.error("Response is not valid JSON")
+    else:
+        logger.warning(f"Request failed with status: {response.status_code}")
 
 
 @receiver(post_save, sender=Playlist)
