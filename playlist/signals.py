@@ -100,5 +100,6 @@ def playlist_to_wordpress(sender, instance, **kwargs):
         instance.save()
     except Exception as e:
         logger.error(
-            f"Error when publishing playlist {str(wpShow)} timestamp={timestamp}. ", e
+            f"Error when publishing playlist {instance.show.name} (showId={instance.show.id}). ",
+            e,
         )
