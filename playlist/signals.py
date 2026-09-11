@@ -42,6 +42,8 @@ def find_show_for_playlist(showName):
         return None
 
     response_json = response.json()
+    if len(response_json) == 0:
+        return None
     return response_json[0]
 
 
