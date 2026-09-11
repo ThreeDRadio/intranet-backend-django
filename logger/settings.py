@@ -22,6 +22,7 @@ DATABASES = {
 
 WORDPRESS_USER = ""
 WORDPRESS_API_KEY = ""
+WORDPRESS_URL = "https://threedradio.com/wp-json/wp/v2"
 
 include(
     "settings/base.py",
