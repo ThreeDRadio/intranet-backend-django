@@ -21,8 +21,6 @@ wordpress_header = {
     "accept": "application/json",
 }
 
-wordpress_url = settings.WORDPRESS_URL
-
 headers = {"user-agent": "threedradio-api", "accept": "application/json"}
 
 logger = logging.getLogger(__name__)
@@ -32,7 +30,9 @@ logger.setLevel(logging.INFO)
 
 
 def find_show_for_playlist(showName):
-    api_url = f"{wordpress_url}/program?search=" + urllib.parse.quote_plus(showName)
+    api_url = f"{settings.WORDPRESS_URL}/program?search=" + urllib.parse.quote_plus(
+        showName
+    )
     response = requests.get(api_url, headers=headers)
 
     if response.status_code != 200:
@@ -46,7 +46,7 @@ def find_show_for_playlist(showName):
 
 
 def createPost(title, showId, content, date):
-    api_url = f"{wordpress_url}/program-playlist"
+    api_url = f"{settings.WORDPRESS_URL}/program-playlist"
     data = {
         "title": title,
         "status": "publish",

@@ -47,23 +47,28 @@ class WordPressSignalTests(TestCase):
         # 4. Reconnect the post_save signal for the actual test runs
         post_save.connect(playlist_to_wordpress, sender=Playlist)
 
-    @patch("requests.get")
-    @override_settings(WORDPRESS_USER="FakeUser", WORDPRESS_API_KEY="Fake-Key")
+    @patch("playlist.signals.requests.get")
+    @override_settings(
+        WORDPRESS_URL="https://fake-url.com/wp-json/wp/v2",
+        WORDPRESS_USER="FakeUser",
+        WORDPRESS_API_KEY="Fake-Key",
+    )
     def test_find_show_for_playlist_success(self, mock_get):
         """Verify standard API response processing when a show match is found."""
-        mock_response = MagicMock()
+        mock_response = MagicMock(status_code=200)
         mock_response.json.return_value = [{"id": 42, "slug": "drive-time"}]
         mock_get.return_value = mock_response
 
         result = find_show_for_playlist("Drive Time")
 
         self.assertEqual(result["id"], 42)
+
         mock_get.assert_called_once_with(
-            "https://www.threedradio.com/wp-json/wp/v2/program?search=Drive+Time",
+            "https://fake-url.com/wp-json/wp/v2/program?search=Drive+Time",
             headers={"user-agent": "threedradio-api", "accept": "application/json"},
         )
 
-    @patch("requests.get")
+    @patch("playlist.signals.requests.get")
     @override_settings(WORDPRESS_USER="FakeUser", WORDPRESS_API_KEY="Fake-Key")
     def test_find_show_for_playlist_empty(self, mock_get):
         """Verify None is returned safely when the external API returns no records."""
@@ -74,7 +79,7 @@ class WordPressSignalTests(TestCase):
         result = find_show_for_playlist("Unknown Show")
         self.assertIsNone(result)
 
-    @patch("requests.post")
+    @patch("playlist.signals.requests.post")
     @override_settings(WORDPRESS_USER="FakeUser", WORDPRESS_API_KEY="Fake-Key")
     def test_create_post(self, mock_post):
         """Verify createPost executes a payload containing the correct WordPress parameters."""
@@ -108,7 +113,7 @@ class WordPressSignalTests(TestCase):
             self.playlist.save()
             mock_get.assert_not_called()
 
-    @patch("requests.get")
+    @patch("playlist.signals.requests.get")
     @override_settings(WORDPRESS_USER="FakeUser", WORDPRESS_API_KEY="Fake-Key")
     def test_signal_aborts_if_show_not_found(self, mock_get):
         """Signal must abort if no show is found in WordPress."""
@@ -141,8 +146,8 @@ class WordPressSignalTests(TestCase):
         self.playlist.refresh_from_db()
         self.assertFalse(self.playlist.published)
 
-    @patch("requests.post")
-    @patch("requests.get")
+    @patch("playlist.signals.requests.post")
+    @patch("playlist.signals.requests.get")
     @override_settings(WORDPRESS_USER="FakeUser", WORDPRESS_API_KEY="Fake-Key")
     def test_signal_publishes_successfully(self, mock_get, mock_post):
         """Validates playlist content assembly and state mutation upon success."""
