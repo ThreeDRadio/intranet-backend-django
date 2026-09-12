@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import viewsets
 from django.contrib.auth.models import User
-from django.http import HttpResponseBadRequest
+from django.http import HttpResponseBadRequest, JsonResponse
 
 from .serializers import UserSerializer
 from .permissions import IsStaffOrTargetUser
@@ -86,3 +86,14 @@ class MigrateAndLogin(APIView):
                 return Response({"token": user.auth_token.key, "user": user.id})
 
         return self._error_response("invalid")
+
+
+def echo_ip(request):
+    x_forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
+
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(",")[0].strip()
+    else:
+        ip = request.META.get("REMOTE_ADDR")
+
+    return JsonResponse(f"{ip}", safe=False)

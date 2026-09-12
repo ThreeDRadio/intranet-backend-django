@@ -22,7 +22,7 @@ from rest_framework import routers
 from catalogue.views import ArtistViewSet, CommentViewSet, ReleaseViewSet, TrackViewSet
 from downloads import views as downloadViews
 from playlist import views
-from session.views import MigrateAndLogin, UserViewSet
+from session.views import MigrateAndLogin, UserViewSet, echo_ip
 
 router = routers.DefaultRouter()
 router.register(r"releases", ReleaseViewSet, "release")
@@ -38,6 +38,7 @@ router.register(r"playlistentries", views.PlaylistEntryViewSet, "PlaylistEntry")
 urlpatterns = [
     # url(r'^api-token-auth/', 'rest_framework.authtoken.views.obtain_auth_token'),
     re_path(r"^auth", MigrateAndLogin.as_view()),
+    re_path(r"^echo-ip", echo_ip),
     re_path(r"^admin/", admin.site.urls),
     re_path(r"^api/", include(router.urls)),
     re_path(r"^logger/", include("playlist.urls")),
