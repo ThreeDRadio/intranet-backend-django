@@ -1,5 +1,6 @@
 import csv
 from datetime import date, timedelta, timezone
+from unittest import mock
 from unittest.mock import MagicMock, patch
 
 from django.contrib.auth.models import User
@@ -10,7 +11,13 @@ from rest_framework import status
 from rest_framework.test import APIRequestFactory, APITestCase, force_authenticate
 
 from playlist.models import Playlist, PlaylistEntry, Setting, Show
-from playlist.views import PlaylistEntryViewSet, ShowViewSet, playlist, summary
+from playlist.views import (
+    PlaylistEntryViewSet,
+    PlaylistViewSet,
+    ShowViewSet,
+    playlist,
+    summary,
+)
 from session.models import Whitelist
 
 
@@ -26,25 +33,27 @@ class ShowViewsetTest(APITestCase):
         )
 
     def test_filter_active_shows(self):
-        factory = APIRequestFactory()
-        request = factory.get("/api/shows/active")
-        view = ShowViewSet.as_view({"get": "active"})
-        response = view(request)
+        with mock.patch.object(ShowViewSet, "permission_classes", []):
+            factory = APIRequestFactory()
+            request = factory.get("/api/shows/active")
+            view = ShowViewSet.as_view({"get": "active"})
+            response = view(request)
 
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        # Verify only the active show is returned
-        self.assertEqual(len(response.data), 1)
-        self.assertEqual(response.data[0]["id"], self.show.id)
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            # Verify only the active show is returned
+            self.assertEqual(len(response.data), 1)
+            self.assertEqual(response.data[0]["id"], self.show.id)
 
     def test_no_filter_returns_all_shows(self):
-        factory = APIRequestFactory()
-        request = factory.get("/api/shows")
-        view = ShowViewSet.as_view({"get": "list"})
-        response = view(request)
+        with mock.patch.object(ShowViewSet, "permission_classes", []):
+            factory = APIRequestFactory()
+            request = factory.get("/api/shows")
+            view = ShowViewSet.as_view({"get": "list"})
+            response = view(request)
 
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        # Verify both shows are returned
-        self.assertEqual(len(response.data), 2)
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            # Verify both shows are returned
+            self.assertEqual(len(response.data), 2)
 
     def test_grant_access_for_unauthenticated_unwhitelisted(self):
         """Makes sure a non-authenticated, non-whitelisted request fails with forbidden"""
@@ -53,7 +62,7 @@ class ShowViewsetTest(APITestCase):
         view = resolve(url).func
         request = factory.get(url)
         response = view(request)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 403)
 
     def test_grant_access_for_unauthenticated_whitelisted(self):
         """Makes sure a non-authenticated, but whitelisted request succeeds"""
@@ -93,7 +102,7 @@ class PlaylistViewsetTest(APITestCase):
         view = resolve(url).func
         request = factory.get(url)
         response = view(request)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 403)
 
     def test_grant_access_for_unauthenticated_whitelisted(self):
         """Makes sure a non-authenticated, but whitelisted request succeeds"""
@@ -129,7 +138,7 @@ class PlaylistEntryViewsetTest(APITestCase):
         view = resolve(url).func
         request = factory.get(url)
         response = view(request)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 403)
 
     def test_grant_access_for_unauthenticated_whitelisted(self):
         """Makes sure a non-authenticated, but whitelisted request succeeds"""
@@ -622,47 +631,51 @@ class ShowViewSetActionTests(APITestCase):
 
     def test_topartists_action(self):
         """Test that topartists returns correctly aggregated and ordered artist counts."""
-        url = reverse("Show-topartists", kwargs={"pk": self.show.pk})
-        response = self.client.get(url)
+        with mock.patch.object(ShowViewSet, "permission_classes", []):
+            url = reverse("Show-topartists", kwargs={"pk": self.show.pk})
+            response = self.client.get(url)
 
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        # Artist A has 2 plays, Artist B has 1 play
-        self.assertEqual(len(response.data), 2)
-        self.assertEqual(response.data[0]["artist"], "Artist A")
-        self.assertEqual(response.data[0]["plays"], 2)
-        self.assertEqual(response.data[1]["artist"], "Artist B")
-        self.assertEqual(response.data[1]["plays"], 1)
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            # Artist A has 2 plays, Artist B has 1 play
+            self.assertEqual(len(response.data), 2)
+            self.assertEqual(response.data[0]["artist"], "Artist A")
+            self.assertEqual(response.data[0]["plays"], 2)
+            self.assertEqual(response.data[1]["artist"], "Artist B")
+            self.assertEqual(response.data[1]["plays"], 1)
 
     def test_statistics_action(self):
         """Test that statistics action returns accurate counts for the specific show."""
-        url = reverse("Show-statistics", kwargs={"pk": self.show.pk})
-        response = self.client.get(url)
+        with mock.patch.object(ShowViewSet, "permission_classes", []):
+            url = reverse("Show-statistics", kwargs={"pk": self.show.pk})
+            response = self.client.get(url)
 
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        # Map response list into a dictionary for clean assertions
-        stats_dict = {item["name"]: item["value"] for item in response.data}
+            # Map response list into a dictionary for clean assertions
+            stats_dict = {item["name"]: item["value"] for item in response.data}
 
-        self.assertEqual(stats_dict["Total tracks"], 3)
-        self.assertEqual(stats_dict["Unique artists"], 2)
-        self.assertEqual(stats_dict["Local"], 2)
-        self.assertEqual(stats_dict["Australian"], 2)
-        self.assertEqual(stats_dict["Female"], 2)
+            self.assertEqual(stats_dict["Total tracks"], 3)
+            self.assertEqual(stats_dict["Unique artists"], 2)
+            self.assertEqual(stats_dict["Local"], 2)
+            self.assertEqual(stats_dict["Australian"], 2)
+            self.assertEqual(stats_dict["Female"], 2)
 
     def test_playlists_action(self):
         """Test that playlists action returns the correct playlist data for the show."""
-        url = reverse("Show-playlists", kwargs={"pk": self.show.pk})
-        response = self.client.get(url)
+        with mock.patch.object(ShowViewSet, "permission_classes", []):
+            url = reverse("Show-playlists", kwargs={"pk": self.show.pk})
+            response = self.client.get(url)
 
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        # Validates that the list contains the playlist created in setup
-        self.assertTrue(len(response.data) >= 1)
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            # Validates that the list contains the playlist created in setup
+            self.assertTrue(len(response.data) >= 1)
 
     def test_action_returns_404_for_invalid_show(self):
         """Test that actions correctly return 404 if the show instance does not exist."""
-        invalid_url = reverse("Show-statistics", kwargs={"pk": 9999})
-        response = self.client.get(invalid_url)
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        with mock.patch.object(ShowViewSet, "permission_classes", []):
+            invalid_url = reverse("Show-statistics", kwargs={"pk": 9999})
+            response = self.client.get(invalid_url)
+            self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 
 class PlaylistViewSetTests(APITestCase):
@@ -715,23 +728,25 @@ class PlaylistViewSetTests(APITestCase):
 
     def test_list_playlists(self):
         """Verify the playlist collection can be fetched successfully."""
-        url = reverse("Playlist-list")
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data["results"]), 2)
+        with mock.patch.object(PlaylistViewSet, "permission_classes", []):
+            url = reverse("Playlist-list")
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            self.assertEqual(len(response.data["results"]), 2)
 
     def test_tracks_detail_action_ordering(self):
         """Verify the custom 'tracks' action sorts items strictly by index, then pk."""
-        # Standard DRF router formats extra detail actions as 'basename-action_name'
-        url = reverse("Playlist-tracks", kwargs={"pk": self.playlist.pk})
-        response = self.client.get(url)
+        with mock.patch.object(PlaylistViewSet, "permission_classes", []):
+            # Standard DRF router formats extra detail actions as 'basename-action_name'
+            url = reverse("Playlist-tracks", kwargs={"pk": self.playlist.pk})
+            response = self.client.get(url)
 
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 2)
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            self.assertEqual(len(response.data), 2)
 
-        # Track with index=1 (Song Beta) must appear first despite being created second
-        self.assertEqual(response.data[0]["title"], "Song Beta")
-        self.assertEqual(response.data[1]["title"], "Song Alpha")
+            # Track with index=1 (Song Beta) must appear first despite being created second
+            self.assertEqual(response.data[0]["title"], "Song Beta")
+            self.assertEqual(response.data[1]["title"], "Song Alpha")
 
 
 class PlaylistEntryViewSetTests(APITestCase):
@@ -810,46 +825,52 @@ class PlaylistEntryViewSetTests(APITestCase):
 
     def test_today_action_aggregation_and_ordering(self):
         """Verify aggregate query counts today's plays and sorts by artist, then plays."""
-        url = reverse("PlaylistEntry-today")
-        response = self.client.get(url)
+        with mock.patch.object(PlaylistEntryViewSet, "permission_classes", []):
+            url = reverse("PlaylistEntry-today")
+            response = self.client.get(url)
 
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        # Handle paginated framework responses dynamically
-        results = (
-            response.data.get("results")
-            if isinstance(response.data, dict)
-            else response.data
-        )
+            # Handle paginated framework responses dynamically
+            results = (
+                response.data.get("results")
+                if isinstance(response.data, dict)
+                else response.data
+            )
 
-        # Total distinct track groupings today should be 2
-        self.assertEqual(len(results), 2)
+            # Total distinct track groupings today should be 2
+            self.assertEqual(len(results), 2)
 
-        # Find explicit counts inside the payload
-        track_one_data = next(item for item in results if item["title"] == "Track One")
-        track_two_data = next(item for item in results if item["title"] == "Track Two")
+            # Find explicit counts inside the payload
+            track_one_data = next(
+                item for item in results if item["title"] == "Track One"
+            )
+            track_two_data = next(
+                item for item in results if item["title"] == "Track Two"
+            )
 
-        # Check aggregation calculations
-        self.assertEqual(track_one_data["plays"], 2)
-        self.assertEqual(track_two_data["plays"], 1)
+            # Check aggregation calculations
+            self.assertEqual(track_one_data["plays"], 2)
+            self.assertEqual(track_two_data["plays"], 1)
 
-        # Verify serializer fields match PlayCountSerializer schema definitions
-        self.assertIn("artist", track_one_data)
-        self.assertIn("album", track_one_data)
-        self.assertIn("plays", track_one_data)
+            # Verify serializer fields match PlayCountSerializer schema definitions
+            self.assertIn("artist", track_one_data)
+            self.assertIn("album", track_one_data)
+            self.assertIn("plays", track_one_data)
 
     def test_today_no_pagination_class(self):
-        # 1. Create a fake request
-        factory = APIRequestFactory()
-        request = factory.get("/fake-url/")
+        with mock.patch.object(PlaylistEntryViewSet, 'permission_classes', []):
+            # 1. Create a fake request
+            factory = APIRequestFactory()
+            request = factory.get("/fake-url/")
 
-        # 2. Instantiate view and explicitly wipe pagination
-        view = PlaylistEntryViewSet.as_view({"get": "today"})
-        PlaylistEntryViewSet.pagination_class = None
+            # 2. Instantiate view and explicitly wipe pagination
+            view = PlaylistEntryViewSet.as_view({"get": "today"})
+            PlaylistEntryViewSet.pagination_class = None
 
-        # 3. Call the view
-        response = view(request)
+            # 3. Call the view
+            response = view(request)
 
-        # 4. Assertions
-        self.assertEqual(response.status_code, 200)
-        self.assertIsInstance(response.data, list)
+            # 4. Assertions
+            self.assertEqual(response.status_code, 200)
+            self.assertIsInstance(response.data, list)
