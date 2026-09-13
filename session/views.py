@@ -4,7 +4,13 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import viewsets
 from django.contrib.auth.models import User
-from django.http import HttpResponseBadRequest, JsonResponse
+from django.http import (
+    HttpResponse,
+    HttpResponseBadRequest,
+    HttpResponseForbidden,
+)
+
+import session
 
 from .serializers import UserSerializer
 from .permissions import IsStaffOrTargetUser
@@ -88,12 +94,10 @@ class MigrateAndLogin(APIView):
         return self._error_response("invalid")
 
 
-def echo_ip(request):
-    x_forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
+def is_whitelisted(request):
+    if session.permissions.is_whitelisted(
+        session.permissions.get_ip_from_request(request)
+    ):
+        return HttpResponse(status=status.HTTP_202_ACCEPTED)
 
-    if x_forwarded_for:
-        ip = x_forwarded_for.split(",")[0].strip()
-    else:
-        ip = request.META.get("REMOTE_ADDR")
-
-    return JsonResponse(f"{ip}", safe=False)
+    return HttpResponseForbidden()

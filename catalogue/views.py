@@ -4,12 +4,13 @@ import django_filters
 from django.conf import settings
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404
-from rest_framework import filters, permissions, viewsets
+from rest_framework import filters, viewsets
 from rest_framework.decorators import action
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.response import Response
 
 from downloads.models import DownloadLink
+from session.permissions import IsAuthenticatedOrWhitelist
 
 from .models import Comment, Release, Track
 from .serializers import CommentSerializer, ReleaseSerializer, TrackSerializer
@@ -17,7 +18,9 @@ from .serializers import CommentSerializer, ReleaseSerializer, TrackSerializer
 
 # Create your views here.
 class ArtistViewSet(viewsets.ViewSet):
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = [
+        IsAuthenticatedOrWhitelist,
+    ]
     filter_backends = (filters.SearchFilter,)
     search_fields = ("artist",)
 
@@ -65,7 +68,9 @@ class ReleaseFilter(django_filters.FilterSet):
 
 
 class ReleaseViewSet(viewsets.ModelViewSet):
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = [
+        IsAuthenticatedOrWhitelist,
+    ]
     queryset = Release.objects.all()
     serializer_class = ReleaseSerializer
     filter_backends = (
@@ -100,7 +105,9 @@ class ReleaseViewSet(viewsets.ModelViewSet):
 
 
 class CommentViewSet(viewsets.ModelViewSet):
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = [
+        IsAuthenticatedOrWhitelist,
+    ]
     queryset = Comment.objects.filter(visible=True)
     serializer_class = CommentSerializer
     filter_backends = (
@@ -125,7 +132,9 @@ class TrackFilter(django_filters.FilterSet):
 
 
 class TrackViewSet(viewsets.ModelViewSet):
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = [
+        IsAuthenticatedOrWhitelist,
+    ]
     queryset = Track.objects.all()
     serializer_class = TrackSerializer
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)

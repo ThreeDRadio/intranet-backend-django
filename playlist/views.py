@@ -9,6 +9,8 @@ from rest_framework import filters, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from session.permissions import IsAuthenticatedOrWhitelist
+
 from .models import Playlist, PlaylistEntry, Show
 from .serializers import (
     PlayCountSerializer,
@@ -182,7 +184,9 @@ class ShowViewSet(viewsets.ModelViewSet):
     queryset = Show.objects.all()
     serializer_class = ShowSerializer
     pagination_class = None
-    # permission_classes = [IsAuthenticatedOrWhitelist,]
+    permission_classes = [
+        IsAuthenticatedOrWhitelist,
+    ]
     filter_backends = (DjangoFilterBackend,)
     filter_fields = ("active",)
 
@@ -257,10 +261,14 @@ class PlaylistViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.OrderingFilter,)
     queryset = Playlist.objects.all()
     serializer_class = PlaylistSerializer
-    # permission_classes = [IsAuthenticatedOrWhitelist,]
+    permission_classes = [
+        IsAuthenticatedOrWhitelist,
+    ]
     ordering_fields = ("date",)
 
-    @action(detail=True)
+    @action(
+        detail=True,
+    )
     def tracks(self, request, pk=None):
         post = self.get_object()
         serializer = PlaylistEntrySerializer(
@@ -274,9 +282,13 @@ class PlaylistViewSet(viewsets.ModelViewSet):
 class PlaylistEntryViewSet(viewsets.ModelViewSet):
     queryset = PlaylistEntry.objects.all()
     serializer_class = PlaylistEntrySerializer
-    # permission_classes = [IsAuthenticatedOrWhitelist,]
+    permission_classes = [
+        IsAuthenticatedOrWhitelist,
+    ]
 
-    @action(detail=False)
+    @action(
+        detail=False,
+    )
     def today(self, request):
         queryset = (
             PlaylistEntry.objects.filter(playlist__date=date.today())
