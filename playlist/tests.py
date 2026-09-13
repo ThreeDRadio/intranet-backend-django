@@ -859,7 +859,7 @@ class PlaylistEntryViewSetTests(APITestCase):
             self.assertIn("plays", track_one_data)
 
     def test_today_no_pagination_class(self):
-        with mock.patch.object(PlaylistEntryViewSet, 'permission_classes', []):
+        with mock.patch.object(PlaylistEntryViewSet, "permission_classes", []):
             # 1. Create a fake request
             factory = APIRequestFactory()
             request = factory.get("/fake-url/")
