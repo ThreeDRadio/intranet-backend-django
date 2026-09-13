@@ -4,13 +4,19 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import viewsets
 from django.contrib.auth.models import User
-from django.http import HttpResponseBadRequest, JsonResponse
+from django.http import (
+    HttpResponse,
+    HttpResponseBadRequest,
+    HttpResponseForbidden,
+    JsonResponse,
+)
+from rest_framework.authtoken.models import Token
 
 from .serializers import UserSerializer
 from .permissions import IsStaffOrTargetUser
 from hashlib import md5
 
-from .models import OldPassword
+from .models import OldPassword, Whitelist
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -86,3 +92,19 @@ class MigrateAndLogin(APIView):
                 return Response({"token": user.auth_token.key, "user": user.id})
 
         return self._error_response("invalid")
+
+
+def is_whitelisted(request):
+    x_forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
+
+    if x_forwarded_for:
+        requester = x_forwarded_for.split(",")[0].strip()
+    else:
+        requester = request.META.get("REMOTE_ADDR")
+
+    wl = Whitelist.objects.filter(ip=requester).first()
+
+    if wl is None:
+        return HttpResponseForbidden()
+
+    return HttpResponse(status=status.HTTP_202_ACCEPTED)
