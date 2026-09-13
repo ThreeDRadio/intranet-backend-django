@@ -12,6 +12,8 @@ from django.http import (
 )
 from rest_framework.authtoken.models import Token
 
+import session
+
 from .serializers import UserSerializer
 from .permissions import IsStaffOrTargetUser
 from hashlib import md5
@@ -95,16 +97,9 @@ class MigrateAndLogin(APIView):
 
 
 def is_whitelisted(request):
-    x_forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
+    if session.permissions.is_whitelisted(
+        session.permissions.get_ip_from_request(request)
+    ):
+        return HttpResponse(status=status.HTTP_202_ACCEPTED)
 
-    if x_forwarded_for:
-        requester = x_forwarded_for.split(",")[0].strip()
-    else:
-        requester = request.META.get("REMOTE_ADDR")
-
-    wl = Whitelist.objects.filter(ip=requester).first()
-
-    if wl is None:
-        return HttpResponseForbidden()
-
-    return HttpResponse(status=status.HTTP_202_ACCEPTED)
+    return HttpResponseForbidden()
