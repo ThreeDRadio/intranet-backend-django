@@ -8,9 +8,7 @@ from django.http import (
     HttpResponse,
     HttpResponseBadRequest,
     HttpResponseForbidden,
-    JsonResponse,
 )
-from rest_framework.authtoken.models import Token
 
 import session
 
@@ -18,7 +16,7 @@ from .serializers import UserSerializer
 from .permissions import IsStaffOrTargetUser
 from hashlib import md5
 
-from .models import OldPassword, Whitelist
+from .models import OldPassword
 
 
 class UserViewSet(viewsets.ModelViewSet):
