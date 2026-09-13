@@ -266,7 +266,9 @@ class PlaylistViewSet(viewsets.ModelViewSet):
     ]
     ordering_fields = ("date",)
 
-    @action(detail=True)
+    @action(
+        detail=True,
+    )
     def tracks(self, request, pk=None):
         post = self.get_object()
         serializer = PlaylistEntrySerializer(
@@ -284,7 +286,9 @@ class PlaylistEntryViewSet(viewsets.ModelViewSet):
         IsAuthenticatedOrWhitelist,
     ]
 
-    @action(detail=False)
+    @action(
+        detail=False,
+    )
     def today(self, request):
         queryset = (
             PlaylistEntry.objects.filter(playlist__date=date.today())

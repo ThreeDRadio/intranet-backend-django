@@ -19,8 +19,8 @@ from .serializers import CommentSerializer, ReleaseSerializer, TrackSerializer
 # Create your views here.
 class ArtistViewSet(viewsets.ViewSet):
     permission_classes = [
-            IsAuthenticatedOrWhitelist,
-        ]
+        IsAuthenticatedOrWhitelist,
+    ]
     filter_backends = (filters.SearchFilter,)
     search_fields = ("artist",)
 
