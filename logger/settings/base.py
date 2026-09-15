@@ -77,7 +77,7 @@ REST_FRAMEWORK = {
 SPECTACULAR_SETTINGS = {
     "TITLE": "Three D Radio API",
     "DESCRIPTION": "Three D Radio's API",
-    "VERSION": "1.0.6",
+    "VERSION": "1.0.7",
     "SERVE_INCLUDE_SCHEMA": False,
     # OTHER SETTINGS
 }
