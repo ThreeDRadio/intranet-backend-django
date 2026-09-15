@@ -20,8 +20,22 @@ class IsAuthenticatedOrWhitelist(permissions.IsAuthenticated):
     """Passes if the user is authenticated or in a whitelist of IPs"""
 
     def has_permission(self, request, view):
-        ipAddress = request.META["REMOTE_ADDR"]
-        whitelisted = Whitelist.objects.filter(ip=ipAddress).exists()
-        if whitelisted:
+        if is_whitelisted(get_ip_from_request(request)):
             return True
+
         return super(IsAuthenticatedOrWhitelist, self).has_permission(request, view)
+
+
+def get_ip_from_request(request):
+    x_forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
+
+    if x_forwarded_for:
+        requester = x_forwarded_for.split(",")[0].strip()
+    else:
+        requester = request.META.get("REMOTE_ADDR")
+
+    return requester
+
+
+def is_whitelisted(ip_address):
+    return ip_address is not None and Whitelist.objects.filter(ip=ip_address).exists()

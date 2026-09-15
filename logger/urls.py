@@ -22,7 +22,7 @@ from rest_framework import routers
 from catalogue.views import ArtistViewSet, CommentViewSet, ReleaseViewSet, TrackViewSet
 from downloads import views as downloadViews
 from playlist import views
-from session.views import MigrateAndLogin, UserViewSet
+from session.views import MigrateAndLogin, UserViewSet, is_whitelisted
 
 router = routers.DefaultRouter()
 router.register(r"releases", ReleaseViewSet, "release")
@@ -40,6 +40,7 @@ urlpatterns = [
     re_path(r"^auth", MigrateAndLogin.as_view()),
     re_path(r"^admin/", admin.site.urls),
     re_path(r"^api/", include(router.urls)),
+    re_path(r"^api/session/whitelist", is_whitelisted),
     re_path(r"^logger/", include("playlist.urls")),
     re_path(r"^download/([a-f0-9\-]+)", downloadViews.download),
     # YOUR PATTERNS

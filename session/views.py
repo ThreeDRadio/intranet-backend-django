@@ -4,7 +4,13 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import viewsets
 from django.contrib.auth.models import User
-from django.http import HttpResponseBadRequest
+from django.http import (
+    HttpResponse,
+    HttpResponseBadRequest,
+    HttpResponseForbidden,
+)
+
+import session
 
 from .serializers import UserSerializer
 from .permissions import IsStaffOrTargetUser
@@ -86,3 +92,12 @@ class MigrateAndLogin(APIView):
                 return Response({"token": user.auth_token.key, "user": user.id})
 
         return self._error_response("invalid")
+
+
+def is_whitelisted(request):
+    if session.permissions.is_whitelisted(
+        session.permissions.get_ip_from_request(request)
+    ):
+        return HttpResponse(status=status.HTTP_202_ACCEPTED)
+
+    return HttpResponseForbidden()
