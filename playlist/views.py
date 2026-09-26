@@ -256,6 +256,20 @@ class ShowViewSet(viewsets.ModelViewSet):
         )
         return Response(serializer.data)
 
+    @action(detail=False, methods=["post"])
+    def search(self, request, pk=None):
+        if "ids" not in request.data:
+            return Response({"error": "No search parameters provided."}, status=400)
+
+        ids = request.data.get("ids")
+
+        serializer = ShowSerializer(
+            Show.objects.filter(id__in=ids).order_by("id"),
+            context={"request": request},
+            many=True,
+        )
+        return Response(serializer.data)
+
 
 class PlaylistViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.OrderingFilter,)
