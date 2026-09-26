@@ -258,7 +258,7 @@ class ShowViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=["post"])
     def search(self, request, pk=None):
-        if not "ids" in request.data:
+        if "ids" not in request.data:
             return Response({"error": "No search parameters provided."}, status=400)
 
         ids = request.data.get("ids")

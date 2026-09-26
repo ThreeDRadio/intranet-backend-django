@@ -174,7 +174,7 @@ class ShowViewSetActionTests(APITestCase):
     def test_search_shows_success(self):
         """Test searching for shows with a valid list of IDs."""
         # Create an extra show to verify filtering works correctly
-        extra_show = Show.objects.create(
+        Show.objects.create(
             id=2, name="Evening Beats", active=True, startTime="18:00", endTime="19:00"
         )
 
@@ -188,6 +188,7 @@ class ShowViewSetActionTests(APITestCase):
             self.assertEqual(len(response.data), 2)
             self.assertEqual(response.data[0]["id"], 1)
             self.assertEqual(response.data[1]["id"], 2)
+            self.assertEqual(response.data[1]["name"], "Evening Beats")
 
     def test_search_shows_missing_ids_key(self):
         """Test that a 400 error is returned when 'ids' key is missing from payload."""

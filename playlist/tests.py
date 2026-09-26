@@ -14,7 +14,6 @@ from playlist.models import Playlist, PlaylistEntry, Setting, Show
 from playlist.views import (
     PlaylistEntryViewSet,
     PlaylistViewSet,
-    ShowViewSet,
     playlist,
     summary,
 )
