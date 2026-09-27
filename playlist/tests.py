@@ -55,6 +55,7 @@ class PlaylistViewsetTest(APITestCase):
         response = view(request)
         self.assertEqual(response.status_code, 200)
 
+
 class PlaylistModelTest(APITestCase):
     def setUp(self):
         """Set up common test data used across multiple test cases."""

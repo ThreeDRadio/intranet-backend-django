@@ -2,7 +2,7 @@ import csv
 from datetime import date
 
 from django.db import transaction, DatabaseError
-from django.db.models import Count 
+from django.db.models import Count
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django_filters.rest_framework import DjangoFilterBackend
@@ -293,6 +293,7 @@ class PlaylistViewSet(viewsets.ModelViewSet):
         )
         return Response(serializer.data)
 
+
 class PlaylistEntryViewSet(viewsets.ModelViewSet):
     queryset = PlaylistEntry.objects.all()
     serializer_class = PlaylistEntrySerializer
@@ -319,11 +320,11 @@ class PlaylistEntryViewSet(viewsets.ModelViewSet):
         serializer = PlayCountSerializer(queryset, many=True)
         return Response(serializer.data)
 
-    @action(detail=True, methods=['post'])
+    @action(detail=True, methods=["post"])
     def move(self, request, pk=None):
         if "to" not in request.data:
             return Response({"error": "No move to index provided."}, status=400)
-        
+
         to_idx = request.data.get("to")
 
         if to_idx <= 0:
@@ -333,8 +334,7 @@ class PlaylistEntryViewSet(viewsets.ModelViewSet):
         # Send back a bad request if the user tries to move this one outside
         # of the 1 -> largest idx range
         largest_idx = (
-            PlaylistEntry.objects
-            .filter(playlist=self.get_object().playlist)
+            PlaylistEntry.objects.filter(playlist=self.get_object().playlist)
             .values("index")
             .order_by("index")
             .last()
@@ -346,15 +346,13 @@ class PlaylistEntryViewSet(viewsets.ModelViewSet):
         subject = self.get_object()
         from_idx = subject.index
 
-        if from_idx == to_idx: # Nice try
+        if from_idx == to_idx:  # Nice try
             return Response({}, status=204)
 
-        lower_idx = min(from_idx, to_idx)        
+        lower_idx = min(from_idx, to_idx)
         upper_idx = max(from_idx, to_idx)
-        entry_range = (
-            PlaylistEntry.objects
-            .filter(playlist=subject.playlist)
-            .filter(index__gte=lower_idx, index__lte=upper_idx)
+        entry_range = PlaylistEntry.objects.filter(playlist=subject.playlist).filter(
+            index__gte=lower_idx, index__lte=upper_idx
         )
         direction = -1 if from_idx < to_idx else 1
 
@@ -371,8 +369,7 @@ class PlaylistEntryViewSet(viewsets.ModelViewSet):
                 subject.save()
         except DatabaseError:
             return Response(
-                {"error": "Failed to update records. No move to was done."}, 
-                status=500
+                {"error": "Failed to update records. No move to was done."}, status=500
             )
 
         # No content, so reply with a 204.

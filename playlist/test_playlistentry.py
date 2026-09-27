@@ -1,7 +1,11 @@
-
 from django.contrib.auth.models import User
 from django.urls import resolve, reverse
-from rest_framework.test import APIClient, APIRequestFactory, APITestCase, force_authenticate
+from rest_framework.test import (
+    APIClient,
+    APIRequestFactory,
+    APITestCase,
+    force_authenticate,
+)
 
 from playlist.models import Playlist, PlaylistEntry, Show
 from session.models import Whitelist
@@ -46,6 +50,7 @@ class PlaylistEntryModelTest(APITestCase):
             expected,
         )
 
+
 class PlaylistEntryViewsetTest(APITestCase):
     def setUp(self):
         self.user = User.objects.create_user("user", "password", "fake1@user.com")
@@ -76,7 +81,7 @@ class PlaylistEntryViewsetTest(APITestCase):
             australian=False,
             newRelease=False,
             index=1,
-            id=99
+            id=99,
         )
         self.playlist_entry_2 = PlaylistEntry.objects.create(
             playlist=self.playlist_instance,
@@ -87,7 +92,7 @@ class PlaylistEntryViewsetTest(APITestCase):
             australian=False,
             newRelease=False,
             index=2,
-            id=100
+            id=100,
         )
         self.playlist_entry_3 = PlaylistEntry.objects.create(
             playlist=self.playlist_instance,
@@ -98,7 +103,7 @@ class PlaylistEntryViewsetTest(APITestCase):
             australian=False,
             newRelease=False,
             index=3,
-            id=103
+            id=103,
         )
         self.playlist_entry_4 = PlaylistEntry.objects.create(
             playlist=self.playlist_instance,
@@ -109,7 +114,7 @@ class PlaylistEntryViewsetTest(APITestCase):
             australian=False,
             newRelease=False,
             index=4,
-            id=108
+            id=108,
         )
 
     def test_grant_access_for_unauthenticated_unwhitelisted(self):
@@ -140,8 +145,6 @@ class PlaylistEntryViewsetTest(APITestCase):
         response = view(request)
         self.assertEqual(response.status_code, 200)
 
-
-
     # Move semantics for index
     def test_move_no_to_throws_400(self):
         client = APIClient()
@@ -171,19 +174,21 @@ class PlaylistEntryViewsetTest(APITestCase):
         response = client.post(url, {"to": 2}, format="json")
         self.assertEqual(response.status_code, 204)
         current_order = list(
-            PlaylistEntry.objects
-                .filter(playlist=self.playlist_instance)
-                .order_by("index")
-                .values_list("id", flat=True)
+            PlaylistEntry.objects.filter(playlist=self.playlist_instance)
+            .order_by("index")
+            .values_list("id", flat=True)
         )
-        
+
         # Assert the exact expected sequence of IDs
-        self.assertEqual(current_order, [
-            self.playlist_entry_2.id, 
-            self.playlist_entry_1.id, 
-            self.playlist_entry_3.id, 
-            self.playlist_entry_4.id
-        ])
+        self.assertEqual(
+            current_order,
+            [
+                self.playlist_entry_2.id,
+                self.playlist_entry_1.id,
+                self.playlist_entry_3.id,
+                self.playlist_entry_4.id,
+            ],
+        )
 
     def test_move_back_1(self):
         client = APIClient()
@@ -192,19 +197,21 @@ class PlaylistEntryViewsetTest(APITestCase):
         response = client.post(url, {"to": 2}, format="json")
         self.assertEqual(response.status_code, 204)
         current_order = list(
-            PlaylistEntry.objects
-                .filter(playlist=self.playlist_instance)
-                .order_by("index")
-                .values_list("id", flat=True)
+            PlaylistEntry.objects.filter(playlist=self.playlist_instance)
+            .order_by("index")
+            .values_list("id", flat=True)
         )
-        
+
         # Assert the exact expected sequence of IDs
-        self.assertEqual(current_order, [
-            self.playlist_entry_1.id, 
-            self.playlist_entry_3.id, 
-            self.playlist_entry_2.id, 
-            self.playlist_entry_4.id
-        ])
+        self.assertEqual(
+            current_order,
+            [
+                self.playlist_entry_1.id,
+                self.playlist_entry_3.id,
+                self.playlist_entry_2.id,
+                self.playlist_entry_4.id,
+            ],
+        )
 
     def test_move_first_to_last(self):
         client = APIClient()
@@ -213,19 +220,21 @@ class PlaylistEntryViewsetTest(APITestCase):
         response = client.post(url, {"to": 4}, format="json")
         self.assertEqual(response.status_code, 204)
         current_order = list(
-            PlaylistEntry.objects
-                .filter(playlist=self.playlist_instance)
-                .order_by("index")
-                .values_list("id", flat=True)
+            PlaylistEntry.objects.filter(playlist=self.playlist_instance)
+            .order_by("index")
+            .values_list("id", flat=True)
         )
-        
+
         # Assert the exact expected sequence of IDs
-        self.assertEqual(current_order, [
-            self.playlist_entry_2.id, 
-            self.playlist_entry_3.id, 
-            self.playlist_entry_4.id, 
-            self.playlist_entry_1.id
-        ])
+        self.assertEqual(
+            current_order,
+            [
+                self.playlist_entry_2.id,
+                self.playlist_entry_3.id,
+                self.playlist_entry_4.id,
+                self.playlist_entry_1.id,
+            ],
+        )
 
     def test_move_last_to_first(self):
         client = APIClient()
@@ -234,16 +243,18 @@ class PlaylistEntryViewsetTest(APITestCase):
         response = client.post(url, {"to": 1}, format="json")
         self.assertEqual(response.status_code, 204)
         current_order = list(
-            PlaylistEntry.objects
-                .filter(playlist=self.playlist_instance)
-                .order_by("index")
-                .values_list("id", flat=True)
+            PlaylistEntry.objects.filter(playlist=self.playlist_instance)
+            .order_by("index")
+            .values_list("id", flat=True)
         )
-        
+
         # Assert the exact expected sequence of IDs
-        self.assertEqual(current_order, [
-            self.playlist_entry_4.id, 
-            self.playlist_entry_1.id, 
-            self.playlist_entry_2.id, 
-            self.playlist_entry_3.id
-        ])
+        self.assertEqual(
+            current_order,
+            [
+                self.playlist_entry_4.id,
+                self.playlist_entry_1.id,
+                self.playlist_entry_2.id,
+                self.playlist_entry_3.id,
+            ],
+        )
