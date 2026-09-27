@@ -1,7 +1,8 @@
 import csv
 from datetime import date
 
-from django.db.models import Count
+from django.db import transaction, DatabaseError
+from django.db.models import Count 
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django_filters.rest_framework import DjangoFilterBackend
@@ -325,7 +326,7 @@ class PlaylistEntryViewSet(viewsets.ModelViewSet):
         
         to_idx = request.data.get("to")
 
-        if to_idx < 0:
+        if to_idx <= 0:
             return Response({"error": "Invalid move to index."}, status=400)
 
         # Next, get all entries for this playlist and check the latest index.
@@ -342,7 +343,8 @@ class PlaylistEntryViewSet(viewsets.ModelViewSet):
         if to_idx > largest_idx:
             return Response({"error": "Invalid move to index."}, status=400)
 
-        from_idx = self.get_object().index
+        subject = self.get_object()
+        from_idx = subject.index
 
         if from_idx == to_idx: # Nice try
             return Response({}, status=204)
@@ -351,9 +353,27 @@ class PlaylistEntryViewSet(viewsets.ModelViewSet):
         upper_idx = max(from_idx, to_idx)
         entry_range = (
             PlaylistEntry.objects
+            .filter(playlist=subject.playlist)
             .filter(index__gte=lower_idx, index__lte=upper_idx)
         )
-        print(entry_range)
+        direction = -1 if from_idx < to_idx else 1
+
+        try:
+            with transaction.atomic():
+                for entry in entry_range:
+                    if entry.id == subject.id:
+                        continue
+
+                    entry.index = entry.index + direction
+                    entry.save()
+                # Finish by updating the subject of this move.
+                subject.index = to_idx
+                subject.save()
+        except DatabaseError:
+            return Response(
+                {"error": "Failed to update records. No move to was done."}, 
+                status=500
+            )
 
         # No content, so reply with a 204.
         return Response({}, status=204)
