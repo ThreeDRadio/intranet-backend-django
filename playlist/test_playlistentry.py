@@ -167,6 +167,97 @@ class PlaylistEntryViewsetTest(APITestCase):
         response = client.post(url, {"to": 5}, format="json")
         self.assertEqual(response.status_code, 400)
 
+    def test_move_to_null_throws_400(self):
+        client = APIClient()
+        client.force_authenticate(user=self.user)
+        url = reverse("PlaylistEntry-move", kwargs={"pk": 100})
+        response = client.post(url, {"to": None}, format="json")
+        self.assertEqual(response.status_code, 400)
+
+    def test_move_with_unindexed_entry_present(self):
+        # Regression test for #92: an entry without an index must not break
+        # moving the indexed entries (on Postgres the old largest-index
+        # lookup could return the unindexed entry and crash).
+        PlaylistEntry.objects.create(
+            playlist=self.playlist_instance,
+            artist="unindexed artist",
+            title="unindexed title",
+            local=False,
+            female=False,
+            australian=False,
+            newRelease=False,
+            index=None,
+            id=110,
+        )
+        client = APIClient()
+        client.force_authenticate(user=self.user)
+        url = reverse("PlaylistEntry-move", kwargs={"pk": 99})
+        response = client.post(url, {"to": 2}, format="json")
+        self.assertEqual(response.status_code, 204)
+        indexed_order = list(
+            PlaylistEntry.objects.filter(
+                playlist=self.playlist_instance, index__isnull=False
+            )
+            .order_by("index")
+            .values_list("id", flat=True)
+        )
+        self.assertEqual(
+            indexed_order,
+            [
+                self.playlist_entry_2.id,
+                self.playlist_entry_1.id,
+                self.playlist_entry_3.id,
+                self.playlist_entry_4.id,
+            ],
+        )
+
+    def test_move_entry_without_index_throws_400(self):
+        unindexed = PlaylistEntry.objects.create(
+            playlist=self.playlist_instance,
+            artist="unindexed artist",
+            title="unindexed title",
+            local=False,
+            female=False,
+            australian=False,
+            newRelease=False,
+            index=None,
+            id=110,
+        )
+        client = APIClient()
+        client.force_authenticate(user=self.user)
+        url = reverse("PlaylistEntry-move", kwargs={"pk": unindexed.id})
+        response = client.post(url, {"to": 1}, format="json")
+        self.assertEqual(response.status_code, 400)
+
+    def test_move_in_playlist_with_no_indexes_throws_400(self):
+        # Regression test for #92: with no indexed entries at all there is
+        # no valid move target; this used to crash with
+        # TypeError: '>' not supported between 'int' and 'NoneType'.
+        playlist = Playlist.objects.create(
+            id=1000,
+            show=self.show,
+            date="2026-01-02",
+            australianQuota=20,
+            localQuota=20,
+            femaleQuota=40,
+        )
+        entry = PlaylistEntry.objects.create(
+            playlist=playlist,
+            artist="unindexed artist",
+            title="unindexed title",
+            local=False,
+            female=False,
+            australian=False,
+            newRelease=False,
+            index=None,
+            id=111,
+        )
+        client = APIClient()
+        client.force_authenticate(user=self.user)
+        url = reverse("PlaylistEntry-move", kwargs={"pk": entry.id})
+        response = client.post(url, {"to": 1}, format="json")
+        self.assertEqual(response.status_code, 400)
+
     def test_move_forward_1(self):
         client = APIClient()
         client.force_authenticate(user=self.user)
