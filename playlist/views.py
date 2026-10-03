@@ -1,6 +1,7 @@
 import csv
 from datetime import date
 
+from django.db import transaction, DatabaseError
 from django.db.models import Count
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
@@ -256,6 +257,20 @@ class ShowViewSet(viewsets.ModelViewSet):
         )
         return Response(serializer.data)
 
+    @action(detail=False, methods=["post"])
+    def search(self, request, pk=None):
+        if "ids" not in request.data:
+            return Response({"error": "No search parameters provided."}, status=400)
+
+        ids = request.data.get("ids")
+
+        serializer = ShowSerializer(
+            Show.objects.filter(id__in=ids).order_by("id"),
+            context={"request": request},
+            many=True,
+        )
+        return Response(serializer.data)
+
 
 class PlaylistViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.OrderingFilter,)
@@ -304,3 +319,58 @@ class PlaylistEntryViewSet(viewsets.ModelViewSet):
             return self.get_paginated_response(serializer.data)
         serializer = PlayCountSerializer(queryset, many=True)
         return Response(serializer.data)
+
+    @action(detail=True, methods=["post"])
+    def move(self, request, pk=None):
+        if "to" not in request.data:
+            return Response({"error": "No move to index provided."}, status=400)
+
+        to_idx = request.data.get("to")
+
+        if to_idx <= 0:
+            return Response({"error": "Invalid move to index."}, status=400)
+
+        # Next, get all entries for this playlist and check the latest index.
+        # Send back a bad request if the user tries to move this one outside
+        # of the 1 -> largest idx range
+        largest_idx = (
+            PlaylistEntry.objects.filter(playlist=self.get_object().playlist)
+            .values("index")
+            .order_by("index")
+            .last()
+        )["index"]
+
+        if to_idx > largest_idx:
+            return Response({"error": "Invalid move to index."}, status=400)
+
+        subject = self.get_object()
+        from_idx = subject.index
+
+        if from_idx == to_idx:  # Nice try
+            return Response({}, status=204)
+
+        lower_idx = min(from_idx, to_idx)
+        upper_idx = max(from_idx, to_idx)
+        entry_range = PlaylistEntry.objects.filter(playlist=subject.playlist).filter(
+            index__gte=lower_idx, index__lte=upper_idx
+        )
+        direction = -1 if from_idx < to_idx else 1
+
+        try:
+            with transaction.atomic():
+                for entry in entry_range:
+                    if entry.id == subject.id:
+                        continue
+
+                    entry.index = entry.index + direction
+                    entry.save()
+                # Finish by updating the subject of this move.
+                subject.index = to_idx
+                subject.save()
+        except DatabaseError:
+            return Response(
+                {"error": "Failed to update records. No move to was done."}, status=500
+            )
+
+        # No content, so reply with a 204.
+        return Response({}, status=204)
