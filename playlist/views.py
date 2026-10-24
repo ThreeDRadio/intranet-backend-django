@@ -2,7 +2,7 @@ import csv
 from datetime import date
 
 from django.db import transaction, DatabaseError
-from django.db.models import Count
+from django.db.models import Count, Max
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django_filters.rest_framework import DjangoFilterBackend
@@ -327,24 +327,32 @@ class PlaylistEntryViewSet(viewsets.ModelViewSet):
 
         to_idx = request.data.get("to")
 
-        if to_idx <= 0:
+        # "to" can be present but null (or another non-integer JSON value);
+        # comparing those against ints raises TypeError instead of a 400.
+        if not isinstance(to_idx, int) or isinstance(to_idx, bool) or to_idx <= 0:
             return Response({"error": "Invalid move to index."}, status=400)
 
         # Next, get all entries for this playlist and check the latest index.
         # Send back a bad request if the user tries to move this one outside
-        # of the 1 -> largest idx range
-        largest_idx = (
-            PlaylistEntry.objects.filter(playlist=self.get_object().playlist)
-            .values("index")
-            .order_by("index")
-            .last()
-        )["index"]
+        # of the 1 -> largest idx range.
+        # PlaylistEntry.index is nullable: entries without an index must not
+        # count towards the largest index. The old order_by("index").last()
+        # could return an unindexed entry on Postgres (NULLS LAST), making
+        # largest_idx None and crashing the comparison below (issue #92).
+        largest_idx = PlaylistEntry.objects.filter(
+            playlist=self.get_object().playlist, index__isnull=False
+        ).aggregate(Max("index"))["index__max"]
 
-        if to_idx > largest_idx:
+        if largest_idx is None or to_idx > largest_idx:
             return Response({"error": "Invalid move to index."}, status=400)
 
         subject = self.get_object()
         from_idx = subject.index
+
+        if from_idx is None:
+            return Response(
+                {"error": "Cannot move an entry without an index."}, status=400
+            )
 
         if from_idx == to_idx:  # Nice try
             return Response({}, status=204)
