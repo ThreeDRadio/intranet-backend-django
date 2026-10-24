@@ -131,6 +131,14 @@ def playlist(request, playlist_id):
             response["Content-Type"] = "text/plain; charset=utf-8"
             return response
 
+        if request.GET.get("format") == "song_artist":
+            if request.GET.get("album") == "true":
+                context["printalbum"] = True
+            response = render(request, "playlist/songartistview.html", context)
+            response["Content-Type"] = "text/plain; charset=utf-8"
+            return response
+
+
         elif request.GET.get("format") == "csv":
             response = HttpResponse(content_type="text/csv")
             if playlist.show is None:
