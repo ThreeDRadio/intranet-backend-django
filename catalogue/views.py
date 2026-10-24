@@ -97,31 +97,32 @@ class ReleaseViewSet(viewsets.ModelViewSet):
         )
         return Response(serializer.data)
 
-    @action(detail=True, methods=['get', 'post'])
+    @action(detail=True, methods=["get", "post"])
     def comments(self, request, pk=None):
         this_release = self.get_object()
 
-        if request.method == 'POST':
+        if request.method == "POST":
             data = json.loads(request.body)
             # Load data
-            if data['comment'] is None or data['author'] is None:
+            if data["comment"] is None or data["author"] is None:
                 return HttpResponse(status=400)
             # Get required data out of the payload.
-            input_comment = data['comment']
+            input_comment = data["comment"]
             if not input_comment or not input_comment.strip():
                 return HttpResponse(status=400)
-            author = data['author']
+            author = data["author"]
             # Make sure we have a user id.
-            if author['id'] is None:
+            if author["id"] is None:
                 return HttpResponse(status=400)
             # Pull user from author
-            author_id = author['id']
-            user_by_id = User.objects.get(id=author_id)
+            author_id = author["id"]
             # Make sure we pull a legit user.
-            if user_by_id is None:
+            try:
+                user_by_id = User.objects.get(id=author_id)
+            except User.DoesNotExist:
                 return HttpResponse(status=400)
 
-            result=Comment.objects.create(
+            result = Comment.objects.create(
                 release=this_release,
                 comment=input_comment,
                 author=user_by_id,
@@ -129,11 +130,11 @@ class ReleaseViewSet(viewsets.ModelViewSet):
                 modifywho=author_id,
                 modifywhen=-1,
                 cdtrackid=1,
-                visible=True
+                visible=True,
             )
-            
+
             return HttpResponse(result, status=201)
-        
+
         serializer = CommentSerializer(
             this_release.comments.filter(visible=True).order_by("pk"),
             context={"request": request},
