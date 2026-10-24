@@ -133,7 +133,13 @@ class ReleaseViewSet(viewsets.ModelViewSet):
                 visible=True,
             )
 
-            return HttpResponse(result, status=201)
+            serializer = CommentSerializer(
+                result,
+                context={"request": request},
+                many=False,
+            )
+
+            return Response(serializer.data, status=201)
 
         serializer = CommentSerializer(
             this_release.comments.filter(visible=True).order_by("pk"),
