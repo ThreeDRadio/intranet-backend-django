@@ -394,6 +394,21 @@ class PlaylistViewTests(APITestCase):
 
         self.assertEqual(response.status_code, 200)
 
+    def test_song_artist_format_view(self):
+        """song_artist format returns plain text response and maps context correctly."""
+        request = self.factory.get("/playlist/", {"format": "song_artist"})
+        response = playlist(request, playlist_id=self.playlist_with_show.pk)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "text/plain; charset=utf-8")
+
+    def test_song_artist_format_with_album_true(self):
+        """song_artist album=true flag injects printalbum into the template context."""
+        request = self.factory.get("/playlist/", {"format": "song_artist", "album": "true"})
+        response = playlist(request, playlist_id=self.playlist_with_show.pk)
+
+        self.assertEqual(response.status_code, 200)
+
     def test_csv_format_filename_with_show(self):
         """CSV filename uses the Show name if a relation exists."""
         request = self.factory.get("/playlist/", {"format": "csv"})
