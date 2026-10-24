@@ -11,7 +11,7 @@ from rest_framework.decorators import action
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.response import Response
 
-from datetime import datetime
+import time
 
 from downloads.models import DownloadLink
 from session.permissions import IsAuthenticatedOrWhitelist
@@ -126,9 +126,9 @@ class ReleaseViewSet(viewsets.ModelViewSet):
                 release=this_release,
                 comment=input_comment,
                 author=user_by_id,
-                createwhen=-1,
+                createwhen=int(time.time()),
                 modifywho=author_id,
-                modifywhen=-1,
+                modifywhen=int(time.time()),
                 cdtrackid=1,
                 visible=True,
             )
