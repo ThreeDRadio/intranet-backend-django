@@ -404,7 +404,9 @@ class PlaylistViewTests(APITestCase):
 
     def test_song_artist_format_with_album_true(self):
         """song_artist album=true flag injects printalbum into the template context."""
-        request = self.factory.get("/playlist/", {"format": "song_artist", "album": "true"})
+        request = self.factory.get(
+            "/playlist/", {"format": "song_artist", "album": "true"}
+        )
         response = playlist(request, playlist_id=self.playlist_with_show.pk)
 
         self.assertEqual(response.status_code, 200)
