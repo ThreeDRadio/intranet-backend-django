@@ -1,4 +1,4 @@
-certifi==2026.6.17
+certifi==2026.10.19
 chardet==7.4.3
 coverage==7.10.7
 setuptools==84.1.0
