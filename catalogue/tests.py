@@ -180,6 +180,8 @@ class ReleaseViewSetTest(APITestCase):
         self.user = User.objects.create_user(
             username="testuser", password="password123"
         )
+        
+        self.client.force_authenticate(user=self.user)
 
         # Create sample data
         self.release1 = Release.objects.create(
@@ -210,7 +212,6 @@ class ReleaseViewSetTest(APITestCase):
         )
 
         self.comment1 = Comment.objects.create(
-            id=1,
             cdtrackid=1,
             release=self.release1,
             comment="Masterpiece",
@@ -221,7 +222,6 @@ class ReleaseViewSetTest(APITestCase):
         )
 
         self.bad_comment = Comment.objects.create(
-            id=2,
             cdtrackid=3,
             release=self.release2,
             comment="I am a bad person and need to shut up",
@@ -233,7 +233,6 @@ class ReleaseViewSetTest(APITestCase):
         )
 
         self.good_comment = Comment.objects.create(
-            id=3,
             cdtrackid=3,
             release=self.release2,
             comment="I am a good person and am ok to speak :)",
@@ -256,20 +255,19 @@ class ReleaseViewSetTest(APITestCase):
     # --- PERMISSION TESTS ---
     def test_unauthenticated_user_is_forbidden(self):
         """Verify that anonymous requests are rejected."""
+        self.client.force_authenticate(user=None, token=None)
         response = self.client.get(self.list_url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     # --- STANDARD CRUD TESTS ---
     def test_list_releases_authenticated(self):
         """Verify authenticated users can fetch the release list with pagination."""
-        self.client.force_authenticate(user=self.user)
         response = self.client.get(self.list_url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn("results", response.data)  # LimitOffsetPagination format
 
     def test_retrieve_single_release(self):
         """Verify fetching a specific release by ID."""
-        self.client.force_authenticate(user=self.user)
         response = self.client.get(self.detail_url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["title"], "Kid A")
@@ -277,25 +275,21 @@ class ReleaseViewSetTest(APITestCase):
     # --- FILTERING, SEARCHING, & ORDERING TESTS ---
     def test_search_by_artist(self):
         """Verify filtering results via the search query parameter."""
-        self.client.force_authenticate(user=self.user)
         response = self.client.get(self.list_url, {"search": "Radiohead"})
         self.assertEqual(len(response.data["results"]), 1)
 
     def test_search_by_nested_track_title(self):
         """Verify search works across the track title relation."""
-        self.client.force_authenticate(user=self.user)
         response = self.client.get(self.list_url, {"search": "Everything"})
         self.assertEqual(len(response.data["results"]), 1)
 
     def test_ordering_by_year_ascending(self):
         """Verify ordering parameter sorts results chronologically."""
-        self.client.force_authenticate(user=self.user)
         response = self.client.get(self.list_url, {"ordering": "year"})
         self.assertEqual(response.data["results"][0]["title"], "Kid A")
 
     def test_min_arrival_filterset_works(self):
         """Verify filtering results via the search query parameter."""
-        self.client.force_authenticate(user=self.user)
         response = self.client.get(self.list_url, {"min_arrival": "2026-02-01"})
         self.assertEqual(len(response.data["results"]), 1)
         self.assertEqual(response.data["results"][0]["year"], 2001)
@@ -304,7 +298,6 @@ class ReleaseViewSetTest(APITestCase):
     # --- CUSTOM ACTION TESTS ---
     def test_get_tracks_ordered_by_tracknum(self):
         """Verify custom tracks action returns nested tracks sorted by track number."""
-        self.client.force_authenticate(user=self.user)
         response = self.client.get(self.tracks_url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 2)
@@ -312,7 +305,6 @@ class ReleaseViewSetTest(APITestCase):
 
     def test_get_comments_ordered_by_pk(self):
         """Verify custom comments action returns nested comments sorted by primary key."""
-        self.client.force_authenticate(user=self.user)
         response = self.client.get(self.comments_url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
@@ -320,13 +312,71 @@ class ReleaseViewSetTest(APITestCase):
 
     def test_get_comments_does_not_return_invisible(self):
         """Verify custom comments action does NOT return hidden comments."""
-        self.client.force_authenticate(user=self.user)
         response = self.client.get(self.comments_url_2)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
         self.assertEqual(
             response.data[0]["comment"], "I am a good person and am ok to speak :)"
         )
+
+    def test_create_comment_success(self):
+        """Test successfully creating a comment with valid data."""
+        url = reverse("release-comments", kwargs={"pk": self.release1.pk})
+        payload = {
+            "comment": "This is a valid comment.",
+            "author": {"id": self.user.id},
+        }
+
+        response = self.client.post(url, data=payload, format="json")
+
+        self.assertEqual(response.status_code, 201)
+        self.assertTrue(
+            Comment.objects.filter(
+                release=self.release1, comment="This is a valid comment."
+            ).exists()
+        )
+
+    def test_create_comment_missing_toplevel_fields(self):
+        """Test payload missing the 'comment' or 'author' keys entirely."""
+        url = reverse("release-comments", kwargs={"pk": self.release1.pk})
+
+        # Missing 'comment'
+        payload_no_comment = {"author": {"id": self.user.id}, "comment": None}
+        response = self.client.post(url, data=payload_no_comment, format="json")
+        self.assertEqual(response.status_code, 400)
+
+        # Missing 'author'
+        payload_no_author = {"comment": "Hello", "author": None}
+        response = self.client.post(url, data=payload_no_author, format="json")
+        self.assertEqual(response.status_code, 400)
+
+    def test_create_comment_empty_or_whitespace_string(self):
+        """Test comment field containing only spaces or empty text."""
+        url = reverse("release-comments", kwargs={"pk": self.release1.pk})
+
+        # Whitespace comment
+        payload = {"comment": "   ", "author": {"id": self.user.id}}
+        response = self.client.post(url, data=payload, format="json")
+        self.assertEqual(response.status_code, 400)
+
+    def test_create_comment_missing_author_id(self):
+        """Test author object missing an internal id."""
+        url = reverse("release-comments", kwargs={"pk": self.release1.pk})
+        payload = {"comment": "Valid comment", "author": {"id": None}}
+
+        response = self.client.post(url, data=payload, format="json")
+        self.assertEqual(response.status_code, 400)
+
+    def test_create_comment_invalid_user_id(self):
+        """Test a user ID that does not exist in the database."""
+        url = reverse("release-comments", kwargs={"pk": self.release1.pk})
+        payload = {
+            "comment": "Valid comment",
+            "author": {"id": 99999},  # Non-existent ID
+        }
+
+        response = self.client.post(url, data=payload, format="json")
+        self.assertEqual(response.status_code, 400)
 
 
 # Create a temporary directory for file path testing
