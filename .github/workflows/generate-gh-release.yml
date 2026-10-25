@@ -72,31 +72,34 @@ jobs:
       contents: write
 
     steps:
-      - name: Update Version in Base Settings
+      - name: Check out repository code
+        uses: actions/checkout@v7
+
+      - name: Update version in settings.py
         run: |
-          sed -i -E 's/("VERSION":\s*")[^"]*("/")/\1${{ inputs.version }}\2/g' logger/settings/base.py
+          awk -v ver="${{ inputs.version }}" '{gsub(/"VERSION": "[^"]+"/, "\"VERSION\": \"" ver "\"")}1' logger/settings/base.py > temp.py && mv temp.py logger/settings/base.py
 
       - name: Verify Changes
         run: grep -A 5 "SPECTACULAR_SETTINGS" logger/settings/base.py
 
-      - name: Commit and Push Changes
+      - name: Commit and push changes
         id: commit_step
         uses: stefanzweifel/git-auto-commit-action@v7
         with:
-          commit_message: "chore: bump version to ${{ inputs.version }} [skip ci]"
+          commit_message: "chore: bump API version to ${{ inputs.version }} [skip ci]"
           file_pattern: "logger/settings/base.py"
 
-      - name: Create and Push Tag
+      - name: Create and push tag
         run: |
           TAG_NAME="${{ inputs.version }}"
           git tag $TAG_NAME ${{ steps.commit_step.outputs.commit_hash }}
           git push origin $TAG_NAME
 
-      - name: Create GitHub Release
+      - name: Create GitHub release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: "${{ inputs.version }}"
-          name: "Release ${{ inputs.version }}"
+          name: "${{ inputs.version }}"
           generate_release_notes: true
           draft: false
           prerelease: false
