@@ -1,0 +1,102 @@
+name: Create a release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Enter version number (e.g., 1.2.3)"
+        type: string
+        required: true
+
+env:
+  CR_PAT: ${{ vars.CR_PAT }}
+
+jobs:
+  validate:
+    environment: test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Validate Semantic Versioning Format
+        run: |
+          # Regex matches strict X.Y.Z format (digits only)
+          if [[ ! "${{ inputs.version }}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+          echo "::error::Invalid version format! You entered '${{ inputs.version }}'. Please use 'major.minor.patch' (e.g., 1.4.12)."
+          exit 1
+          fi
+      - name: Proceed with workflow
+        run: echo "Version validated successfully! Deploying version ${{ inputs.version }}"
+
+  test:
+    needs: validate
+    environment: test
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16 # Specify your required PostgreSQL version
+        env:
+          POSTGRES_USER: test_user
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_DB: threed
+        # Ensure the container is fully healthy before starting workflow steps
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --no-build-isolation -r requirements.txt
+
+      - name: Run Tests
+        run: |
+          python manage.py test --keepdb
+
+  update-version:
+    needs: test
+    environment: test
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Update Version in Base Settings
+        run: |
+          sed -i -E 's/("VERSION":\s*")[^"]*("/")/\1${{ inputs.version }}\2/g' logger/settings/base.py
+
+      - name: Verify Changes
+        run: grep -A 5 "SPECTACULAR_SETTINGS" logger/settings/base.py
+
+      - name: Commit and Push Changes
+        id: commit_step
+        uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          commit_message: "chore: bump version to ${{ inputs.version }} [skip ci]"
+          file_pattern: "logger/settings/base.py"
+
+      - name: Create and Push Tag
+        run: |
+          TAG_NAME="${{ inputs.version }}"
+          git tag $TAG_NAME ${{ steps.commit_step.outputs.commit_hash }}
+          git push origin $TAG_NAME
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: "${{ inputs.version }}"
+          name: "Release ${{ inputs.version }}"
+          generate_release_notes: true
+          draft: false
+          prerelease: false
