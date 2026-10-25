@@ -74,7 +74,7 @@ jobs:
     steps:
       - name: Update Version in Base Settings
         run: |
-          sed -i -E 's/("VERSION":\s*")[^"]*("/")/\1${{ inputs.version }}\2/g' logger/settings/base.py
+          sed -i -E 's!("VERSION":\s*")[^"]*(")#\${{ inputs.version }}\2#g' logger/settings/base.py
 
       - name: Verify Changes
         run: grep -A 5 "SPECTACULAR_SETTINGS" logger/settings/base.py
