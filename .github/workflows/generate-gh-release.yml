@@ -72,9 +72,18 @@ jobs:
       contents: write
 
     steps:
+      - name: Generate GitHub App Token
+        id: generate-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ vars.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+        
       - name: Check out repository code
         uses: actions/checkout@v7
-
+        with:
+          token: ${{ steps.generate-token.outputs.token }}
+          
       - name: Update version in settings.py
         run: |
           awk -v ver="${{ inputs.version }}" '{gsub(/"VERSION": "[^"]+"/, "\"VERSION\": \"" ver "\"")}1' logger/settings/base.py > temp.py && mv temp.py logger/settings/base.py
@@ -82,17 +91,18 @@ jobs:
       - name: Verify Changes
         run: grep -A 5 "SPECTACULAR_SETTINGS" logger/settings/base.py
 
-      - name: Commit and push changes
-        id: commit_step
-        uses: stefanzweifel/git-auto-commit-action@v7
-        with:
-          commit_message: "chore: bump API version to ${{ inputs.version }} [skip ci]"
-          file_pattern: "logger/settings/base.py"
+      - name: Make changes and Push
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add logger/settings/base.py
+          git commit -m "chore: bump API version to ${{ inputs.version }} [skip ci]"
+          git push origin HEAD:master
 
       - name: Create and push tag
         run: |
           TAG_NAME="${{ inputs.version }}"
-          git tag $TAG_NAME ${{ steps.commit_step.outputs.commit_hash }}
+          git tag $TAG_NAME HEAD
           git push origin $TAG_NAME
 
       - name: Create GitHub release
@@ -103,3 +113,4 @@ jobs:
           generate_release_notes: true
           draft: false
           prerelease: false
+          token: ${{ steps.generate-token.outputs.token }}
