@@ -68,9 +68,6 @@ jobs:
     environment: test
     runs-on: ubuntu-latest
 
-    permissions:
-      contents: write
-
     steps:
       - name: Generate GitHub App Token
         id: generate-token
