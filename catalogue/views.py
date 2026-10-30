@@ -1,13 +1,17 @@
+import json
 import os
 
 import django_filters
 from django.conf import settings
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404
+from django.contrib.auth.models import User
 from rest_framework import filters, viewsets
 from rest_framework.decorators import action
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.response import Response
+
+import time
 
 from downloads.models import DownloadLink
 from session.permissions import IsAuthenticatedOrWhitelist
@@ -93,11 +97,52 @@ class ReleaseViewSet(viewsets.ModelViewSet):
         )
         return Response(serializer.data)
 
-    @action(detail=True)
+    @action(detail=True, methods=["get", "post"])
     def comments(self, request, pk=None):
-        release = self.get_object()
+        this_release = self.get_object()
+
+        if request.method == "POST":
+            data = json.loads(request.body)
+            # Load data
+            if data["comment"] is None or data["author"] is None:
+                return HttpResponse(status=400)
+            # Get required data out of the payload.
+            input_comment = data["comment"]
+            if not input_comment or not input_comment.strip():
+                return HttpResponse(status=400)
+            author = data["author"]
+            # Make sure we have a user id.
+            if author["id"] is None:
+                return HttpResponse(status=400)
+            # Pull user from author
+            author_id = author["id"]
+            # Make sure we pull a legit user.
+            try:
+                user_by_id = User.objects.get(id=author_id)
+            except User.DoesNotExist:
+                return HttpResponse(status=400)
+
+            result = Comment.objects.create(
+                release=this_release,
+                comment=input_comment,
+                author=user_by_id,
+                createwhen=int(time.time()),
+                modifywho=author_id,
+                modifywhen=int(time.time()),
+                cdtrackid=1,
+                visible=True,
+            )
+
+            serializer = CommentSerializer(
+                result,
+                context={"request": request},
+                many=False,
+            )
+
+            return Response(serializer.data, status=201)
+
         serializer = CommentSerializer(
-            release.comments.filter(visible=True).order_by("pk"),
+            this_release.comments.filter(visible=True).order_by("pk"),
             context={"request": request},
             many=True,
         )
