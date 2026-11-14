@@ -48,6 +48,7 @@ API_PREFIX = env("API_PREFIX", default="/")
 CORS_ORIGIN_ALLOW_ALL = env.bool("CORS_ORIGIN_ALLOW_ALL", default=False)
 DOWNLOAD_BASE_PATH = env("DOWNLOAD_BASE_PATH", default="/")
 DOWNLOAD_X_SENDFILE = env.bool("DOWNLOAD_X_SENDFILE", default=False)
+STATIC_URL = env("STATIC_URL", default="/static/")
 
 include(
     "settings/base.py",
