@@ -17,7 +17,8 @@ Including another URLconf
 from django.conf.urls import include
 from django.contrib import admin
 from django.urls import re_path
-#from django.urls import path, re_path
+
+# from django.urls import path, re_path
 # from drf_spectacular.views import (
 #     SpectacularAPIView,
 #     SpectacularRedocView,
