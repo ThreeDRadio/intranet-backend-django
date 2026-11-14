@@ -1,2 +1,1 @@
-DOWNLOAD_BASE_PATH = "/Users/Michael/test/"
 DOWNLOAD_LIFETIME = 3000

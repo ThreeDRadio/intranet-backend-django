@@ -47,6 +47,9 @@ jobs:
           python -m pip install --no-build-isolation -r requirements.txt
 
       - name: Run Tests with coverage
+        env:
+          WORDPRESS_USER: "none"
+          WORDPRESS_API_KEY: "none"
         run: |
           coverage run manage.py test
           coverage xml

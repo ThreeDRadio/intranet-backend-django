@@ -96,6 +96,8 @@ FROM base AS django-production
 # Copy the source code into the container.
 FROM django-${DJANGO_ENV} AS final
 COPY --exclude=/html . .
+ENV WORDPRESS_USER=none
+ENV WORDPRESS_API_KEY=none
 RUN python3 /app/manage.py collectstatic --noinput
 # Enable mods as root
 RUN a2enmod status && a2enmod lbmethod_byrequests && a2enmod ssl && a2enmod rewrite
