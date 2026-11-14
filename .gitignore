@@ -10,4 +10,4 @@ components/
 .vscode
 .coverage
 .python-version
-**/.env
+.env

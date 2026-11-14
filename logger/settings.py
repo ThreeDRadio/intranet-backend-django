@@ -1,6 +1,7 @@
 import logging
 import sys
 
+from corsheaders.defaults import default_headers
 import sentry_sdk
 from sentry_sdk.integrations.logging import (
     LoggingIntegration,
@@ -9,22 +10,40 @@ from sentry_sdk.integrations.logging import (
 )
 from split_settings.tools import include, optional
 
+from pathlib import Path
+import environ
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+env = environ.Env(DEBUG=(bool, False))
+environ.Env.read_env(BASE_DIR / ".env")
+DEBUG = env("DEBUG")
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": "threed",
-        "USER": "test_user",
-        "PASSWORD": "test_password",
-        "HOST": "localhost",
-        "PORT": "5432",
-    }
+    "default": env.db(
+        "LOGGER_DB_URL",
+        default="postgres://test_user:test_password@localhost:5432/threed",
+        engine="django.db.backends.postgresql_psycopg2",
+    ),
+    "msglist": env.db(
+        "MSGLIST_DB_URL",
+        default="postgres://test_user:test_password@localhost:5432/msglist",
+        engine="django.db.backends.postgresql_psycopg2",
+    ),
 }
-
 DATABASE_ROUTERS = ["message_bank.routers.MessageBankRouter"]
-
-WORDPRESS_USER = ""
-WORDPRESS_API_KEY = ""
+WORDPRESS_USER = env("WORDPRESS_USER")
+WORDPRESS_API_KEY = env("WORDPRESS_API_KEY")
 WORDPRESS_URL = "https://threedradio.com/wp-json/wp/v2"
+# Internals
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["localhost", "127.0.0.1"])
+CORS_ORIGIN_WHITELIST = env.list(
+    "CORS_ORIGIN_WHITELIST", default=["localhost", "127.0.0.1"]
+)
+CORS_ALLOW_HEADERS = list(default_headers) + env.list("CORS_ALLOW_HEADERS_ADDITIONAL")
+API_PREFIX = env("API_PREFIX")
+CORS_ORIGIN_ALLOW_ALL = env.bool("CORS_ORIGIN_ALLOW_ALL")
+DOWNLOAD_BASE_PATH = env("DOWNLOAD_BASE_PATH")
+DOWNLOAD_X_SENDFILE = env("DOWNLOAD_X_SENDFILE")
 
 include(
     "settings/base.py",
