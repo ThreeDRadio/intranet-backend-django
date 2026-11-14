@@ -35,9 +35,9 @@ WORDPRESS_USER = env("WORDPRESS_USER")
 WORDPRESS_API_KEY = env("WORDPRESS_API_KEY")
 WORDPRESS_URL = "https://threedradio.com/wp-json/wp/v2"
 # Internals
-ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["localhost", "127.0.0.1"])
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["localhost", "https://127.0.0.1"])
 CORS_ORIGIN_WHITELIST = env.list(
-    "CORS_ORIGIN_WHITELIST", default=["localhost", "127.0.0.1"]
+    "CORS_ORIGIN_WHITELIST", default=["localhost", "https://127.0.0.1"]
 )
 CORS_ALLOW_HEADERS = list(default_headers) + env.list("CORS_ALLOW_HEADERS_ADDITIONAL", default=[])
 API_PREFIX = env("API_PREFIX", default="/")
