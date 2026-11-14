@@ -27,6 +27,7 @@ from django.urls import re_path
 from rest_framework import routers
 
 from catalogue.views import ArtistViewSet, CommentViewSet, ReleaseViewSet, TrackViewSet
+from message_bank.views import MessagesViewSet
 from downloads import views as downloadViews
 from playlist import views
 from session.views import MigrateAndLogin, UserViewSet, is_whitelisted
@@ -41,6 +42,9 @@ router.register(r"shows", views.ShowViewSet, "Show")
 router.register(r"users", UserViewSet, "user")
 router.register(r"playlists", views.PlaylistViewSet, "Playlist")
 router.register(r"playlistentries", views.PlaylistEntryViewSet, "PlaylistEntry")
+
+# Message bank
+router.register(r"messages", MessagesViewSet, "messages")
 
 urlpatterns = [
     # url(r'^api-token-auth/', 'rest_framework.authtoken.views.obtain_auth_token'),
