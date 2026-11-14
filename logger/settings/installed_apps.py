@@ -16,4 +16,5 @@ INSTALLED_APPS = (
     "downloads",
     "playlist",
     "session",
+    "message_bank",
 )
