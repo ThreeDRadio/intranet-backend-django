@@ -58,6 +58,9 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build the Docker image
+        env:
+          WORDPRESS_USER: "none"
+          WORDPRESS_API_KEY: "none"
         run: docker build . --file Dockerfile --tag ghcr.io/threedradio/intranet-backend-django:testing --build-arg DJANGO_ENV=staging
 
       - name: Login to the GitHub Docker registry
