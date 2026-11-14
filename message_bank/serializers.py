@@ -11,6 +11,7 @@ class MessageSerializer(serializers.ModelSerializer):
             "title",
             "type",
             "created",
+            "nq",
             "expirydate",
             "fldproducer",
             "duration",
