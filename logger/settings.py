@@ -20,6 +20,8 @@ DATABASES = {
     }
 }
 
+DATABASE_ROUTERS = ['message_bank.routers.MessageBankRouter']
+
 WORDPRESS_USER = ""
 WORDPRESS_API_KEY = ""
 WORDPRESS_URL = "https://threedradio.com/wp-json/wp/v2"
