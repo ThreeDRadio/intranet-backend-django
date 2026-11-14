@@ -39,11 +39,11 @@ ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["localhost", "127.0.0.1"])
 CORS_ORIGIN_WHITELIST = env.list(
     "CORS_ORIGIN_WHITELIST", default=["localhost", "127.0.0.1"]
 )
-CORS_ALLOW_HEADERS = list(default_headers) + env.list("CORS_ALLOW_HEADERS_ADDITIONAL")
-API_PREFIX = env("API_PREFIX")
-CORS_ORIGIN_ALLOW_ALL = env.bool("CORS_ORIGIN_ALLOW_ALL")
-DOWNLOAD_BASE_PATH = env("DOWNLOAD_BASE_PATH")
-DOWNLOAD_X_SENDFILE = env("DOWNLOAD_X_SENDFILE")
+CORS_ALLOW_HEADERS = list(default_headers) + env.list("CORS_ALLOW_HEADERS_ADDITIONAL", default="")
+API_PREFIX = env("API_PREFIX", default="/")
+CORS_ORIGIN_ALLOW_ALL = env.bool("CORS_ORIGIN_ALLOW_ALL", default=False)
+DOWNLOAD_BASE_PATH = env("DOWNLOAD_BASE_PATH", default="/")
+DOWNLOAD_X_SENDFILE = env.bool("DOWNLOAD_X_SENDFILE", default=False)
 
 include(
     "settings/base.py",

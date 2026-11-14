@@ -43,7 +43,6 @@ jobs:
           python -m pip install --no-build-isolation -r requirements.txt
       - name: Run Tests
         env:
-          CORS_ALLOW_HEADERS_ADDITIONAL: ""
           WORDPRESS_USER: "none"
           WORDPRESS_API_KEY: "none"
         run: |
