@@ -48,6 +48,7 @@ jobs:
 
       - name: Run Tests with coverage
         env:
+          CORS_ALLOW_HEADERS_ADDITIONAL: ""
           WORDPRESS_USER: "none"
           WORDPRESS_API_KEY: "none"
         run: |
