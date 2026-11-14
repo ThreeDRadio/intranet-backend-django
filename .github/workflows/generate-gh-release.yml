@@ -60,6 +60,9 @@ jobs:
           python -m pip install --no-build-isolation -r requirements.txt
 
       - name: Run Tests
+        env:
+          WORDPRESS_USER: "none"
+          WORDPRESS_API_KEY: "none"
         run: |
           python manage.py test --keepdb
 
@@ -75,12 +78,12 @@ jobs:
         with:
           app-id: ${{ vars.APP_ID }}
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
-        
+
       - name: Check out repository code
         uses: actions/checkout@v7
         with:
           token: ${{ steps.generate-token.outputs.token }}
-          
+
       - name: Update version in settings.py
         run: |
           awk -v ver="${{ inputs.version }}" '{gsub(/"VERSION": "[^"]+"/, "\"VERSION\": \"" ver "\"")}1' logger/settings/base.py > temp.py && mv temp.py logger/settings/base.py
