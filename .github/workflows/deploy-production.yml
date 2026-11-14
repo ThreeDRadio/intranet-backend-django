@@ -9,11 +9,11 @@ env:
 jobs:
   test:
     environment: prod
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     services:
       postgres:
-        image: postgres:16 # Specify your required PostgreSQL version
+        image: postgres:10 # Specify your required PostgreSQL version
         env:
           POSTGRES_USER: test_user
           POSTGRES_PASSWORD: test_password
@@ -32,7 +32,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.14"
+          python-version: "3.9"
       - name: Install dependencies
         run: |
           python -m pip install --no-build-isolation -r requirements.txt
@@ -115,6 +115,8 @@ jobs:
               -e SENTRY_DSN="${{ secrets.SENTRY_DSN }}" \
               -e SENTRY_ENVIRONMENT="${{ vars.SENTRY_ENVIRONMENT }}" \
               -e SENTRY_RELEASE="${{ github.sha }}" \
+              -e WORDPRESS_USER="${{ secrets.WORDPRESS_USER }}" \
+              -e WORDPRESS_API_KEY="${{ secrets.WORDPRESS_API_KEY }}" \
               -v /srv/docker/intranet-backend-django/keys/server.key:/etc/apache2/ssl/ssl.key/server.key:z \
               -v /srv/docker/intranet-backend-django/certs/server.crt:/etc/apache2/ssl/ssl.crt/server.crt:z \
               -v /srv/docker/intranet-backend-django/.env:/app/.env:z \

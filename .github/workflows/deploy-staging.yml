@@ -122,6 +122,8 @@ jobs:
               -e SENTRY_DSN="${{ secrets.SENTRY_DSN }}" \
               -e SENTRY_ENVIRONMENT="${{ vars.SENTRY_ENVIRONMENT }}" \
               -e SENTRY_RELEASE="${{ github.sha }}" \
+              -e WORDPRESS_USER="${{ secrets.WORDPRESS_USER }}" \
+              -e WORDPRESS_API_KEY="${{ secrets.WORDPRESS_API_KEY }}" \
               -v /srv/docker/intranet-backend-django/keys/server.key:/etc/apache2/ssl/ssl.key/server.key:z \
               -v /srv/docker/intranet-backend-django/certs/server.crt:/etc/apache2/ssl/ssl.crt/server.crt:z \
               -v /srv/docker/intranet-backend-django/.env:/app/.env:z \
