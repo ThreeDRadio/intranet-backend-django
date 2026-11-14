@@ -35,7 +35,7 @@ class Playlog(models.Model):
         db_table = "playlog"
 
 
-class Programmes(models.Model):
+class Program(models.Model):
     code = models.CharField(primary_key=True, max_length=6)
     name = models.CharField(max_length=36)
     day = models.CharField(max_length=9)
