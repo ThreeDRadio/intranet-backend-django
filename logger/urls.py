@@ -27,7 +27,7 @@ from django.urls import re_path
 from rest_framework import routers
 
 from catalogue.views import ArtistViewSet, CommentViewSet, ReleaseViewSet, TrackViewSet
-from message_bank.views import MessagesViewSet
+from message_bank.views import MessageTypesViewSet, MessagesViewSet
 from downloads import views as downloadViews
 from playlist import views
 from session.views import MigrateAndLogin, UserViewSet, is_whitelisted
@@ -44,6 +44,7 @@ router.register(r"playlists", views.PlaylistViewSet, "Playlist")
 router.register(r"playlistentries", views.PlaylistEntryViewSet, "PlaylistEntry")
 
 # Message bank
+router.register(r"messages/types", MessageTypesViewSet, "messagetypes")
 router.register(r"messages", MessagesViewSet, "messages")
 
 urlpatterns = [
