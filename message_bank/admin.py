@@ -15,8 +15,9 @@ class MessageTypeAdmin(admin.ModelAdmin):
 
 
 class ProgramAdmin(admin.ModelAdmin):
-    ordering = ("-day","start")
+    ordering = ("-day", "start")
     list_display = ("code", "name", "day", "start", "presenters", "description")
+
 
 admin.site.register(Message, MessageAdmin)
 admin.site.register(MessageType, MessageTypeAdmin)
