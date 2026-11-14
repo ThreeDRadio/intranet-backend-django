@@ -99,7 +99,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: ${{ vars.SSH_PORT }}
           source: ".env"
-          target: "/srv/docker/intranet-backend-django/.env"
+          target: "/srv/docker/intranet-backend-django"
 
       - name: Pull the new Docker image from GitHub and restart the container
         uses: appleboy/ssh-action@v1
