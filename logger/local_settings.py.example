@@ -8,6 +8,13 @@ DATABASES = {
         'NAME': os.path.join(''),
         'USER': os.path.join(''),
         'PASSWORD': os.path.join(''),
+    },
+    'msglist': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'HOST': os.path.join(''),
+        'NAME': os.path.join(''),
+        'USER': os.path.join(''),
+        'PASSWORD': os.path.join(''),
     }
 }
 REST_FRAMEWORK = {
