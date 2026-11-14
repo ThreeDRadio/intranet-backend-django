@@ -8,7 +8,7 @@
 from django.db import models
 
 
-class Messagelist(models.Model):
+class Message(models.Model):
     code = models.CharField(primary_key=True, max_length=6)
     title = models.CharField(max_length=30)
     type = models.CharField(max_length=20)
@@ -66,7 +66,7 @@ class Tbladmin(models.Model):
         db_table = 'tbladmin'
 
 
-class Typelist(models.Model):
+class MessageType(models.Model):
     type = models.CharField(primary_key=True, max_length=20)
     description = models.CharField(max_length=70)
     scheduled = models.BooleanField(blank=True, null=True)
