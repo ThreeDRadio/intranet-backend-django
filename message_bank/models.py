@@ -21,7 +21,7 @@ class Message(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'messagelist'
+        db_table = "messagelist"
 
 
 class Playlog(models.Model):
@@ -32,7 +32,7 @@ class Playlog(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'playlog'
+        db_table = "playlog"
 
 
 class Programmes(models.Model):
@@ -45,7 +45,7 @@ class Programmes(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'programmes'
+        db_table = "programmes"
 
 
 class Schedule(models.Model):
@@ -55,7 +55,7 @@ class Schedule(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'schedule'
+        db_table = "schedule"
 
 
 class Tbladmin(models.Model):
@@ -63,7 +63,7 @@ class Tbladmin(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'tbladmin'
+        db_table = "tbladmin"
 
 
 class MessageType(models.Model):
@@ -73,4 +73,4 @@ class MessageType(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'typelist'
+        db_table = "typelist"

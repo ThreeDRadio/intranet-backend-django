@@ -20,7 +20,7 @@ DATABASES = {
     }
 }
 
-DATABASE_ROUTERS = ['message_bank.routers.MessageBankRouter']
+DATABASE_ROUTERS = ["message_bank.routers.MessageBankRouter"]
 
 WORDPRESS_USER = ""
 WORDPRESS_API_KEY = ""
