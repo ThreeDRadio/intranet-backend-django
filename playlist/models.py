@@ -69,7 +69,7 @@ pre_save.connect(Playlist.applyQuotas, sender=Playlist)
 
 class PlaylistEntry(models.Model):
     playlist = models.ForeignKey(
-        Playlist, on_delete=models.PROTECT, related_name="tracks"
+        Playlist, on_delete=models.CASCADE, related_name="tracks"
     )
 
     # entry order!
