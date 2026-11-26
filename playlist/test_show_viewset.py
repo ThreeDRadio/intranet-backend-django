@@ -221,7 +221,7 @@ class ShowViewSetActionTests(APITestCase):
         self.global_australian = Setting.objects.create(
             id="australian_quota", value="20", description="Global Aus quota"
         )
-        
+
         # Create a playlist with clean percentage targets (multiples of 20% for 5 tracks)
         self.weekend_show = Show.objects.create(
             id=3, name="Weekend Warmup", active=True, startTime="12:00", endTime="14:00"
