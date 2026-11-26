@@ -1,4 +1,5 @@
 import csv
+import math
 from datetime import date
 
 from django.db import transaction, DatabaseError
@@ -6,18 +7,20 @@ from django.db.models import Count
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django_filters.rest_framework import DjangoFilterBackend
+from drf_spectacular.utils import extend_schema
 from rest_framework import filters, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from session.permissions import IsAuthenticatedOrWhitelist
 
-from .models import Playlist, PlaylistEntry, Show
+from .models import Playlist, PlaylistEntry, Show, Setting
 from .serializers import (
     PlayCountSerializer,
     PlaylistEntrySerializer,
     PlaylistSerializer,
     ShowSerializer,
+    ShowStatisticsQuerySerializer,
     ShowStatisticsSerializer,
     TopArtistSerializer,
 )
@@ -210,8 +213,16 @@ class ShowViewSet(viewsets.ModelViewSet):
         serializer = TopArtistSerializer(top, many=True)
         return Response(serializer.data)
 
+    @extend_schema(
+        parameters=[ShowStatisticsQuerySerializer],
+        responses={200: ShowStatisticsSerializer(many=True)},
+    )
     @action(detail=True)
     def statistics(self, request, pk=None):
+        query_serializer = ShowStatisticsQuerySerializer(data=request.query_params)
+        query_serializer.is_valid(raise_exception=True)
+        targets = query_serializer.validated_data.get("targets")
+
         show = self.get_object()
         tracks = PlaylistEntry.objects.filter(playlist__show=show).count()
         local = (
@@ -231,13 +242,33 @@ class ShowViewSet(viewsets.ModelViewSet):
             PlaylistEntry.objects.filter(playlist__show=show).distinct("artist").count()
         )
 
-        data = (
-            {"name": "Total tracks", "value": tracks},
-            {"name": "Unique artists", "value": artists},
-            {"name": "Local", "value": local},
-            {"name": "Australian", "value": australian},
-            {"name": "Female", "value": female},
-        )
+        total = {"name": "Total tracks", "value": tracks}
+        unique = {"name": "Unique artists", "value": artists}
+        lq = {"name": "Local", "value": local}
+        aq = {"name": "Australian", "value": australian}
+        fq = {"name": "Female", "value": female}
+
+        if targets:
+            localTarget = (
+                show.localQuota
+                if show.customQuotas
+                else int(Setting.objects.get(pk="local_quota").value)
+            )
+            ausTarget = (
+                show.australianQuota
+                if show.customQuotas
+                else int(Setting.objects.get(pk="australian_quota").value)
+            )
+            femaleTarget = (
+                show.femaleQuota
+                if show.customQuotas
+                else int(Setting.objects.get(pk="female_quota").value) 
+            )
+            lq["target"] = math.floor(tracks * (localTarget / 100.0))
+            aq["target"] = math.floor(tracks * (ausTarget / 100.0))
+            fq["target"] = math.floor(tracks * (femaleTarget / 100.0))
+
+        data = (total, unique, lq, aq, fq)
 
         serializer = ShowStatisticsSerializer(
             data, context={"request": request}, many=True
