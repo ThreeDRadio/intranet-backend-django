@@ -11,6 +11,11 @@ class TopArtistSerializer(serializers.Serializer):
 class ShowStatisticsSerializer(serializers.Serializer):
     name = serializers.CharField()
     value = serializers.IntegerField()
+    target = serializers.IntegerField(required=False)
+
+
+class ShowStatisticsQuerySerializer(serializers.Serializer):
+    targets = serializers.BooleanField(required=False)
 
 
 class PlayCountSerializer(serializers.Serializer):
