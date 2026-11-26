@@ -249,24 +249,34 @@ class ShowViewSet(viewsets.ModelViewSet):
         fq = {"name": "Female", "value": female}
 
         if targets:
-            localTarget = (
-                show.localQuota
-                if show.customQuotas
-                else int(Setting.objects.get(pk="local_quota").value)
-            )
-            ausTarget = (
-                show.australianQuota
-                if show.customQuotas
-                else int(Setting.objects.get(pk="australian_quota").value)
-            )
-            femaleTarget = (
-                show.femaleQuota
-                if show.customQuotas
-                else int(Setting.objects.get(pk="female_quota").value) 
-            )
-            lq["target"] = math.floor(tracks * (localTarget / 100.0))
-            aq["target"] = math.floor(tracks * (ausTarget / 100.0))
-            fq["target"] = math.floor(tracks * (femaleTarget / 100.0))
+            if show.customQuotas:
+                lq["target"] = math.floor(tracks * (show.localQuota / 100.0))
+                aq["target"] = math.floor(tracks * (show.australianQuota / 100.0))
+                fq["target"] = math.floor(tracks * (show.femaleQuota / 100.0))
+            if not show.customQuotas:
+                defaultLocal = (
+                    Setting.objects.filter(pk="local_quota")
+                    .values_list("value", flat=True)
+                    .first()
+                )
+                defaultLocalTarget = (
+                    int(defaultLocal) if defaultLocal is not None else 0
+                )
+                defaultAus = (
+                    Setting.objects.filter(pk="australian_quota")
+                    .values_list("value", flat=True)
+                    .first()
+                )
+                defaultAusTarget = int(defaultAus) if defaultAus is not None else 0
+                defaultFem = (
+                    Setting.objects.filter(pk="female_quota")
+                    .values_list("value", flat=True)
+                    .first()
+                )
+                defaultFemTarget = int(defaultFem) if defaultFem is not None else 0
+                lq["target"] = math.floor(tracks * (defaultLocalTarget / 100.0))
+                aq["target"] = math.floor(tracks * (defaultAusTarget / 100.0))
+                fq["target"] = math.floor(tracks * (defaultFemTarget / 100.0))
 
         data = (total, unique, lq, aq, fq)
 
